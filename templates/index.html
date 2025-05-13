@@ -1,189 +1,263 @@
 {% extends 'layout.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Federal Funding Club - DIY Business Tax Tool{% endblock %}
 
 {% block content %}
-<section class="py-5 text-center container">
-    <div class="row py-lg-5">
-        <div class="col-lg-8 col-md-10 mx-auto">
-            <h1 class="fw-bold">DIY Business Tax Filing Tool</h1>
-            <p class="lead">Simplified tax filing for small businesses, solo entrepreneurs, and side hustlers. Create, file, and optimize your business taxes without hiring an expensive CPA.</p>
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a href="{{ url_for('main.pricing') }}" class="btn btn-primary btn-lg px-4 gap-3">View Pricing</a>
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">Go to Dashboard</a>
-                {% else %}
-                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-secondary btn-lg px-4">Create Account</a>
-                {% endif %}
+<!-- Hero Section -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-3">DIY Business Tax Tool</h1>
+                <p class="lead mb-4">The easiest way to handle your business tax filings without the expense of a CPA.</p>
+                <div class="d-grid gap-3 d-md-flex justify-content-md-start">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-light btn-lg px-4 me-md-2">
+                        <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-4 me-md-2">
+                        <i class="fas fa-user-plus me-2"></i> Sign Up Free
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-tag me-2"></i> View Pricing
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='img/hero-image.svg') }}" alt="Tax Tool Illustration" class="img-fluid" style="max-height: 400px;">
             </div>
         </div>
     </div>
 </section>
 
-<div class="container">
-    <!-- Features -->
-    <div class="row mt-5 mb-4">
-        <div class="col-12 text-center">
-            <h2 class="mb-4">What We Offer</h2>
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5">Simplify Your Business Taxes</h2>
+            <p class="lead text-muted">Comprehensive tools to make tax filing quick and painless</p>
         </div>
-    </div>
-    
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <i class="fas fa-file-alt fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Basic DIY Filing</h5>
-                    <p class="card-text">Generate zero-activity business tax returns in minutes. Perfect for newly formed entities or minimal activity businesses.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <i class="fas fa-clipboard-list fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Guided Filing</h5>
-                    <p class="card-text">Step-by-step guidance through Form 1120, 1065, or Schedule C with explanation of each section.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <i class="fas fa-lightbulb fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Strategy Unlock</h5>
-                    <p class="card-text">AI-powered tax saving strategies customized to your business type, income level, and business activities.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <i class="fas fa-envelope-open-text fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">IRS Letter Generator</h5>
-                    <p class="card-text">Professionally crafted response letters for IRS notices, penalty abatement, and late filing relief.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Process Steps -->
-    <div class="row mt-5 mb-4">
-        <div class="col-12 text-center">
-            <h2 class="mb-4">How It Works</h2>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-3 text-center">
-            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                <h2 class="mb-0">1</h2>
-            </div>
-            <h5>Select Your Tool</h5>
-            <p>Choose from our range of tax tools based on your business needs.</p>
-        </div>
-        <div class="col-md-3 text-center">
-            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                <h2 class="mb-0">2</h2>
-            </div>
-            <h5>Answer Questions</h5>
-            <p>Complete our simple questionnaire about your business activities.</p>
-        </div>
-        <div class="col-md-3 text-center">
-            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                <h2 class="mb-0">3</h2>
-            </div>
-            <h5>Review & Edit</h5>
-            <p>Review the auto-filled forms and make any necessary adjustments.</p>
-        </div>
-        <div class="col-md-3 text-center">
-            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                <h2 class="mb-0">4</h2>
-            </div>
-            <h5>Download & File</h5>
-            <p>Download your completed forms ready for filing with the IRS.</p>
-        </div>
-    </div>
-    
-    <!-- Testimonials -->
-    <div class="row mt-5 mb-4">
-        <div class="col-12 text-center">
-            <h2 class="mb-4">What Our Customers Say</h2>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <div class="mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-file-alt fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Business Tax Forms</h5>
+                        <p class="card-text text-muted">Generate Form 1120, 1065, or Schedule C with step-by-step guidance.</p>
                     </div>
-                    <p class="card-text">"I was three years behind on filing my LLC taxes. This tool helped me get caught up in a single weekend. Worth every penny!"</p>
-                    <div class="d-flex align-items-center">
-                        <div class="ms-2">
-                            <h6 class="mb-0">Michael T.</h6>
-                            <small class="text-muted">Small Business Owner</small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-lightbulb fa-3x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Tax Strategies</h5>
+                        <p class="card-text text-muted">Discover custom tax-saving strategies based on your business profile.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-envelope-open-text fa-3x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">IRS Letter Generator</h5>
+                        <p class="card-text text-muted">Create professional response letters for IRS notices and penalties.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-download fa-3x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Ready-to-File PDFs</h5>
+                        <p class="card-text text-muted">Download completed tax forms and letters ready for filing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5">How It Works</h2>
+            <p class="lead text-muted">Three simple steps to filing your business taxes</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <h2 class="mb-0">1</h2>
+                        </div>
+                        <h4>Choose Your Form</h4>
+                        <p class="text-muted">Select the tax form that matches your business entity type.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i> Form 1120 for C-Corporations</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Form 1065 for Partnerships</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Schedule C for Sole Proprietors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <h2 class="mb-0">2</h2>
+                        </div>
+                        <h4>Answer Questions</h4>
+                        <p class="text-muted">Complete our guided questionnaire about your business activities.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i> Simple, straightforward questions</li>
+                            <li><i class="fas fa-check text-success me-2"></i> AI-powered guidance and tips</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Save and continue later</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <h2 class="mb-0">3</h2>
+                        </div>
+                        <h4>Get Your Documents</h4>
+                        <p class="text-muted">Download your completed tax forms ready for filing with the IRS.</p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="fas fa-check text-success me-2"></i> Professional PDF documents</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Ready to print and mail</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Storage in your secure account</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5">What Our Users Say</h2>
+            <p class="lead text-muted">Trusted by small business owners nationwide</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-muted mb-0">"This tool saved me thousands in accountant fees. I was able to file my LLC's tax return in under an hour!"</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pt-0 pb-4 px-4">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <div class="bg-secondary rounded-circle" style="width: 40px; height: 40px;"></div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Sarah J.</h6>
+                                <small class="text-muted">Marketing Agency Owner</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-muted mb-0">"The strategy recommendations were excellent. I discovered deductions I didn't even know were available to my business."</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pt-0 pb-4 px-4">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <div class="bg-secondary rounded-circle" style="width: 40px; height: 40px;"></div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Michael T.</h6>
+                                <small class="text-muted">E-commerce Entrepreneur</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="text-muted mb-0">"The IRS letter generator was a lifesaver when I received a penalty notice. Created a response in minutes that got my penalty waived."</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pt-0 pb-4 px-4">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <div class="bg-secondary rounded-circle" style="width: 40px; height: 40px;"></div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">David R.</h6>
+                                <small class="text-muted">Construction Company Owner</small>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <div class="mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <p class="card-text">"The Strategy Unlock feature saved me over $4,200 in taxes by identifying deductions I didn't know I qualified for. Incredible value."</p>
-                    <div class="d-flex align-items-center">
-                        <div class="ms-2">
-                            <h6 class="mb-0">Sarah L.</h6>
-                            <small class="text-muted">E-commerce Entrepreneur</small>
-                        </div>
-                    </div>
-                </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <h2 class="display-5 fw-bold mb-3">Ready to simplify your business taxes?</h2>
+                <p class="lead mb-0">Join thousands of business owners who file with confidence using our DIY Tax Tool.</p>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <div class="mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star-half-alt text-warning"></i>
-                    </div>
-                    <p class="card-text">"I received an IRS penalty notice for late filing. Used the IRS Letter Generator to request abatement and got the $950 penalty removed!"</p>
-                    <div class="d-flex align-items-center">
-                        <div class="ms-2">
-                            <h6 class="mb-0">David R.</h6>
-                            <small class="text-muted">Freelance Consultant</small>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-lg-4 text-lg-end">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-user-plus me-2"></i> Get Started Free
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
-    
-    <!-- CTA -->
-    <div class="row mt-5">
-        <div class="col-12 text-center">
-            <div class="p-5 bg-light rounded-3">
-                <h2>Ready to simplify your business taxes?</h2>
-                <p class="lead">Join thousands of small business owners saving time and money on their tax filings.</p>
-                <a href="{{ url_for('main.pricing') }}" class="btn btn-primary btn-lg">Get Started Today</a>
-            </div>
-        </div>
-    </div>
-</div>
+</section>
 {% endblock %}

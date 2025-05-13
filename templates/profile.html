@@ -1,194 +1,261 @@
 {% extends 'layout.html' %}
 
-{% block title %}Profile{% endblock %}
+{% block title %}My Profile{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row">
-        <div class="col-lg-4">
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <i class="fas fa-user-circle fa-5x text-primary mb-3"></i>
-                    <h3 class="mb-1">{{ current_user.username }}</h3>
-                    <p class="text-muted mb-3">{{ current_user.email }}</p>
-                    <p class="mb-4">
-                        <span class="badge bg-primary">{{ current_user.plan.value|capitalize }} Plan</span>
-                        {% if current_user.subscription_member %}
-                        <span class="badge bg-success">Subscription Member</span>
-                        {% endif %}
-                    </p>
-                    <div class="d-flex justify-content-center mb-2">
-                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Dashboard</a>
-                        <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-primary ms-1">Upgrade Plan</a>
-                    </div>
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">My Account</h5>
                 </div>
-            </div>
-            <div class="card mb-4">
-                <div class="card-header">Account Information</div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Member Since
-                            <span>{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Account Type
-                            {% if current_user.wordpress_id %}
-                            <span>Federal Funding Club Member</span>
-                            {% else %}
-                            <span>Direct Registration</span>
-                            {% endif %}
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Access Level
-                            <span class="badge bg-primary rounded-pill">{{ current_user.get_access_level()|replace('_', ' ')|capitalize }}</span>
-                        </li>
-                    </ul>
+                <div class="list-group list-group-flush">
+                    <a href="#profile-section" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-user me-2"></i> Profile Information
+                    </a>
+                    <a href="#subscription-section" class="list-group-item list-group-item-action">
+                        <i class="fas fa-credit-card me-2"></i> Subscription Status
+                    </a>
+                    <a href="#history-section" class="list-group-item list-group-item-action">
+                        <i class="fas fa-history me-2"></i> Purchase History
+                    </a>
+                    <a href="#password-section" class="list-group-item list-group-item-action">
+                        <i class="fas fa-lock me-2"></i> Change Password
+                    </a>
                 </div>
             </div>
         </div>
         
-        <div class="col-lg-8">
-            <div class="card mb-4">
-                <div class="card-header">Profile Settings</div>
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Profile Information -->
+            <div id="profile-section" class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Profile Information</h5>
+                </div>
                 <div class="card-body">
-                    <form id="profileForm" method="post" action="{{ url_for('main.update_profile') }}">
+                    <form action="{{ url_for('main.update_profile') }}" method="post" class="needs-validation" novalidate>
                         <div class="row mb-3">
-                            <div class="col-sm-3">
+                            <div class="col-md-6">
                                 <label for="username" class="form-label">Username</label>
-                            </div>
-                            <div class="col-sm-9">
                                 <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+                                <div class="invalid-feedback">
+                                    Please enter a username.
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <label for="email" class="form-label">Email</label>
-                            </div>
-                            <div class="col-sm-9">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address</label>
                                 <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <label for="password" class="form-label">New Password</label>
-                            </div>
-                            <div class="col-sm-9">
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
-                                <div class="form-text">Only fill this if you want to change your password.</div>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-sm-3">
-                                <label for="password_confirm" class="form-label">Confirm Password</label>
-                            </div>
-                            <div class="col-sm-9">
-                                <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Confirm new password">
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Update Profile
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
             
-            <div class="card mb-4">
-                <div class="card-header">Payment History</div>
+            <!-- Subscription Status -->
+            <div id="subscription-section" class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Subscription Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Current Plan</h6>
+                            {% if current_user.plan == 'BUSINESS_BUILDER' %}
+                                <div class="alert alert-success">
+                                    <i class="fas fa-crown me-2"></i>
+                                    <strong>Business Builder</strong>
+                                    <p class="small mb-0 mt-1">You have full access to all premium features.</p>
+                                </div>
+                            {% elif current_user.subscription_member %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-star me-2"></i>
+                                    <strong>Subscription Member</strong>
+                                    <p class="small mb-0 mt-1">You receive a 50% discount on all tools.</p>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-light border">
+                                    <i class="fas fa-user me-2"></i>
+                                    <strong>Standard User</strong>
+                                    <p class="small mb-0 mt-1">Pay-as-you-go access to tools.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Features Access</h6>
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Basic DIY Filing
+                                    {% if current_user.plan == 'BUSINESS_BUILDER' or current_user.has_paid('basic_diy') %}
+                                        <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                                    {% else %}
+                                        <span class="badge bg-secondary rounded-pill"><i class="fas fa-times"></i></span>
+                                    {% endif %}
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Guided Filing
+                                    {% if current_user.plan == 'BUSINESS_BUILDER' or current_user.has_paid('guided_filing') %}
+                                        <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                                    {% else %}
+                                        <span class="badge bg-secondary rounded-pill"><i class="fas fa-times"></i></span>
+                                    {% endif %}
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Strategy Unlock
+                                    {% if current_user.plan == 'BUSINESS_BUILDER' or current_user.has_paid('strategy_unlock') %}
+                                        <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                                    {% else %}
+                                        <span class="badge bg-secondary rounded-pill"><i class="fas fa-times"></i></span>
+                                    {% endif %}
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    IRS Letter Pack
+                                    {% if current_user.plan == 'BUSINESS_BUILDER' or current_user.has_paid('irs_letter_pack') %}
+                                        <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                                    {% else %}
+                                        <span class="badge bg-secondary rounded-pill"><i class="fas fa-times"></i></span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-tag me-2"></i> View Available Plans
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Purchase History -->
+            <div id="history-section" class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Purchase History</h5>
+                </div>
                 <div class="card-body">
                     {% if current_user.payments %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Feature</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for payment in current_user.payments %}
-                                <tr>
-                                    <td>{{ payment.created_at.strftime('%Y-%m-%d') }}</td>
-                                    <td>{{ payment.feature|replace('_', ' ')|title }}</td>
-                                    <td>${{ "%.2f"|format(payment.amount) }}</td>
-                                    <td>
-                                        <span class="badge {% if payment.status == 'completed' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
-                                            {{ payment.status|capitalize }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Item</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in current_user.payments %}
+                                        <tr>
+                                            <td>{{ payment.created_at.strftime('%m/%d/%Y') }}</td>
+                                            <td>{{ payment.feature }}</td>
+                                            <td>${{ "%.2f"|format(payment.amount) }}</td>
+                                            <td>
+                                                {% if payment.status == 'completed' %}
+                                                    <span class="badge bg-success">Completed</span>
+                                                {% elif payment.status == 'pending' %}
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                {% elif payment.status == 'refunded' %}
+                                                    <span class="badge bg-info">Refunded</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ payment.status }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-receipt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     {% else %}
-                    <p class="text-center mb-0">No payment history available.</p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            You don't have any purchase history yet.
+                        </div>
                     {% endif %}
                 </div>
             </div>
             
-            <div class="card">
-                <div class="card-header">Subscription Details</div>
+            <!-- Change Password -->
+            <div id="password-section" class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Change Password</h5>
+                </div>
                 <div class="card-body">
-                    {% if current_user.subscriptions %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Plan</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for subscription in current_user.subscriptions %}
-                                <tr>
-                                    <td>{{ subscription.plan_name|replace('_', ' ')|title }}</td>
-                                    <td>{{ subscription.starts_at.strftime('%Y-%m-%d') }}</td>
-                                    <td>{{ subscription.ends_at.strftime('%Y-%m-%d') if subscription.ends_at else 'Active' }}</td>
-                                    <td>
-                                        <span class="badge {% if subscription.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
-                                            {{ subscription.status|capitalize }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center">
-                        <p class="mb-3">You don't have any active subscriptions.</p>
-                        <a href="https://federalfundingclub.com/join" class="btn btn-primary">
-                            <i class="fas fa-star me-2"></i> Join Business Builder Plan
-                        </a>
-                    </div>
-                    {% endif %}
+                    <form action="{{ url_for('main.update_profile') }}" method="post" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="invalid-feedback">
+                                Please enter a new password.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" required>
+                            <div class="invalid-feedback">
+                                Passwords do not match.
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key me-2"></i> Change Password
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const profileForm = document.getElementById('profileForm');
-        
-        profileForm.addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const passwordConfirm = document.getElementById('password_confirm').value;
-            
-            if (password !== passwordConfirm && password !== '') {
-                e.preventDefault();
-                alert('Passwords do not match.');
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    // Password confirmation validation
+    const passwordForm = document.querySelector('#password-section form');
+    const password = document.querySelector('#password');
+    const confirmPassword = document.querySelector('#confirm_password');
+    
+    passwordForm.addEventListener('submit', function(event) {
+        if (password.value !== confirmPassword.value) {
+            event.preventDefault();
+            confirmPassword.setCustomValidity('Passwords do not match');
+            confirmPassword.reportValidity();
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    });
+    
+    // Handle sidebar navigation
+    const sidebarLinks = document.querySelectorAll('.list-group-item-action');
+    
+    sidebarLinks.forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            sidebarLinks.forEach(function(l) {
+                l.classList.remove('active');
+            });
+            this.classList.add('active');
         });
     });
+});
 </script>
-{% endblock %}
-
 {% endblock %}

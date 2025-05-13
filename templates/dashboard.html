@@ -1,213 +1,308 @@
 {% extends 'layout.html' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard - DIY Business Tax Tool{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Welcome, {{ current_user.username }}</h1>
-        <span class="badge bg-primary p-2">Plan: {{ current_user.plan.value|capitalize }}</span>
+<div class="container py-5">
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-6">
+            <h1 class="display-5 mb-0">Welcome, {{ current_user.username }}</h1>
+            <p class="lead text-muted">Manage your business tax tools and documents</p>
+        </div>
+        <div class="col-lg-6 text-lg-end">
+            <div class="d-inline-block p-3 rounded bg-light">
+                <span class="me-2">Your Plan:</span>
+                {% if current_user.plan == 'BUSINESS_BUILDER' %}
+                    <span class="badge bg-primary p-2">
+                        <i class="fas fa-crown me-1"></i> Business Builder
+                    </span>
+                {% elif current_user.subscription_member %}
+                    <span class="badge bg-info p-2">
+                        <i class="fas fa-star me-1"></i> Subscription Member
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary p-2">
+                        <i class="fas fa-user me-1"></i> Standard User
+                    </span>
+                {% endif %}
+            </div>
+        </div>
     </div>
     
-    {% if access_level == 'full_access' %}
-    <div class="alert alert-success" role="alert">
-        <i class="fas fa-star me-2"></i> You have full access to all features with your Business Builder plan!
-    </div>
-    {% elif access_level == 'discounted' %}
-    <div class="alert alert-info" role="alert">
-        <i class="fas fa-tag me-2"></i> As a subscription member, you get 50% off all tax tools!
-    </div>
-    {% endif %}
-    
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card mb-4 h-100">
-                <div class="card-header">
-                    <h5 class="mb-0">Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-3">
-                        <a href="#" class="btn btn-outline-primary">
-                            <i class="fas fa-file-alt me-2"></i> Start New Tax Form
-                        </a>
-                        <a href="#" class="btn btn-outline-primary">
-                            <i class="fas fa-lightbulb me-2"></i> Generate Tax Strategies
-                        </a>
-                        <a href="#" class="btn btn-outline-primary">
-                            <i class="fas fa-envelope-open-text me-2"></i> Create IRS Letter
-                        </a>
-                        <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-shopping-cart me-2"></i> Browse Available Tools
-                        </a>
+    <!-- Quick Access Tools -->
+    <div class="row mb-5">
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-sm dashboard-card">
+                <div class="card-body text-center">
+                    <div class="dashboard-icon text-primary">
+                        <i class="fas fa-file-alt"></i>
                     </div>
+                    <h5>Tax Forms</h5>
+                    <p class="text-muted mb-4">Create & manage your business tax forms</p>
+                    <a href="{{ url_for('form.new_form') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i> New Form
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card mb-4 h-100">
-                <div class="card-header">
-                    <h5 class="mb-0">Account Overview</h5>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-sm dashboard-card">
+                <div class="card-body text-center">
+                    <div class="dashboard-icon text-success">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h5>Tax Strategies</h5>
+                    <p class="text-muted mb-4">Discover tax-saving opportunities</p>
+                    <a href="{{ url_for('strategy.home') }}" class="btn btn-success">
+                        <i class="fas fa-search-dollar me-2"></i> Find Strategies
+                    </a>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Email
-                            <span>{{ current_user.email }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Member Since
-                            <span>{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Access Level
-                            <span class="badge bg-primary rounded-pill">{{ access_level|replace('_', ' ')|capitalize }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Subscription Status
-                            <span class="badge {% if current_user.subscription_member %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">
-                                {% if current_user.subscription_member %}Active{% else %}None{% endif %}
-                            </span>
-                        </li>
-                    </ul>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-sm dashboard-card">
+                <div class="card-body text-center">
+                    <div class="dashboard-icon text-warning">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+                    <h5>IRS Letters</h5>
+                    <p class="text-muted mb-4">Generate response letters for the IRS</p>
+                    <a href="{{ url_for('letter.new_letter') }}" class="btn btn-warning text-dark">
+                        <i class="fas fa-pen me-2"></i> Create Letter
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card shadow-sm dashboard-card">
+                <div class="card-body text-center">
+                    <div class="dashboard-icon text-info">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <h5>Pricing Plans</h5>
+                    <p class="text-muted mb-4">Upgrade your plan for more features</p>
+                    <a href="{{ url_for('main.pricing') }}" class="btn btn-info text-white">
+                        <i class="fas fa-arrow-circle-up me-2"></i> View Plans
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     
+    <!-- Recent Activity Section -->
     <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card">
+        <div class="col-lg-8">
+            <!-- Recent Tax Forms -->
+            <div class="card shadow-sm mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Your Tax Forms</h5>
-                    <a href="#" class="btn btn-sm btn-primary">
+                    <a href="{{ url_for('form.new_form') }}" class="btn btn-sm btn-primary">
                         <i class="fas fa-plus me-1"></i> New Form
                     </a>
                 </div>
                 <div class="card-body">
                     {% if forms %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Form Type</th>
-                                    <th>Tax Year</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for form in forms %}
-                                <tr>
-                                    <td>{{ form.form_type.value }}</td>
-                                    <td>{{ form.tax_year }}</td>
-                                    <td>
-                                        <span class="badge {% if form.status == 'completed' %}bg-success{% elif form.status == 'draft' %}bg-warning{% else %}bg-secondary{% endif %}">
-                                            {{ form.status|capitalize }}
-                                        </span>
-                                    </td>
-                                    <td>{{ form.created_at.strftime('%Y-%m-%d') }}</td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <a href="#" class="btn btn-outline-primary">Edit</a>
-                                            <a href="#" class="btn btn-outline-secondary">View</a>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Form Type</th>
+                                        <th>Tax Year</th>
+                                        <th>Status</th>
+                                        <th>Last Updated</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for form in forms %}
+                                    <tr>
+                                        <td>{{ form.form_type.value }}</td>
+                                        <td>{{ form.tax_year }}</td>
+                                        <td>
                                             {% if form.status == 'completed' %}
-                                            <a href="#" class="btn btn-outline-success">Download</a>
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif form.status == 'draft' %}
+                                                <span class="badge bg-warning text-dark">Draft</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ form.status }}</span>
                                             {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                        </td>
+                                        <td>{{ form.updated_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('form.view_form', form_id=form.id) }}" class="btn btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('form.edit_form', form_type=form.form_type.value) }}?form_id={{ form.id }}" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% if form.status == 'completed' %}
+                                                <a href="{{ url_for('form.download_form', form_id=form.id) }}" class="btn btn-outline-success">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                        <p class="lead">You haven't created any tax forms yet.</p>
-                        <a href="#" class="btn btn-primary">Create Your First Form</a>
-                    </div>
+                        <div class="text-center py-5">
+                            <img src="{{ url_for('static', filename='img/tax-forms.svg') }}" alt="Tax Forms" style="width: 120px; opacity: 0.3;" class="mb-3">
+                            <h5>No Tax Forms Yet</h5>
+                            <p class="text-muted">Get started by creating your first tax form.</p>
+                            <a href="{{ url_for('form.new_form') }}" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-2"></i> Create Your First Form
+                            </a>
+                        </div>
                     {% endif %}
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card">
+            
+            <!-- Recent IRS Letters -->
+            <div class="card shadow-sm mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Tax Strategies</h5>
-                    <a href="#" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i> Analyze
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if strategies %}
-                    <div class="list-group">
-                        {% for strategy in strategies %}
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">{{ strategy.strategy_name }}</h6>
-                                <small class="text-muted">{{ strategy.created_at.strftime('%Y-%m-%d') }}</small>
-                            </div>
-                            <p class="mb-1 text-truncate">{{ strategy.description }}</p>
-                            {% if strategy.estimated_savings %}
-                            <small class="text-success">
-                                <i class="fas fa-dollar-sign me-1"></i> Estimated Savings: ${{ "%.2f"|format(strategy.estimated_savings) }}
-                            </small>
-                            {% endif %}
-                        </a>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
-                        <p class="lead">Discover tax strategies for your business.</p>
-                        <a href="#" class="btn btn-primary">Generate Strategies</a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">IRS Letters</h5>
-                    <a href="#" class="btn btn-sm btn-primary">
+                    <h5 class="mb-0">Your IRS Letters</h5>
+                    <a href="{{ url_for('letter.new_letter') }}" class="btn btn-sm btn-primary">
                         <i class="fas fa-plus me-1"></i> New Letter
                     </a>
                 </div>
                 <div class="card-body">
                     {% if letters %}
-                    <div class="list-group">
-                        {% for letter in letters %}
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">{{ letter.letter_type.value|replace('_', ' ')|capitalize }}</h6>
-                                <small class="text-muted">{{ letter.created_at.strftime('%Y-%m-%d') }}</small>
-                            </div>
-                            <small class="d-block">
-                                <span class="badge {% if letter.status == 'completed' %}bg-success{% elif letter.status == 'draft' %}bg-warning{% else %}bg-secondary{% endif %}">
-                                    {{ letter.status|capitalize }}
-                                </span>
-                                {% if letter.pdf_path %}
-                                <span class="ms-2">
-                                    <i class="fas fa-file-pdf me-1"></i> PDF Available
-                                </span>
-                                {% endif %}
-                            </small>
-                        </a>
-                        {% endfor %}
-                    </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Letter Type</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for letter in letters %}
+                                    <tr>
+                                        <td>{{ letter.letter_type.value }}</td>
+                                        <td>
+                                            {% if letter.status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif letter.status == 'draft' %}
+                                                <span class="badge bg-warning text-dark">Draft</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ letter.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ letter.created_at.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('letter.view_letter', letter_id=letter.id) }}" class="btn btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ url_for('letter.edit_letter', letter_type=letter.letter_type.value) }}?letter_id={{ letter.id }}" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% if letter.status == 'completed' %}
+                                                <a href="{{ url_for('letter.download_letter', letter_id=letter.id) }}" class="btn btn-outline-success">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-envelope-open-text fa-3x text-muted mb-3"></i>
-                        <p class="lead">You haven't created any IRS letters yet.</p>
-                        <a href="#" class="btn btn-primary">Create Letter</a>
-                    </div>
+                        <div class="text-center py-5">
+                            <img src="{{ url_for('static', filename='img/letters.svg') }}" alt="IRS Letters" style="width: 120px; opacity: 0.3;" class="mb-3">
+                            <h5>No IRS Letters Yet</h5>
+                            <p class="text-muted">Create letters for penalty abatement, reasonable cause, and more.</p>
+                            <a href="{{ url_for('letter.new_letter') }}" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-2"></i> Create Your First Letter
+                            </a>
+                        </div>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Tax Strategies -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Your Tax Strategies</h5>
+                    <a href="{{ url_for('strategy.home') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i> New Analysis
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if strategies %}
+                        <ul class="list-group list-group-flush">
+                            {% for strategy in strategies %}
+                            <li class="list-group-item strategy-card p-3">
+                                <h6>{{ strategy.strategy_name }}</h6>
+                                <p class="text-muted small mb-2">{{ strategy.description|truncate(100) }}</p>
+                                {% if strategy.estimated_savings %}
+                                <p class="strategy-savings mb-2">Estimated Savings: ${{ "%.2f"|format(strategy.estimated_savings) }}</p>
+                                {% endif %}
+                                <a href="{{ url_for('strategy.view_strategy', strategy_id=strategy.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <img src="{{ url_for('static', filename='img/strategies.svg') }}" alt="Tax Strategies" style="width: 120px; opacity: 0.3;" class="mb-3">
+                            <h5>No Strategies Yet</h5>
+                            <p class="text-muted">Take our questionnaire to discover tax-saving opportunities.</p>
+                            <a href="{{ url_for('strategy.home') }}" class="btn btn-primary">
+                                <i class="fas fa-lightbulb me-2"></i> Discover Strategies
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Resources & Tips -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Resources & Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 pb-3 border-bottom">
+                        <h6><i class="fas fa-calendar-alt text-primary me-2"></i> Tax Deadline Reminder</h6>
+                        <p class="small text-muted mb-0">The next tax deadline is April 15, 2026 for the 2025 tax year.</p>
+                    </div>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <h6><i class="fas fa-book text-success me-2"></i> Tax Tip</h6>
+                        <p class="small text-muted mb-0">Don't forget to track your business mileage and home office expenses for potential deductions.</p>
+                    </div>
+                    <div>
+                        <h6><i class="fas fa-money-bill-wave text-warning me-2"></i> Did You Know?</h6>
+                        <p class="small text-muted mb-0">If your business had no income this year, filing a zero-activity return maintains your good standing with the IRS.</p>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="https://federalfundingclub.com/resources" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-1"></i> More Resources
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Help & Support -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Our support team is here to assist you with any questions about your tax forms or strategies.</p>
+                    <div class="d-grid">
+                        <a href="mailto:support@federalfundingclub.com" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope me-2"></i> Contact Support
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
