@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield Shape -->
+  <path d="M45 10L60 5L75 10C75 10 80 40 60 60C40 40 45 10 45 10Z" fill="#0F6848" stroke="#D4AF37" stroke-width="1.5"/>
+  
+  <!-- FFC Letters -->
+  <text x="53" y="30" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#D4AF37">F</text>
+  <text x="60" y="38" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#D4AF37">F</text>
+  <text x="53" y="46" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#D4AF37">C</text>
+  
+  <!-- Federal Funding Club Text -->
+  <text x="85" y="30" font-family="Montserrat, Arial, sans-serif" font-size="18" font-weight="bold" fill="#0F6848">FEDERAL</text>
+  <text x="85" y="50" font-family="Montserrat, Arial, sans-serif" font-size="18" font-weight="bold" fill="#0F6848">FUNDING CLUB</text>
+  
+  <!-- Gold Underline -->
+  <path d="M85 55L180 55" stroke="#D4AF37" stroke-width="2"/>
+  
+  <!-- Luxury Badge -->
+  <path d="M160 20C160 20 165 20 165 15C165 10 160 10 160 10L160 20Z" fill="#D4AF37"/>
+</svg>

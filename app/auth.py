@@ -163,62 +163,93 @@ def logout():
 def validate_wp_token(token):
     """Validate WordPress authentication token and return/create a user"""
     try:
-        # In a real implementation, we would call the WordPress site API
-        # to validate the token and get user information
-        # For now, we'll simulate this process with a placeholder
+        # Set up WordPress API endpoint
+        # This should be the REST API endpoint for your WordPress site
+        wordpress_api_url = "https://federalfundingclub.com/wp-json/jwt-auth/v1/token/validate"
         
-        # Placeholder logic for WordPress token validation
-        # This would be replaced with actual API calls to WordPress
-        wp_user_data = {
-            'id': 123,  # WordPress user ID
-            'username': 'wp_user',
-            'email': 'wp_user@example.com',
-            'subscription_status': 'active',  # or 'inactive'
-            'plan': 'business_builder'  # or 'standard' or 'free'
+        # Headers for the API request
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
         }
         
-        # Check if user with this WordPress ID already exists
-        user = User.query.filter_by(wordpress_id=wp_user_data['id']).first()
+        # Make the request to WordPress to validate the token
+        response = requests.post(wordpress_api_url, headers=headers)
         
-        if user:
-            # Update user information
-            user.username = wp_user_data['username']
-            user.email = wp_user_data['email']
-            user.subscription_member = wp_user_data['subscription_status'] == 'active'
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Parse the response data
+            data = response.json()
             
-            if wp_user_data['plan'] == 'business_builder':
-                user.plan = UserPlan.BUSINESS_BUILDER
-            elif wp_user_data['plan'] == 'standard':
-                user.plan = UserPlan.STANDARD
-            else:
-                user.plan = UserPlan.FREE
+            if data.get('success', False):
+                # Get the user data from the response
+                wp_user_data = data.get('data', {})
                 
-            db.session.commit()
+                # If we don't have a WordPress user ID, we can't proceed
+                if not wp_user_data.get('id'):
+                    logging.error("No WordPress user ID provided in token response")
+                    return None
+                
+                # Get the user's membership status and level
+                # This would depend on your WordPress site setup
+                subscription_status = "active" if wp_user_data.get('membership_active', False) else "inactive"
+                plan_level = wp_user_data.get('membership_level', 'free').lower()
+                
+                # Check if user with this WordPress ID already exists
+                user = User.query.filter_by(wordpress_id=wp_user_data['id']).first()
+                
+                if user:
+                    # Update user information
+                    user.username = wp_user_data.get('username', user.username)
+                    user.email = wp_user_data.get('email', user.email)
+                    user.subscription_member = subscription_status == 'active'
+                    
+                    # Update the user's plan based on WordPress membership level
+                    if plan_level == 'business_builder':
+                        user.plan = UserPlan.BUSINESS_BUILDER
+                    elif plan_level == 'standard':
+                        user.plan = UserPlan.STANDARD
+                    else:
+                        user.plan = UserPlan.FREE
+                        
+                    db.session.commit()
+                    logging.info(f"Updated existing user from WordPress: {user.username}")
+                else:
+                    # Create new user
+                    username = wp_user_data.get('username', f"wp_user_{wp_user_data['id']}")
+                    email = wp_user_data.get('email', f"wp_{wp_user_data['id']}@federalfundingclub.com")
+                    
+                    user = User(
+                        username=username,
+                        email=email,
+                        wordpress_id=wp_user_data['id'],
+                        subscription_member=subscription_status == 'active'
+                    )
+                    
+                    # Set the user's plan based on WordPress membership level
+                    if plan_level == 'business_builder':
+                        user.plan = UserPlan.BUSINESS_BUILDER
+                    elif plan_level == 'standard':
+                        user.plan = UserPlan.STANDARD
+                    else:
+                        user.plan = UserPlan.FREE
+                    
+                    # Generate a random password (not used for WP users, as they authenticate via token)
+                    import secrets
+                    random_password = secrets.token_urlsafe(16)
+                    user.set_password(random_password)
+                    
+                    db.session.add(user)
+                    db.session.commit()
+                    logging.info(f"Created new user from WordPress: {user.username}")
+                
+                return user
+            else:
+                logging.warning(f"WordPress token validation failed: {data.get('message', 'Unknown error')}")
+                return None
         else:
-            # Create new user
-            user = User(
-                username=wp_user_data['username'],
-                email=wp_user_data['email'],
-                wordpress_id=wp_user_data['id'],
-                subscription_member=wp_user_data['subscription_status'] == 'active'
-            )
-            
-            if wp_user_data['plan'] == 'business_builder':
-                user.plan = UserPlan.BUSINESS_BUILDER
-            elif wp_user_data['plan'] == 'standard':
-                user.plan = UserPlan.STANDARD
-            else:
-                user.plan = UserPlan.FREE
-                
-            # Generate a random password (not used for WP users)
-            import secrets
-            random_password = secrets.token_urlsafe(16)
-            user.set_password(random_password)
-            
-            db.session.add(user)
-            db.session.commit()
-        
-        return user
+            logging.error(f"WordPress API request failed with status {response.status_code}: {response.text}")
+            return None
     except Exception as e:
         logging.error(f"Error validating WordPress token: {e}")
         return None

@@ -5,8 +5,24 @@
 {% block content %}
 <div class="container py-5">
     <div class="text-center mb-5">
-        <h1 class="display-4 mb-3">DIY Business Tax Tool Pricing</h1>
-        <p class="lead text-muted">Choose the plan that's right for your business tax needs</p>
+        <h1 class="display-4 mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 800;">Premium Tax Solutions</h1>
+        <div class="luxury-divider mx-auto" style="width: 80px; margin-bottom: 1.5rem;"></div>
+        <p class="lead" style="font-family: 'Montserrat', sans-serif; color: var(--ffc-primary);">Enterprise-grade tax tools for discerning business owners</p>
+    </div>
+    
+    <div class="luxury-card premium-bg mb-5 py-4 px-4 text-center">
+        <div class="row align-items-center">
+            <div class="col-md-2 text-center mb-3 mb-md-0">
+                <i class="fas fa-award fa-3x gold-accent"></i>
+            </div>
+            <div class="col-md-8 mb-3 mb-md-0">
+                <h4 style="font-family: 'Montserrat', sans-serif; font-weight: 600;">Exclusive Limited-Time Offer</h4>
+                <p class="mb-0">Our professional-grade tax tools are now available at a fraction of their market value.</p>
+            </div>
+            <div class="col-md-2">
+                <span class="badge bg-primary px-3 py-2" style="font-size: 0.9rem;">SAVE 70%</span>
+            </div>
+        </div>
     </div>
     
     {% if current_user.is_authenticated %}
