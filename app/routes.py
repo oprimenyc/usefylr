@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, session
 from flask_login import login_required, current_user
+from app.app import db
+from app.models import User, AuditLog
 
 # Create blueprint
 main_bp = Blueprint('main', __name__)
@@ -65,11 +67,59 @@ def pricing():
         
     return render_template('pricing.html', pricing=pricing_data, user_plans=user_plans)
 
-@main_bp.route('/profile')
+@main_bp.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     """User profile page"""
     return render_template('profile.html')
+
+@main_bp.route('/update-profile', methods=['POST'])
+@login_required
+def update_profile():
+    """Update user profile information"""
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        # Check if username already exists (excluding current user)
+        if username != current_user.username:
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                flash('Username already exists.', 'danger')
+                return redirect(url_for('main.profile'))
+        
+        # Check if email already exists (excluding current user)
+        if email != current_user.email:
+            existing_email = User.query.filter_by(email=email).first()
+            if existing_email:
+                flash('Email already exists.', 'danger')
+                return redirect(url_for('main.profile'))
+        
+        # Update user information
+        current_user.username = username
+        current_user.email = email
+        
+        # Update password if provided
+        if password and password.strip():
+            current_user.set_password(password)
+        
+        # Log the profile update
+        log = AuditLog(
+            user_id=current_user.id,
+            action="profile_update",
+            details="User profile updated",
+            ip_address=request.remote_addr
+        )
+        db.session.add(log)
+        
+        # Commit changes
+        db.session.commit()
+        
+        flash('Profile updated successfully.', 'success')
+        return redirect(url_for('main.profile'))
+    
+    return redirect(url_for('main.profile'))
 
 @main_bp.route('/success')
 def success():

@@ -4,7 +4,13 @@ import json
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify, redirect, url_for, render_template, flash, current_app
 from flask_login import login_required, current_user
-import stripe
+
+# Import with try-except to handle missing Stripe API key
+try:
+    import stripe
+    stripe_available = True
+except (ImportError, ModuleNotFoundError):
+    stripe_available = False
 
 from app.app import db
 from app.models import Payment, Subscription, AuditLog
@@ -12,8 +18,11 @@ from app.models import Payment, Subscription, AuditLog
 # Create blueprint
 billing_bp = Blueprint('billing', __name__, url_prefix='/billing')
 
-# Initialize Stripe
-stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', '')
+# Initialize Stripe if available
+if stripe_available:
+    stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', '')
+    if not stripe.api_key:
+        logging.warning("STRIPE_SECRET_KEY environment variable is not set. Stripe features will be limited.")
 
 # Pricing data
 pricing_tiers = {
@@ -59,6 +68,24 @@ def create_checkout_session(product_id):
     price = product['price']
     if current_user.subscription_member:
         price = price * 0.5  # 50% discount
+    
+    # Check if Stripe is available and configured
+    if not stripe_available or not os.environ.get('STRIPE_SECRET_KEY'):
+        flash('Payment processing is currently unavailable. Please try again later.', 'warning')
+        # Create record for demo purposes
+        payment = Payment(
+            user_id=current_user.id,
+            stripe_payment_id="demo_" + datetime.now().strftime("%Y%m%d%H%M%S"),
+            amount=price,
+            feature=product_id,
+            status='demo'
+        )
+        db.session.add(payment)
+        db.session.commit()
+        
+        # For demo purposes, redirect to success page
+        flash('Demo mode: Payment would be processed here in production.', 'info')
+        return redirect(url_for('billing.success', product_id=product_id))
     
     try:
         # Determine domain for success/cancel URLs
@@ -112,7 +139,7 @@ def create_checkout_session(product_id):
         db.session.commit()
         
         # Redirect to Stripe checkout
-        return redirect(checkout_session.url, code=303)
+        return redirect(checkout_session.url)
     except Exception as e:
         logging.error(f"Error creating checkout session: {e}")
         flash('An error occurred while processing your payment. Please try again.', 'danger')

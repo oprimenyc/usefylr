@@ -4,19 +4,19 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
+    // Initialize Bootstrap tooltips
     initTooltips();
     
-    // Initialize popovers
+    // Initialize Bootstrap popovers
     initPopovers();
     
-    // Handle flash message dismissal
+    // Setup flash message auto-dismissal
     setupFlashMessages();
     
-    // Enable responsive table handling
+    // Make tables responsive on small screens
     setupResponsiveTables();
     
-    // Initialize any date pickers
+    // Initialize date pickers
     initDatePickers();
     
     // Setup form validation
@@ -27,11 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
  * Initialize Bootstrap tooltips
  */
 function initTooltips() {
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl, {
-            trigger: 'hover'
-        });
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 }
 
@@ -39,8 +37,8 @@ function initTooltips() {
  * Initialize Bootstrap popovers
  */
 function initPopovers() {
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function (popoverTriggerEl) {
+    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function(popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 }
@@ -49,26 +47,28 @@ function initPopovers() {
  * Setup flash message auto-dismissal
  */
 function setupFlashMessages() {
-    // Auto-dismiss flash messages after 5 seconds
-    setTimeout(function() {
-        var flashMessages = document.querySelectorAll('.alert-dismissible');
-        flashMessages.forEach(function(message) {
-            var closeButton = message.querySelector('.btn-close');
+    const flashMessages = document.querySelectorAll('.alert-dismissible');
+    
+    flashMessages.forEach(function(message) {
+        // Auto-dismiss after 5 seconds
+        setTimeout(function() {
+            const closeButton = message.querySelector('.btn-close');
             if (closeButton) {
                 closeButton.click();
             }
-        });
-    }, 5000);
+        }, 5000);
+    });
 }
 
 /**
  * Make tables responsive on small screens
  */
 function setupResponsiveTables() {
-    var tables = document.querySelectorAll('table');
+    const tables = document.querySelectorAll('table');
+    
     tables.forEach(function(table) {
         if (!table.parentElement.classList.contains('table-responsive')) {
-            var wrapper = document.createElement('div');
+            const wrapper = document.createElement('div');
             wrapper.classList.add('table-responsive');
             table.parentNode.insertBefore(wrapper, table);
             wrapper.appendChild(table);
@@ -80,11 +80,15 @@ function setupResponsiveTables() {
  * Initialize date pickers for date inputs
  */
 function initDatePickers() {
-    // This is a placeholder for potential datepicker initialization
-    // In a real implementation, you might use a library like Flatpickr
-    var dateInputs = document.querySelectorAll('input[type="date"]');
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    
     dateInputs.forEach(function(input) {
-        // Add any special handling for date inputs here
+        // Add min and max attributes if not present
+        if (!input.hasAttribute('min')) {
+            const currentYear = new Date().getFullYear();
+            input.setAttribute('min', `${currentYear - 10}-01-01`);
+            input.setAttribute('max', `${currentYear + 1}-12-31`);
+        }
     });
 }
 
@@ -92,10 +96,9 @@ function initDatePickers() {
  * Setup form validation
  */
 function setupFormValidation() {
-    // Add client-side validation to forms with validation-required class
-    var forms = document.querySelectorAll('.validation-required');
+    const forms = document.querySelectorAll('.needs-validation');
     
-    forms.forEach(function(form) {
+    Array.from(forms).forEach(function(form) {
         form.addEventListener('submit', function(event) {
             if (!form.checkValidity()) {
                 event.preventDefault();
@@ -128,11 +131,24 @@ function formatCurrency(value, currency = 'USD') {
  */
 function formatDate(dateStr, format = 'medium') {
     const date = new Date(dateStr);
-    const options = format === 'short' 
-        ? { year: 'numeric', month: 'numeric', day: 'numeric' }
-        : { year: 'numeric', month: 'long', day: 'numeric' };
     
-    return new Intl.DateTimeFormat('en-US', options).format(date);
+    switch (format) {
+        case 'short':
+            return date.toLocaleDateString();
+        case 'long':
+            return date.toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        case 'medium':
+        default:
+            return date.toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+    }
 }
 
 /**
@@ -143,24 +159,26 @@ function formatDate(dateStr, format = 'medium') {
  */
 function toggleLoadingSpinner(show, containerId, message = 'Loading...') {
     const container = document.getElementById(containerId);
-    
     if (!container) return;
     
+    // Remove existing spinner if any
+    const existingSpinner = container.querySelector('.loading-spinner');
+    if (existingSpinner) {
+        existingSpinner.remove();
+    }
+    
     if (show) {
-        const spinnerHtml = `
-            <div class="text-center" id="loading-spinner-${containerId}">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2">${message}</p>
+        const spinner = document.createElement('div');
+        spinner.className = 'loading-spinner text-center my-5';
+        
+        spinner.innerHTML = `
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
             </div>
+            <p>${message}</p>
         `;
-        container.innerHTML = spinnerHtml;
-    } else {
-        const spinner = document.getElementById(`loading-spinner-${containerId}`);
-        if (spinner) {
-            spinner.remove();
-        }
+        
+        container.prepend(spinner);
     }
 }
 
@@ -171,18 +189,19 @@ function toggleLoadingSpinner(show, containerId, message = 'Loading...') {
  * @returns {boolean} Whether the value is valid
  */
 function validateTaxId(type, value) {
-    if (!value) return false;
+    // Remove non-digit characters
+    const digits = value.replace(/\D/g, '');
     
-    const einRegex = /^\d{2}-\d{7}$/;
-    const ssnRegex = /^\d{3}-\d{2}-\d{4}$/;
-    
-    if (type === 'ein') {
-        return einRegex.test(value);
-    } else if (type === 'ssn') {
-        return ssnRegex.test(value);
+    switch (type) {
+        case 'ein':
+            // EIN: XX-XXXXXXX (9 digits)
+            return digits.length === 9;
+        case 'ssn':
+            // SSN: XXX-XX-XXXX (9 digits)
+            return digits.length === 9;
+        default:
+            return false;
     }
-    
-    return false;
 }
 
 /**
@@ -192,10 +211,6 @@ function validateTaxId(type, value) {
  * @param {string} label - Event label
  */
 function trackEvent(category, action, label) {
-    // This is a placeholder for real analytics tracking
-    console.log('TRACKING:', category, action, label);
-    
-    // In a real implementation, this would integrate with an analytics service
     if (typeof gtag !== 'undefined') {
         gtag('event', action, {
             'event_category': category,
