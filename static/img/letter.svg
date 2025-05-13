@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="90" fill="#E6F0FF" />
+  
+  <!-- Envelope Body -->
+  <rect x="40" y="60" width="120" height="80" rx="4" fill="white" stroke="#0052CC" stroke-width="2" />
+  
+  <!-- Envelope Flap (Open) -->
+  <path d="M40 60L100 90L160 60" stroke="#0052CC" stroke-width="2" />
+  
+  <!-- Letter Paper -->
+  <rect x="50" y="70" width="100" height="70" fill="#F5F7FA" stroke="#0052CC" stroke-width="1" />
+  
+  <!-- Letter Content Lines -->
+  <rect x="60" y="80" width="80" height="3" rx="1.5" fill="#718096" />
+  <rect x="60" y="90" width="60" height="3" rx="1.5" fill="#718096" />
+  <rect x="60" y="100" width="80" height="3" rx="1.5" fill="#718096" />
+  <rect x="60" y="110" width="70" height="3" rx="1.5" fill="#718096" />
+  <rect x="60" y="120" width="80" height="3" rx="1.5" fill="#718096" />
+  
+  <!-- IRS Logo on Envelope -->
+  <rect x="130" y="70" width="20" height="10" rx="2" fill="#FF6B35" />
+  <text x="140" y="78" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white" text-anchor="middle">IRS</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="60" y="140" r="5" fill="#0052CC" />
+  <circle cx="80" y="140" r="5" fill="#0052CC" />
+  <circle cx="100" y="140" r="5" fill="#0052CC" />
+  
+  <!-- Seal/Stamp -->
+  <circle cx="140" y="120" r="15" fill="#FF6B35" fill-opacity="0.2" stroke="#FF6B35" stroke-width="1" />
+  <path d="M130 120C130 114.477 134.477 110 140 110C145.523 110 150 114.477 150 120C150 125.523 145.523 130 140 130C134.477 130 130 125.523 130 120Z" stroke="#FF6B35" stroke-width="1" stroke-dasharray="2 2" />
+  <text x="140" y="123" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#FF6B35" text-anchor="middle">APPROVED</text>
+  
+  <!-- Magnifying Glass -->
+  <circle cx="50" y="50" r="15" fill="white" stroke="#0052CC" stroke-width="2" />
+  <line x1="60" y1="60" x2="70" y2="70" stroke="#0052CC" stroke-width="3" stroke-linecap="round" />
+  
+  <!-- Checkmark -->
+  <path d="M40 160L55 175L80 145" stroke="#38B2AC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Exclamation Mark -->
+  <circle cx="160" cy="160" r="12" fill="#FF6B35" />
+  <text x="160" y="165" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">!</text>
+</svg>

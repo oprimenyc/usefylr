@@ -1,24 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="240" height="240" fill="none"/>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="90" fill="#E6F0FF" />
   
   <!-- Stack of Forms -->
-  <rect x="40" y="100" width="160" height="120" fill="#e9ecef" stroke="#adb5bd" stroke-width="2" rx="5" ry="5"/>
-  <rect x="50" y="80" width="160" height="120" fill="#f8f9fa" stroke="#adb5bd" stroke-width="2" rx="5" ry="5"/>
-  <rect x="60" y="60" width="160" height="120" fill="white" stroke="#0d6efd" stroke-width="2" rx="5" ry="5"/>
+  <rect x="50" y="70" width="100" height="80" rx="4" fill="white" stroke="#0052CC" stroke-width="2" />
+  <rect x="55" y="65" width="100" height="80" rx="4" fill="#F5F7FA" stroke="#0052CC" stroke-width="2" />
+  <rect x="60" y="60" width="100" height="80" rx="4" fill="white" stroke="#0052CC" stroke-width="2" />
   
-  <!-- Form Content for Top Form -->
-  <rect x="80" y="80" width="120" height="10" fill="#e9ecef" rx="2" ry="2"/>
-  <rect x="80" y="100" width="80" height="8" fill="#e9ecef" rx="2" ry="2"/>
-  <rect x="80" y="115" width="120" height="8" fill="#e9ecef" rx="2" ry="2"/>
-  <rect x="80" y="130" width="100" height="8" fill="#e9ecef" rx="2" ry="2"/>
-  <rect x="80" y="145" width="60" height="8" fill="#e9ecef" rx="2" ry="2"/>
+  <!-- Form Header -->
+  <rect x="60" y="60" width="100" height="15" rx="4" fill="#0052CC" />
+  <text x="80" y="71" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white">FORM 1120</text>
   
-  <!-- Form Label -->
-  <text x="75" y="75" font-family="Arial" font-size="12" font-weight="bold" fill="#0d6efd">FORM 1120</text>
+  <!-- Form Content -->
+  <rect x="70" y="85" width="80" height="5" rx="1" fill="#E2E8F0" />
+  <rect x="70" y="95" width="60" height="5" rx="1" fill="#E2E8F0" />
+  <rect x="70" y="105" width="80" height="5" rx="1" fill="#E2E8F0" />
+  <rect x="70" y="115" width="70" height="5" rx="1" fill="#E2E8F0" />
+  <rect x="70" y="125" width="80" height="5" rx="1" fill="#E2E8F0" />
   
-  <!-- Checkmark Icon -->
-  <circle cx="180" cy="150" r="15" fill="#28a745"/>
-  <path d="M173,150 L178,155 L187,143" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Check Boxes -->
+  <rect x="150" y="85" width="6" height="6" rx="1" fill="white" stroke="#0052CC" stroke-width="1" />
+  <rect x="150" y="95" width="6" height="6" rx="1" fill="white" stroke="#0052CC" stroke-width="1" />
+  <rect x="150" y="105" width="6" height="6" rx="1" fill="white" stroke="#0052CC" stroke-width="1" />
+  <path d="M150 105L152 107L156 103" stroke="#FF6B35" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Form Number -->
+  <text x="145" y="130" font-family="Arial, sans-serif" font-size="8" fill="#718096">2024</text>
+  
+  <!-- Pencil -->
+  <line x1="65" y1="150" x2="85" y2="130" stroke="#0052CC" stroke-width="2" stroke-linecap="round" />
+  <path d="M65 150L60 155L65 160L70 155L65 150Z" fill="#FF6B35" stroke="#0052CC" stroke-width="1" />
+  
+  <!-- Calculator -->
+  <rect x="120" y="140" width="30" height="40" rx="2" fill="#F5F7FA" stroke="#0052CC" stroke-width="1" />
+  <rect x="125" y="145" width="20" height="10" rx="1" fill="white" stroke="#0052CC" stroke-width="0.5" />
+  <rect x="125" y="160" width="6" height="6" rx="1" fill="white" stroke="#0052CC" stroke-width="0.5" />
+  <rect x="135" y="160" width="6" height="6" rx="1" fill="white" stroke="#0052CC" stroke-width="0.5" />
+  <rect x="125" y="170" width="6" height="6" rx="1" fill="white" stroke="#0052CC" stroke-width="0.5" />
+  <rect x="135" y="170" width="6" height="6" rx="1" fill="white" stroke="#0052CC" stroke-width="0.5" />
+  
+  <!-- Paperclip -->
+  <path d="M40 110C40 110 40 90 50 90C60 90 60 110 60 110C60 110 60 85 45 85C30 85 30 110 30 110C30 110 30 80 50 80C70 80 70 110 70 110" stroke="#0052CC" stroke-width="2" stroke-linecap="round" />
+  
+  <!-- Dollar Sign -->
+  <text x="90" y="50" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FF6B35">$</text>
+  
+  <!-- Circular Stamp -->
+  <circle cx="150" y="40" r="15" fill="#FF6B35" fill-opacity="0.1" stroke="#FF6B35" stroke-width="1" />
+  <text x="150" y="45" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#FF6B35" text-anchor="middle">FILED</text>
 </svg>
