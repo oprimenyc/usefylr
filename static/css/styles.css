@@ -4,19 +4,21 @@
  */
 
 :root {
-  /* Brand Colors - Federal Funding Club */
-  --ffc-primary: #0f6848;       /* Main brand green color */
-  --ffc-primary-dark: #0a4d36;  /* Darker green for hover states */
-  --ffc-secondary: #ff6b35;     /* Orange accent color */
-  --ffc-gold: #d4af37;          /* Gold accent for luxury elements */
+  /* Brand Colors - FYLR by Federal Funding Club */
+  --ffc-primary: #2a9d8f;       /* Main brand teal color - lighter */
+  --ffc-primary-dark: #1e7d73;  /* Darker teal for hover states */
+  --ffc-secondary: #e76f51;     /* Coral accent color */
+  --ffc-gold: #f4a261;          /* Gold/amber accent for luxury elements */
   --ffc-light: #f8f9fd;         /* Light background color */
-  --ffc-dark: #1c2434;          /* Dark text color */
+  --ffc-dark: #264653;          /* Dark text color */
   --ffc-success: #38b2ac;       /* Success color */
   --ffc-info: #4299e1;          /* Info color */
   --ffc-warning: #ed8936;       /* Warning color */
-  --ffc-danger: #e53e3e;        /* Danger/error color */
-  --ffc-gray: #718096;          /* Gray text color */
-  --ffc-light-gold: #f7f2e2;    /* Light gold for backgrounds */
+  --ffc-danger: #e76f51;        /* Danger/error color */
+  --ffc-gray: #6d7a8c;          /* Gray text color */
+  --ffc-light-gold: #fdf5e8;    /* Light gold for backgrounds */
+  --ffc-gradient-start: #2a9d8f; /* Gradient start color */
+  --ffc-gradient-end: #66b2b2;   /* Gradient end color */
 }
 
 /* Base Styles */

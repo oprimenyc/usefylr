@@ -1,34 +1,75 @@
 {% extends 'layout.html' %}
 
-{% block title %}Federal Funding Club - DIY Business Tax Tool{% endblock %}
+{% block title %}FYLR by Federal Funding Club{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="bg-primary text-white py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h1 class="display-4 fw-bold mb-3">DIY Business Tax Tool</h1>
-                <p class="lead mb-4">The easiest way to handle your business tax filings without the expense of a CPA.</p>
-                <div class="d-grid gap-3 d-md-flex justify-content-md-start">
+<section class="py-0 position-relative overflow-hidden">
+    <!-- Background Gradient -->
+    <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, #2a9d8f 0%, #66b2b2 100%); z-index: -2;"></div>
+    
+    <!-- Background Pattern -->
+    <div class="position-absolute w-100 h-100" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjEwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIxMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjEwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNzAiIGN5PSIxMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjEwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iMTAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjIwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjIwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNzAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjIwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iMTAiIGN5PSIzMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNzAiIGN5PSIzMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+'); opacity: 0.2; z-index: -1;"></div>
+
+    <div class="container py-5">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-5 mb-5 mb-lg-0 order-2 order-lg-1">
+                <span class="badge bg-white text-primary px-3 py-2 mb-3" style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">ENTERPRISE-GRADE</span>
+                <h1 class="display-3 fw-bold mb-4" style="font-family: 'Montserrat', sans-serif; letter-spacing: -1px; line-height: 1.1;">Streamline Your Business Tax Process</h1>
+                <p class="lead mb-5 text-white opacity-90" style="font-size: 1.25rem; font-weight: 400;">The premium solution that makes tax filing as simple as answering a few questions. Save time, maximize deductions, and ensure compliance.</p>
+                <div class="d-flex flex-column flex-md-row gap-3">
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-light btn-lg px-4 me-md-2">
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-light btn-lg px-4">
                         <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
                     </a>
                     {% else %}
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-4 me-md-2">
-                        <i class="fas fa-user-plus me-2"></i> Sign Up Free
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-4 py-3">
+                        <i class="fas fa-rocket me-2"></i> Get Started
                     </a>
                     {% endif %}
-                    <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-light btn-lg px-4">
-                        <i class="fas fa-tag me-2"></i> View Pricing
+                    <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-tag me-2"></i> See Plans
                     </a>
                 </div>
+                <div class="mt-5 d-flex align-items-center">
+                    <div class="d-flex">
+                        <span class="rounded-circle overflow-hidden border border-white border-2 shadow-sm" style="width: 40px; height: 40px; background: #f4a261; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">J</span>
+                        <span class="rounded-circle overflow-hidden border border-white border-2 shadow-sm" style="width: 40px; height: 40px; margin-left: -10px; background: #e76f51; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">S</span>
+                        <span class="rounded-circle overflow-hidden border border-white border-2 shadow-sm" style="width: 40px; height: 40px; margin-left: -10px; background: #2a9d8f; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">K</span>
+                    </div>
+                    <div class="ms-3 text-white">
+                        <div style="font-size: 0.9rem; opacity: 0.9;">Trusted by 1,000+ business owners</div>
+                        <div class="d-flex align-items-center" style="font-size: 0.8rem;">
+                            <i class="fas fa-star" style="color: #f4a261;"></i>
+                            <i class="fas fa-star" style="color: #f4a261;"></i>
+                            <i class="fas fa-star" style="color: #f4a261;"></i>
+                            <i class="fas fa-star" style="color: #f4a261;"></i>
+                            <i class="fas fa-star" style="color: #f4a261;"></i>
+                            <span class="ms-1" style="opacity: 0.8;">4.9/5 rating</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="{{ url_for('static', filename='img/hero-image.svg') }}" alt="Tax Tool Illustration" class="img-fluid" style="max-height: 400px;">
+            <div class="col-lg-7 order-1 order-lg-2 mb-5 mb-lg-0">
+                <div class="position-relative">
+                    <div class="position-absolute top-0 start-50 translate-middle-x bg-white opacity-25 rounded-circle" style="width: 300px; height: 300px; z-index: -1; filter: blur(60px);"></div>
+                    <img src="{{ url_for('static', filename='img/hero-illustration.svg') }}" alt="FYLR Dashboard" class="img-fluid" style="filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));">
+                    <div class="position-absolute top-0 end-0 translate-middle p-3 rounded-circle bg-white shadow-lg d-none d-md-flex align-items-center justify-content-center" style="width: 90px; height: 90px; border: 4px solid #f4a261;">
+                        <div class="text-center">
+                            <div style="font-size: 1.5rem; font-weight: 800; color: #e76f51;">70%</div>
+                            <div style="font-size: 0.7rem; color: #264653; font-weight: 600;">TIME SAVED</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+    
+    <!-- Wave Shape Divider -->
+    <div class="position-absolute bottom-0 start-0 w-100 overflow-hidden" style="height: 40px; transform: translateY(1px);">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+            <path fill="#ffffff" fill-opacity="1" d="M0,96L80,80C160,64,320,32,480,16C640,0,800,0,960,16C1120,32,1280,64,1360,80L1440,96L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
+        </svg>
     </div>
 </section>
 
