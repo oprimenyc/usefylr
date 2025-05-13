@@ -1,0 +1,151 @@
+{% extends 'layout.html' %}
+
+{% block title %}Edit IRS Letter{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="h2 mb-0">
+            {% if letter %}
+                Edit {{ letter.letter_type.value|replace('_', ' ')|title }} Letter
+            {% else %}
+                New {{ letter_type|replace('_', ' ')|title }} Letter
+            {% endif %}
+        </h1>
+        <p class="lead text-muted">Complete the form below to generate your IRS response letter</p>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Development Notice:</strong> This is a placeholder for the IRS letter creation feature. In the production version, you'll see a form with all relevant fields for the selected letter type.
+    </div>
+    
+    <!-- Letter Progress Bar -->
+    <div class="form-progress-container mb-4">
+        <div class="form-progress" style="width: 25%;"></div>
+    </div>
+    
+    <!-- Sample Letter Form -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Your Information</h5>
+        </div>
+        <div class="card-body">
+            <form>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="taxpayer_name" class="form-label">Taxpayer Name</label>
+                        <input type="text" class="form-control" id="taxpayer_name" placeholder="Your Full Name or Business Name">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tax_id" class="form-label">Tax ID (EIN/SSN)</label>
+                        <input type="text" class="form-control" id="tax_id" placeholder="XX-XXXXXXX or XXX-XX-XXXX">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="address" class="form-label">Mailing Address</label>
+                        <input type="text" class="form-control" id="address" placeholder="Street Address">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="state" class="form-label">State</label>
+                        <select class="form-select" id="state">
+                            <option selected disabled>Select State</option>
+                            <option>Alabama</option>
+                            <option>Alaska</option>
+                            <option>Arizona</option>
+                            <!-- Other states would be here -->
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="zip" class="form-label">ZIP Code</label>
+                        <input type="text" class="form-control" id="zip">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">IRS Notice Details</h5>
+        </div>
+        <div class="card-body">
+            <form>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="notice_number" class="form-label">IRS Notice/Letter Number</label>
+                        <input type="text" class="form-control" id="notice_number" placeholder="e.g., CP14, CP161, LT11">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="notice_date" class="form-label">Notice Date</label>
+                        <input type="date" class="form-control" id="notice_date">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="tax_form" class="form-label">Tax Form</label>
+                        <select class="form-select" id="tax_form">
+                            <option selected disabled>Select Form</option>
+                            <option>Form 1040</option>
+                            <option>Form 1120</option>
+                            <option>Form 1065</option>
+                            <option>Form 941</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tax_period" class="form-label">Tax Period</label>
+                        <select class="form-select" id="tax_period">
+                            <option selected disabled>Select Period</option>
+                            <option>2024</option>
+                            <option>2023</option>
+                            <option>2022</option>
+                            <option>2021</option>
+                            <option>2020</option>
+                            <option>2019</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Reason for Request</label>
+                    <select class="form-select" id="reason">
+                        <option selected disabled>Select Reason</option>
+                        <option>First Time Penalty Abatement</option>
+                        <option>Death, Serious Illness, or Unavoidable Absence</option>
+                        <option>Fire, Natural Disaster, or Casualty</option>
+                        <option>Unable to Obtain Records</option>
+                        <option>Mistake or Error by IRS</option>
+                        <option>Erroneous Advice from IRS</option>
+                        <option>Other Reasonable Cause</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="explanation" class="form-label">Detailed Explanation</label>
+                    <textarea class="form-control" id="explanation" rows="5" placeholder="Explain the circumstances that led to the penalty..."></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('letter.new_letter') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </a>
+        <button type="button" class="btn btn-primary">
+            Continue <i class="fas fa-arrow-right ms-2"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}

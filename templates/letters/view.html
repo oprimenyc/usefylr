@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block title %}View IRS Letter{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="h2 mb-0">IRS Letter Details</h1>
+        <p class="lead text-muted">Review your completed IRS response letter</p>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Development Notice:</strong> This is a placeholder for the IRS letter viewing feature. In the production version, you'll see your completed letter with all details.
+    </div>
+    
+    <!-- Sample Letter View -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Letter Preview</h5>
+                <a href="{{ url_for('letter.download_letter', letter_id=1) }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-download me-2"></i> Download PDF
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="letter-container p-4 border" style="font-family: 'Times New Roman', serif;">
+                <div class="row mb-5">
+                    <div class="col-6">
+                        <p class="mb-0">John Smith</p>
+                        <p class="mb-0">123 Main Street</p>
+                        <p class="mb-0">Anytown, CA 12345</p>
+                        <p class="mb-0">Tax ID: XXX-XX-1234</p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <p class="mb-0">May 13, 2025</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="mb-0">Department of the Treasury</p>
+                    <p class="mb-0">Internal Revenue Service</p>
+                    <p class="mb-0">IRS Processing Center</p>
+                    <p class="mb-0">P.O. Box 12345</p>
+                    <p class="mb-0">Washington, DC 20001</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="mb-0"><strong>Re: Request for Penalty Abatement</strong></p>
+                    <p class="mb-0">Notice Number: CP161</p>
+                    <p class="mb-0">Tax Period: 2024</p>
+                    <p class="mb-0">Form: 1120</p>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="mb-0">To Whom It May Concern:</p>
+                </div>
+                
+                <div class="mb-3">
+                    <p>I am writing in response to the above-referenced notice dated April 15, 2025, which assessed a penalty for late filing of my 2024 Form 1120. I respectfully request that this penalty be abated based on my eligibility for First Time Penalty Abatement relief.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <p>I have been in business since 2019 and have a history of timely filing and paying all required tax returns and payments. Prior to this instance, I have never been assessed a penalty related to my tax filings. This late filing was due to extraordinary circumstances beyond my control, as detailed below:</p>
+                </div>
+                
+                <div class="mb-3">
+                    <p>In January 2025, I experienced a significant computer system failure that resulted in the loss of key financial records needed to complete my tax return. Despite immediate efforts to recover and reconstruct these records, including hiring specialized data recovery services, the process took longer than anticipated and prevented me from meeting the filing deadline.</p>
+                </div>
+                
+                <div class="mb-3">
+                    <p>Upon recovering the necessary data, I promptly completed and filed my return. I have since implemented additional backup systems to ensure this situation does not recur. My late filing was not due to willful neglect, but rather due to circumstances beyond my reasonable control.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p>Based on my history of compliance and the reasonable cause circumstances described above, I respectfully request that the penalties assessed in your notice be abated. If you need any additional information to process this request, please contact me at (555) 123-4567 or email@example.com.</p>
+                </div>
+                
+                <div class="mb-5">
+                    <p class="mb-0">Sincerely,</p>
+                    <p class="mt-4">John Smith</p>
+                </div>
+                
+                <div>
+                    <p class="fst-italic small">Enclosures: Copy of IRS Notice CP161</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('letter.letter_list') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Letters
+        </a>
+        <a href="{{ url_for('letter.edit_letter', letter_type='PENALTY_ABATEMENT', letter_id=1) }}" class="btn btn-primary">
+            <i class="fas fa-edit me-2"></i> Edit Letter
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends 'layout.html' %}
+
+{% block title %}My IRS Letters{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">My IRS Letters</h1>
+        <a href="{{ url_for('letter.new_letter') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> New Letter
+        </a>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Development Notice:</strong> This is a placeholder for the IRS letters listing feature. In the production version, you'll see all your IRS letters here.
+    </div>
+    
+    <!-- Sample Letters Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if letters %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Letter Type</th>
+                                <th>Date Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for letter in letters %}
+                            <tr>
+                                <td>{{ letter.letter_type.value|replace('_', ' ')|title }}</td>
+                                <td>{{ letter.created_at.strftime('%m/%d/%Y') }}</td>
+                                <td>
+                                    {% if letter.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% elif letter.status == 'draft' %}
+                                        <span class="badge bg-warning text-dark">Draft</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ letter.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('letter.view_letter', letter_id=letter.id) }}" class="btn btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('letter.edit_letter', letter_type=letter.letter_type.value, letter_id=letter.id) }}" class="btn btn-outline-secondary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% if letter.status == 'completed' %}
+                                        <a href="{{ url_for('letter.download_letter', letter_id=letter.id) }}" class="btn btn-outline-success" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <img src="{{ url_for('static', filename='img/letter.svg') }}" alt="IRS Letters" style="width: 120px; opacity: 0.3;" class="mb-3">
+                    <h5>No IRS Letters Yet</h5>
+                    <p class="text-muted">Get started by creating your first IRS response letter.</p>
+                    <a href="{{ url_for('letter.new_letter') }}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i> Create Your First Letter
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Sample IRS Letters for Development -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Sample Letters (Development Only)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Letter Type</th>
+                            <th>Date Created</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Penalty Abatement</td>
+                            <td>05/01/2025</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('letter.view_letter', letter_id=1) }}" class="btn btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('letter.edit_letter', letter_type='PENALTY_ABATEMENT', letter_id=1) }}" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('letter.download_letter', letter_id=1) }}" class="btn btn-outline-success" title="Download">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Reasonable Cause</td>
+                            <td>04/15/2025</td>
+                            <td><span class="badge bg-warning text-dark">Draft</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('letter.view_letter', letter_id=2) }}" class="btn btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('letter.edit_letter', letter_type='REASONABLE_CAUSE', letter_id=2) }}" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Late Filing Relief</td>
+                            <td>03/10/2025</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('letter.view_letter', letter_id=3) }}" class="btn btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('letter.edit_letter', letter_type='LATE_FILING_RELIEF', letter_id=3) }}" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('letter.download_letter', letter_id=3) }}" class="btn btn-outline-success" title="Download">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -60,9 +60,17 @@ with app.app_context():
     from app.auth import auth_bp
     from app.billing import billing_bp
     
+    # Import module blueprints
+    from modules.form_routes import form_bp
+    from modules.strategy_routes import strategy_bp
+    from modules.letter_routes import letter_bp
+    
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(billing_bp)
+    app.register_blueprint(form_bp)
+    app.register_blueprint(strategy_bp)
+    app.register_blueprint(letter_bp)
     
     # Error handlers
     from app.routes import page_not_found, server_error

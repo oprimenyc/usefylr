@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block title %}New IRS Letter{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5">Choose Letter Type</h1>
+        <p class="lead text-muted">Select the IRS response letter you need to generate</p>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+        <!-- Penalty Abatement Letter -->
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Penalty Abatement</h5>
+                    <p class="card-text text-muted mb-4">Request removal of late filing penalties based on reasonable cause</p>
+                    <p class="text-muted small mb-4">Perfect for first-time penalty relief or unexpected circumstances</p>
+                    <a href="{{ url_for('letter.edit_letter', letter_type='PENALTY_ABATEMENT') }}" class="btn btn-primary">
+                        <i class="fas fa-envelope-open-text me-2"></i> Select This Letter
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reasonable Cause Letter -->
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Reasonable Cause</h5>
+                    <p class="card-text text-muted mb-4">Explain qualifying circumstances for penalty relief or late filing</p>
+                    <p class="text-muted small mb-4">For situations like natural disasters, illness, or unavoidable absence</p>
+                    <a href="{{ url_for('letter.edit_letter', letter_type='REASONABLE_CAUSE') }}" class="btn btn-primary">
+                        <i class="fas fa-envelope-open-text me-2"></i> Select This Letter
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Late Filing Relief Letter -->
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Late Filing Relief</h5>
+                    <p class="card-text text-muted mb-4">Request relief from penalties for late-filed returns or payments</p>
+                    <p class="text-muted small mb-4">Includes explanations for circumstances beyond your control</p>
+                    <a href="{{ url_for('letter.edit_letter', letter_type='LATE_FILING_RELIEF') }}" class="btn btn-primary">
+                        <i class="fas fa-envelope-open-text me-2"></i> Select This Letter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-5">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

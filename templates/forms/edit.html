@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+
+{% block title %}Edit Tax Form{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="h2 mb-0">
+            {% if form %}
+                Edit {{ form.form_type.value }}
+            {% else %}
+                New {{ form_type }} Form
+            {% endif %}
+        </h1>
+        <p class="lead text-muted">Complete the form below to generate your tax document</p>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Development Notice:</strong> This is a placeholder for the tax form creation feature. In the production version, you'll see a multi-step form with all relevant fields for the selected tax form type.
+    </div>
+    
+    <!-- Form Progress Bar -->
+    <div class="form-progress-container mb-4">
+        <div class="form-progress" style="width: 25%;"></div>
+    </div>
+    
+    <!-- Sample Form Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Business Information</h5>
+        </div>
+        <div class="card-body">
+            <form>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="business_name" class="form-label">Business Name</label>
+                        <input type="text" class="form-control" id="business_name" placeholder="Your Business Name">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ein" class="form-label">EIN</label>
+                        <input type="text" class="form-control" id="ein" placeholder="XX-XXXXXXX">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="business_address" class="form-label">Business Address</label>
+                        <input type="text" class="form-control" id="business_address" placeholder="Street Address">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="state" class="form-label">State</label>
+                        <select class="form-select" id="state">
+                            <option selected disabled>Select State</option>
+                            <option>Alabama</option>
+                            <option>Alaska</option>
+                            <option>Arizona</option>
+                            <!-- Other states would be here -->
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="zip" class="form-label">ZIP Code</label>
+                        <input type="text" class="form-control" id="zip">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="tax_year" class="form-label">Tax Year</label>
+                        <select class="form-select" id="tax_year">
+                            <option selected>2025</option>
+                            <option>2024</option>
+                            <option>2023</option>
+                            <option>2022</option>
+                            <option>2021</option>
+                            <option>2020</option>
+                            <option>2019</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="business_type" class="form-label">Business Type</label>
+                        <select class="form-select" id="business_type">
+                            <option selected disabled>Select Type</option>
+                            <option>Sole Proprietorship</option>
+                            <option>LLC</option>
+                            <option>C Corporation</option>
+                            <option>S Corporation</option>
+                            <option>Partnership</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </a>
+        <button type="button" class="btn btn-primary">
+            Continue <i class="fas fa-arrow-right ms-2"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}

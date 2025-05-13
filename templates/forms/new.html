@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block title %}New Tax Form{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5">Choose Tax Form Type</h1>
+        <p class="lead text-muted">Select the form type that matches your business entity</p>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+        <!-- Form 1120 for C-Corps -->
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Form 1120</h5>
+                    <p class="card-text text-muted mb-4">U.S. Corporation Income Tax Return</p>
+                    <p class="text-muted small mb-4">For C-Corporations and associations taxed as corporations</p>
+                    <a href="{{ url_for('form.edit_form', form_type='FORM_1120') }}" class="btn btn-primary">
+                        <i class="fas fa-file-alt me-2"></i> Select Form 1120
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form 1065 for Partnerships -->
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Form 1065</h5>
+                    <p class="card-text text-muted mb-4">U.S. Return of Partnership Income</p>
+                    <p class="text-muted small mb-4">For partnerships, LLCs with multiple members, and joint ventures</p>
+                    <a href="{{ url_for('form.edit_form', form_type='FORM_1065') }}" class="btn btn-primary">
+                        <i class="fas fa-file-alt me-2"></i> Select Form 1065
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Schedule C for Sole Props -->
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Schedule C</h5>
+                    <p class="card-text text-muted mb-4">Profit or Loss From Business</p>
+                    <p class="text-muted small mb-4">For sole proprietorships, single-member LLCs, and contractors</p>
+                    <a href="{{ url_for('form.edit_form', form_type='Schedule C') }}" class="btn btn-primary">
+                        <i class="fas fa-file-alt me-2"></i> Select Schedule C
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-5">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
