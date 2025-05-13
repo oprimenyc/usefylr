@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="240" height="240" fill="none"/>
+  
+  <!-- Envelope -->
+  <rect x="40" y="70" width="160" height="100" fill="#f8f9fa" stroke="#adb5bd" stroke-width="2" rx="5" ry="5"/>
+  
+  <!-- Envelope Flap (Open) -->
+  <path d="M40,70 L120,110 L200,70" fill="none" stroke="#adb5bd" stroke-width="2"/>
+  
+  <!-- Letter Inside -->
+  <rect x="60" y="80" width="120" height="150" fill="white" stroke="#0d6efd" stroke-width="2" rx="3" ry="3"/>
+  
+  <!-- Letter Content -->
+  <rect x="80" y="100" width="80" height="8" fill="#e9ecef" rx="2" ry="2"/>
+  <rect x="80" y="115" width="80" height="8" fill="#e9ecef" rx="2" ry="2"/>
+  <rect x="80" y="130" width="80" height="8" fill="#e9ecef" rx="2" ry="2"/>
+  <rect x="80" y="145" width="60" height="8" fill="#e9ecef" rx="2" ry="2"/>
+  <rect x="80" y="180" width="40" height="8" fill="#e9ecef" rx="2" ry="2"/>
+  
+  <!-- Letter Header -->
+  <text x="80" y="95" font-family="Arial" font-size="10" font-weight="bold" fill="#0d6efd">IRS RESPONSE</text>
+  
+  <!-- IRS Logo/Symbol Placeholder -->
+  <rect x="150" y="90" width="20" height="20" fill="#dc3545" rx="2" ry="2"/>
+  <text x="154" y="105" font-family="Arial" font-size="12" font-weight="bold" fill="white">IRS</text>
+</svg>

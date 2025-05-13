@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="400" fill="#f8f9fa" rx="10" ry="10"/>
+  
+  <!-- Tax Document -->
+  <rect x="100" y="50" width="400" height="300" fill="white" stroke="#dee2e6" stroke-width="2" rx="5" ry="5"/>
+  
+  <!-- Document Header -->
+  <rect x="120" y="70" width="360" height="40" fill="#e9ecef" rx="3" ry="3"/>
+  <text x="140" y="95" font-family="Arial" font-size="18" fill="#495057">Business Tax Form</text>
+  
+  <!-- Form Lines -->
+  <rect x="120" y="130" width="360" height="2" fill="#dee2e6"/>
+  <rect x="120" y="170" width="360" height="2" fill="#dee2e6"/>
+  <rect x="120" y="210" width="360" height="2" fill="#dee2e6"/>
+  <rect x="120" y="250" width="360" height="2" fill="#dee2e6"/>
+  <rect x="120" y="290" width="360" height="2" fill="#dee2e6"/>
+  
+  <!-- Form Labels -->
+  <text x="140" y="125" font-family="Arial" font-size="12" fill="#6c757d">Business Name:</text>
+  <text x="140" y="165" font-family="Arial" font-size="12" fill="#6c757d">Tax ID Number:</text>
+  <text x="140" y="205" font-family="Arial" font-size="12" fill="#6c757d">Business Address:</text>
+  <text x="140" y="245" font-family="Arial" font-size="12" fill="#6c757d">Gross Income:</text>
+  <text x="140" y="285" font-family="Arial" font-size="12" fill="#6c757d">Total Deductions:</text>
+  
+  <!-- Checkmark Icon -->
+  <circle cx="450" cy="320" r="25" fill="#0d6efd"/>
+  <path d="M440,320 L448,328 L460,310" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
