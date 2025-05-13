@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request
+from flask import Blueprint, render_template, flash, redirect, url_for, request, session
 from flask_login import login_required, current_user
 
 # Create blueprint
@@ -75,6 +75,46 @@ def profile():
 def success():
     """Payment success page"""
     return render_template('success.html')
+
+@main_bp.route('/terms')
+def terms():
+    """Terms of use page"""
+    return render_template('legal/terms.html')
+
+@main_bp.route('/privacy')
+def privacy():
+    """Privacy policy page"""
+    return render_template('legal/privacy.html')
+
+@main_bp.route('/acknowledgment')
+def acknowledgment():
+    """Legal acknowledgment page"""
+    return render_template('legal/acknowledgment.html')
+
+@main_bp.route('/process-acknowledgment', methods=['POST'])
+def process_acknowledgment():
+    """Process legal acknowledgment form"""
+    if request.method == 'POST':
+        # Store acknowledgment in session
+        session['legal_acknowledged'] = True
+        
+        # Get the acknowledgments that were checked
+        acknowledgments = request.form.getlist('acknowledgments[]')
+        
+        # Check if all required acknowledgments were made
+        required_acks = ['accurate_info', 'not_advice', 'responsible_filings', 'not_liable', 'due_diligence', 'terms_accepted']
+        if all(ack in acknowledgments for ack in required_acks):
+            flash('Thank you for acknowledging our legal terms.', 'success')
+            
+            # Redirect based on where they were going
+            next_page = session.get('next_after_acknowledgment', url_for('main.dashboard'))
+            session.pop('next_after_acknowledgment', None)
+            return redirect(next_page)
+        else:
+            flash('You must acknowledge all terms to proceed.', 'danger')
+            return redirect(url_for('main.acknowledgment'))
+    
+    return redirect(url_for('main.acknowledgment'))
 
 @main_bp.errorhandler(404)
 def page_not_found(e):

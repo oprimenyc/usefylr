@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm my-5">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Create an Account</h2>
+                    
+                    <form method="post" action="{{ url_for('auth.register') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms_agreement" name="terms_agreement" required>
+                            <label class="form-check-label" for="terms_agreement">
+                                I agree to the <a href="{{ url_for('main.terms') }}" target="_blank">Terms of Use</a> and <a href="{{ url_for('main.privacy') }}" target="_blank">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <div class="alert alert-info">
+                                <small>
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    By registering, you acknowledge that this tool is for informational purposes only and does not constitute professional tax advice. You are responsible for the accuracy of your tax filings.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary">
+                                Already have an account? Login
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-3">Already a Federal Funding Club member?</p>
+                        <a href="https://federalfundingclub.com/login" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-2"></i> Login with FFC Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+
+{% block title %}Privacy Policy{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="mb-4">Privacy Policy</h1>
+                    
+                    <p>We value your privacy. This policy explains how we collect, use, and protect your information:</p>
+                    
+                    <ul class="mb-4">
+                        <li class="mb-2"><strong>Data Collected:</strong> Name, email, business info, tax inputs, and billing details.</li>
+                        <li class="mb-2"><strong>Usage:</strong> To provide and improve the Tax Tool, process payments, and generate your tax documents.</li>
+                        <li class="mb-2"><strong>Security:</strong> We use industry-standard encryption and never share or sell your data.</li>
+                        <li class="mb-2"><strong>Access:</strong> You may request deletion of your data at any time via email.</li>
+                        <li class="mb-2"><strong>Cookies:</strong> We may use cookies to enhance your experience.</li>
+                    </ul>
+                    
+                    <div class="alert alert-info">
+                        <p class="mb-0">By using this site, you consent to this policy.</p>
+                    </div>
+                    
+                    <h4 class="mt-5 mb-3">Additional Information</h4>
+                    
+                    <h5>How We Use Your Information</h5>
+                    <p>We use the information we collect in various ways, including to:</p>
+                    <ul>
+                        <li>Provide, operate, and maintain our website and tax tools</li>
+                        <li>Improve, personalize, and expand our services</li>
+                        <li>Understand and analyze how you use our website</li>
+                        <li>Develop new products, services, features, and functionality</li>
+                        <li>Process transactions and generate tax documents</li>
+                        <li>Communicate with you about updates, security alerts, and support</li>
+                    </ul>
+                    
+                    <h5>Third-Party Disclosure</h5>
+                    <p>We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties except as follows:</p>
+                    <ul>
+                        <li>Service providers who assist us in operating our website and business (such as payment processors)</li>
+                        <li>When required by law, to protect our rights, or for safety purposes</li>
+                    </ul>
+                    
+                    <h5>Data Retention</h5>
+                    <p>We will retain your personal information only for as long as is necessary for the purposes set out in this Privacy Policy. You may request deletion of your information at any time by contacting us at support@federalfundingclub.com.</p>
+                    
+                    <div class="text-center mt-5">
+                        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
