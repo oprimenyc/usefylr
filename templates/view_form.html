@@ -1,0 +1,349 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ form.form_type.value }} - Tax Year {{ form.tax_year }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-actions {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        background-color: #f8f9fa;
+    }
+    
+    .form-section h3 {
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #0d6efd;
+        padding-bottom: 0.5rem;
+    }
+    
+    .form-field {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    
+    .form-field:last-child {
+        border-bottom: none;
+    }
+    
+    .field-label {
+        font-weight: 600;
+    }
+    
+    .field-value {
+        font-size: 1.1rem;
+    }
+    
+    .form-meta {
+        display: flex;
+        margin-top: 1rem;
+    }
+    
+    .meta-item {
+        padding-right: 1.5rem;
+        margin-right: 1.5rem;
+        border-right: 1px solid #dee2e6;
+    }
+    
+    .meta-item:last-child {
+        border-right: none;
+    }
+    
+    @media print {
+        .no-print {
+            display: none;
+        }
+        
+        .form-section {
+            border: 1px solid #dee2e6;
+            margin-bottom: 1rem;
+        }
+        
+        body {
+            font-size: 12pt;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header no-print">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1>{{ form.form_type.value }}</h1>
+                <p class="lead mb-0">Tax Year: {{ form.tax_year }}</p>
+                
+                <div class="form-meta">
+                    <div class="meta-item">
+                        <small class="text-muted d-block">Created</small>
+                        <span>{{ form.created_at.strftime('%b %d, %Y') }}</span>
+                    </div>
+                    
+                    <div class="meta-item">
+                        <small class="text-muted d-block">Status</small>
+                        <span class="badge bg-{{ 'success' if form.status == 'completed' else 'warning' }}">{{ form.status|title }}</span>
+                    </div>
+                    
+                    {% if form.pdf_path %}
+                        <div class="meta-item">
+                            <small class="text-muted d-block">PDF</small>
+                            <span class="badge bg-info">Available</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <img src="https://pixabay.com/get/gadd328c13cc365f616e4e1caf34cf4a38980a6b6293565df8414d0bf6205a39fc8aa2abe3dbb76a29b6fec1b082dfa2aca043782adc9fc72cb4f683e1a4993a2_1280.jpg" alt="Tax Form Templates" class="img-fluid rounded" style="max-height: 120px;">
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-actions no-print">
+        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <div>
+                <a href="{{ url_for('forms.form_list') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Forms
+                </a>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2">
+                {% if form.pdf_path %}
+                    <a href="{{ url_for('forms.download_form', form_id=form.id) }}" class="btn btn-success">
+                        <i class="fas fa-download me-2"></i> Download PDF
+                    </a>
+                {% endif %}
+                
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-2"></i> Print Form
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tax-form-content">
+        {% if form.form_type.value == '1120' %}
+            <div class="text-center mb-4">
+                <h2>U.S. Corporation Income Tax Return</h2>
+                <h3>Form 1120</h3>
+                <p>For tax year {{ form.tax_year }}</p>
+            </div>
+        {% elif form.form_type.value == '1065' %}
+            <div class="text-center mb-4">
+                <h2>U.S. Return of Partnership Income</h2>
+                <h3>Form 1065</h3>
+                <p>For tax year {{ form.tax_year }}</p>
+            </div>
+        {% elif form.form_type.value == 'Schedule C' %}
+            <div class="text-center mb-4">
+                <h2>Profit or Loss From Business</h2>
+                <h3>Schedule C (Form 1040)</h3>
+                <p>For tax year {{ form.tax_year }}</p>
+            </div>
+        {% endif %}
+        
+        {% for section in template.sections %}
+            <div class="form-section">
+                <h3>{{ section.name }}</h3>
+                
+                <div class="row">
+                    {% for field in section.fields %}
+                        <div class="col-md-6">
+                            <div class="form-field">
+                                <div class="field-label text-muted">{{ field.label }}</div>
+                                <div class="field-value">
+                                    {% if field.type == 'number' %}
+                                        ${{ form.data.get(field.name, '0') }}
+                                    {% else %}
+                                        {{ form.data.get(field.name, 'N/A') }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        
+        <!-- Calculations Section -->
+        {% if form.form_type.value == '1120' %}
+            <div class="form-section">
+                <h3>Tax Calculations</h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Total Income</div>
+                            <div class="field-value">
+                                {% set gross_receipts = form.data.get('gross_receipts', '0')|float %}
+                                {% set returns_allowances = form.data.get('returns_allowances', '0')|float %}
+                                {% set other_income = form.data.get('other_income', '0')|float %}
+                                {% set total_income = gross_receipts - returns_allowances + other_income %}
+                                ${{ "%.2f"|format(total_income) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Total Deductions</div>
+                            <div class="field-value">
+                                {% set salaries_wages = form.data.get('salaries_wages', '0')|float %}
+                                {% set repairs_maintenance = form.data.get('repairs_maintenance', '0')|float %}
+                                {% set rents = form.data.get('rents', '0')|float %}
+                                {% set taxes_licenses = form.data.get('taxes_licenses', '0')|float %}
+                                {% set interest = form.data.get('interest', '0')|float %}
+                                {% set depreciation = form.data.get('depreciation', '0')|float %}
+                                {% set other_deductions = form.data.get('other_deductions', '0')|float %}
+                                {% set total_deductions = salaries_wages + repairs_maintenance + rents + taxes_licenses + interest + depreciation + other_deductions %}
+                                ${{ "%.2f"|format(total_deductions) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Taxable Income (or Loss)</div>
+                            <div class="field-value">
+                                {% set taxable_income = total_income - total_deductions %}
+                                ${{ "%.2f"|format(taxable_income) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% elif form.form_type.value == '1065' %}
+            <div class="form-section">
+                <h3>Partnership Income Summary</h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Total Income</div>
+                            <div class="field-value">
+                                {% set gross_receipts = form.data.get('gross_receipts', '0')|float %}
+                                {% set cost_of_goods = form.data.get('cost_of_goods', '0')|float %}
+                                {% set other_income = form.data.get('other_income', '0')|float %}
+                                {% set total_income = gross_receipts - cost_of_goods + other_income %}
+                                ${{ "%.2f"|format(total_income) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Total Deductions</div>
+                            <div class="field-value">
+                                {% set salaries_wages = form.data.get('salaries_wages', '0')|float %}
+                                {% set guaranteed_payments = form.data.get('guaranteed_payments', '0')|float %}
+                                {% set repairs_maintenance = form.data.get('repairs_maintenance', '0')|float %}
+                                {% set rent = form.data.get('rent', '0')|float %}
+                                {% set taxes_licenses = form.data.get('taxes_licenses', '0')|float %}
+                                {% set interest = form.data.get('interest', '0')|float %}
+                                {% set depreciation = form.data.get('depreciation', '0')|float %}
+                                {% set other_deductions = form.data.get('other_deductions', '0')|float %}
+                                {% set total_deductions = salaries_wages + guaranteed_payments + repairs_maintenance + rent + taxes_licenses + interest + depreciation + other_deductions %}
+                                ${{ "%.2f"|format(total_deductions) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Net Income (or Loss)</div>
+                            <div class="field-value">
+                                {% set net_income = total_income - total_deductions %}
+                                ${{ "%.2f"|format(net_income) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% elif form.form_type.value == 'Schedule C' %}
+            <div class="form-section">
+                <h3>Business Profit or Loss Summary</h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Gross Income</div>
+                            <div class="field-value">
+                                {% set gross_receipts = form.data.get('gross_receipts', '0')|float %}
+                                {% set returns_allowances = form.data.get('returns_allowances', '0')|float %}
+                                {% set other_income = form.data.get('other_income', '0')|float %}
+                                {% set total_income = gross_receipts - returns_allowances + other_income %}
+                                ${{ "%.2f"|format(total_income) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Total Expenses</div>
+                            <div class="field-value">
+                                {% set advertising = form.data.get('advertising', '0')|float %}
+                                {% set car_expenses = form.data.get('car_expenses', '0')|float %}
+                                {% set commissions = form.data.get('commissions', '0')|float %}
+                                {% set depreciation = form.data.get('depreciation', '0')|float %}
+                                {% set insurance = form.data.get('insurance', '0')|float %}
+                                {% set professional_fees = form.data.get('professional_fees', '0')|float %}
+                                {% set office_expenses = form.data.get('office_expenses', '0')|float %}
+                                {% set rent_equipment = form.data.get('rent_equipment', '0')|float %}
+                                {% set rent_property = form.data.get('rent_property', '0')|float %}
+                                {% set supplies = form.data.get('supplies', '0')|float %}
+                                {% set taxes_licenses = form.data.get('taxes_licenses', '0')|float %}
+                                {% set travel = form.data.get('travel', '0')|float %}
+                                {% set meals = form.data.get('meals', '0')|float %}
+                                {% set utilities = form.data.get('utilities', '0')|float %}
+                                {% set wages = form.data.get('wages', '0')|float %}
+                                {% set other_expenses = form.data.get('other_expenses', '0')|float %}
+                                
+                                {% set total_expenses = advertising + car_expenses + commissions + depreciation + insurance + professional_fees + office_expenses + rent_equipment + rent_property + supplies + taxes_licenses + travel + meals + utilities + wages + other_expenses %}
+                                ${{ "%.2f"|format(total_expenses) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-field">
+                            <div class="field-label text-muted">Net Profit (or Loss)</div>
+                            <div class="field-value">
+                                {% set net_profit = total_income - total_expenses %}
+                                ${{ "%.2f"|format(net_profit) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="alert alert-secondary mt-4 no-print">
+        <small><strong>Disclaimer:</strong> This tax form is provided for informational purposes only and should not be considered official. Please consult with a qualified tax professional before filing with the IRS.</small>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pdf_preview.js') }}"></script>
+{% endblock %}

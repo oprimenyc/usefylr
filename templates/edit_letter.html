@@ -1,0 +1,344 @@
+{% extends 'layout.html' %}
+
+{% block title %}Create {{ template.title }} - IRS Letter{% endblock %}
+
+{% block extra_head %}
+<style>
+    .letter-form-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        background-color: #f8f9fa;
+    }
+    
+    .field-hint {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .letter-header {
+        background-color: #e9ecef;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .letter-preview {
+        font-family: 'Times New Roman', Times, serif;
+        padding: 2rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        background-color: white;
+        margin-top: 1rem;
+    }
+    
+    .preview-header {
+        margin-bottom: 2rem;
+    }
+    
+    .preview-body {
+        line-height: 1.5;
+    }
+    
+    .preview-footer {
+        margin-top: 2rem;
+    }
+    
+    .letter-tips {
+        padding: 1rem;
+        border-left: 4px solid #0d6efd;
+        background-color: #f8f9fa;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="letter-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>{{ template.title }}</h1>
+            <p class="lead">{{ template.description }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/g9dd7e2a62feaef6eda6212040f660b1892e63779123df7a980b3846c7df33301b35626878182ff670646d91cf1c6f0995b8f076de05158ebbdd8e809c57c3e28_1280.jpg" alt="Tax Form Templates" class="img-fluid rounded" style="max-height: 120px;">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="letter-tips">
+            <h5><i class="fas fa-lightbulb text-primary me-2"></i> Tips for Effective IRS Letters</h5>
+            <ul class="mb-0">
+                <li>Be concise and factual - avoid emotional language</li>
+                <li>Include specific dates, amounts, and tax periods</li>
+                <li>Reference relevant IRS guidelines or tax code where applicable</li>
+                <li>Maintain a professional and respectful tone</li>
+                <li>Provide all necessary supporting information</li>
+            </ul>
+        </div>
+
+        <form method="POST" action="{{ url_for('letters.edit_letter', letter_type=letter_type) }}" id="letterForm">
+            <div class="letter-form-section">
+                <h3>Letter Information</h3>
+                
+                <div class="row g-3">
+                    {% for field in template.fields %}
+                        <div class="col-md-{% if field.type == 'textarea' %}12{% else %}6{% endif %}">
+                            <div class="mb-3">
+                                <label for="{{ field.name }}" class="form-label">
+                                    {{ field.label }}
+                                    {% if field.required %}
+                                        <span class="text-danger">*</span>
+                                    {% endif %}
+                                </label>
+                                
+                                {% if field.type == 'text' %}
+                                    <input type="text" class="form-control" id="{{ field.name }}" name="{{ field.name }}" 
+                                           {% if field.required %}required{% endif %} onchange="updatePreview()">
+                                {% elif field.type == 'number' %}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="{{ field.name }}" name="{{ field.name }}" 
+                                               step="0.01" min="0" 
+                                               {% if field.required %}required{% endif %} onchange="updatePreview()">
+                                    </div>
+                                {% elif field.type == 'date' %}
+                                    <input type="date" class="form-control" id="{{ field.name }}" name="{{ field.name }}" 
+                                           {% if field.required %}required{% endif %} onchange="updatePreview()">
+                                {% elif field.type == 'select' %}
+                                    <select class="form-select" id="{{ field.name }}" name="{{ field.name }}" 
+                                            {% if field.required %}required{% endif %} onchange="updatePreview()">
+                                        <option value="">Choose...</option>
+                                        {% for option in field.options %}
+                                            <option value="{{ option }}">{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif field.type == 'textarea' %}
+                                    <textarea class="form-control" id="{{ field.name }}" name="{{ field.name }}" rows="4" 
+                                              {% if field.required %}required{% endif %} onchange="updatePreview()"></textarea>
+                                {% endif %}
+                                
+                                <div class="field-hint">
+                                    {% if field.name == 'taxpayer_name' %}
+                                        Your full name or business name
+                                    {% elif field.name == 'taxpayer_address' %}
+                                        Complete mailing address
+                                    {% elif field.name == 'taxpayer_ein' %}
+                                        Your EIN or SSN (e.g., XX-XXXXXXX)
+                                    {% elif field.name == 'tax_year' %}
+                                        The tax year(s) this letter concerns
+                                    {% elif field.name == 'explanation' %}
+                                        Provide a clear, factual explanation of your circumstances
+                                    {% elif field.name == 'circumstances' %}
+                                        Describe the specific events that led to the issue
+                                    {% elif field.name == 'resolution' %}
+                                        Explain steps you've taken to resolve the issue
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-check-circle me-2"></i> Generate Letter
+                </button>
+                <a href="{{ url_for('letters.letter_list') }}" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Letter Preview</h4>
+            </div>
+            <div class="card-body">
+                <div class="letter-preview">
+                    <div class="preview-header">
+                        <div id="preview-taxpayer-name">Your Name</div>
+                        <div id="preview-taxpayer-address">Your Address</div>
+                        <div id="preview-taxpayer-ein">EIN/SSN: XX-XXXXXXX</div>
+                        <div id="preview-date" class="mt-4">Date: <span id="preview-date-value">MM/DD/YYYY</span></div>
+                        
+                        <div class="mt-4">
+                            <div>Internal Revenue Service</div>
+                            <div>Attn: Penalty Abatement/Appeals</div>
+                            <div>[IRS Address Placeholder]</div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <strong>Subject: <span id="preview-subject">
+                                {% if letter_type == 'penalty_abatement' %}
+                                    Request for Abatement of Penalty
+                                {% elif letter_type == 'reasonable_cause' %}
+                                    Reasonable Cause Explanation
+                                {% elif letter_type == 'late_filing_relief' %}
+                                    Request for First-Time Penalty Abatement
+                                {% endif %}
+                            </span> - Tax Year <span id="preview-tax-year">YYYY</span></strong>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-body">
+                        <p>To Whom It May Concern:</p>
+                        
+                        {% if letter_type == 'penalty_abatement' %}
+                            <p>I am writing to request an abatement of the penalty in the amount of $<span id="preview-penalty-amount">0.00</span> assessed for the tax year <span id="preview-tax-year-2">YYYY</span> due to <span id="preview-reason">Late Filing</span>.</p>
+                            
+                            <p id="preview-explanation">Your explanation of reasonable cause will appear here.</p>
+                            
+                            <p>I have a history of compliance with tax filing and payment requirements, and this was an isolated incident due to the circumstances described above. I have since taken steps to ensure all future filings will be timely and accurate.</p>
+                            
+                            <p>I request that the penalty be abated based on the reasonable cause explained above. If you need any additional information or documentation to support this request, please contact me at [Contact Information].</p>
+                        {% elif letter_type == 'reasonable_cause' %}
+                            <p>I am writing to explain the reasonable cause for the <span id="preview-issue-type">Late Filing</span> for tax year <span id="preview-tax-year-2">YYYY</span>.</p>
+                            
+                            <p><strong>Circumstances:</strong><br>
+                            <span id="preview-circumstances">Your description of circumstances will appear here.</span></p>
+                            
+                            <p><strong>Resolution Steps:</strong><br>
+                            <span id="preview-resolution">Your resolution steps will appear here.</span></p>
+                            
+                            <p>I have taken all necessary steps to resolve this issue and ensure future compliance with all tax obligations. I respectfully request that you consider these circumstances as reasonable cause and waive any associated penalties.</p>
+                        {% elif letter_type == 'late_filing_relief' %}
+                            <p>I am writing to request first-time penalty abatement for the late filing of my tax return for the year <span id="preview-tax-year-2">YYYY</span>.</p>
+                            
+                            <p>My return was due on <span id="preview-due-date">MM/DD/YYYY</span> but was filed on <span id="preview-filing-date">MM/DD/YYYY</span>.</p>
+                            
+                            <p><strong>Compliance History:</strong><br>
+                            <span id="preview-compliance-history">Your compliance history will appear here.</span></p>
+                            
+                            <p><strong>Explanation for Late Filing:</strong><br>
+                            <span id="preview-explanation">Your explanation will appear here.</span></p>
+                            
+                            <p>I understand the importance of timely filing and have taken steps to ensure that all future returns will be filed on time. As this is my first instance of late filing, I respectfully request that you waive the penalties under the IRS First-Time Penalty Abatement policy.</p>
+                        {% endif %}
+                        
+                        <p>Thank you for your consideration of this request. Please contact me if you need any additional information.</p>
+                    </div>
+                    
+                    <div class="preview-footer">
+                        <p>Sincerely,</p>
+                        <p class="mt-4" id="preview-signature-name">Your Name</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-warning mt-4">
+    <h5><i class="fas fa-info-circle me-2"></i> Disclaimer</h5>
+    <p class="mb-0">This letter template is provided for informational purposes only and should not be considered legal advice. While designed to help with common IRS issues, there is no guarantee that using this letter will result in penalty abatement or relief.</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default date to today
+        const today = new Date();
+        const formattedDate = today.toISOString().substr(0, 10);
+        const dateFields = document.querySelectorAll('input[type="date"]');
+        dateFields.forEach(field => {
+            if (field.name === 'date') {
+                field.value = formattedDate;
+            }
+        });
+        
+        // Initial preview update
+        updatePreview();
+    });
+    
+    function updatePreview() {
+        // Update taxpayer info
+        updateTextElement('taxpayer_name', 'preview-taxpayer-name', 'Your Name');
+        updateTextElement('taxpayer_name', 'preview-signature-name', 'Your Name');
+        updateTextElement('taxpayer_address', 'preview-taxpayer-address', 'Your Address');
+        updateTextElement('taxpayer_ein', 'preview-taxpayer-ein', 'EIN/SSN: ', 'XX-XXXXXXX');
+        
+        // Update dates
+        updateDateElement('date', 'preview-date-value', 'MM/DD/YYYY');
+        updateDateElement('filing_date', 'preview-filing-date', 'MM/DD/YYYY');
+        updateDateElement('due_date', 'preview-due-date', 'MM/DD/YYYY');
+        
+        // Update tax year
+        updateTextElement('tax_year', 'preview-tax-year', 'YYYY');
+        updateTextElement('tax_year', 'preview-tax-year-2', 'YYYY');
+        
+        // Update letter-specific fields
+        const letterType = '{{ letter_type }}';
+        
+        if (letterType === 'penalty_abatement') {
+            updateNumberElement('penalty_amount', 'preview-penalty-amount', '0.00');
+            updateSelectElement('reason', 'preview-reason', 'Late Filing');
+            updateTextElement('explanation', 'preview-explanation', 'Your explanation of reasonable cause will appear here.');
+        } else if (letterType === 'reasonable_cause') {
+            updateSelectElement('issue_type', 'preview-issue-type', 'Late Filing');
+            updateTextElement('circumstances', 'preview-circumstances', 'Your description of circumstances will appear here.');
+            updateTextElement('resolution', 'preview-resolution', 'Your resolution steps will appear here.');
+        } else if (letterType === 'late_filing_relief') {
+            updateTextElement('compliance_history', 'preview-compliance-history', 'Your compliance history will appear here.');
+            updateTextElement('explanation', 'preview-explanation', 'Your explanation will appear here.');
+        }
+    }
+    
+    function updateTextElement(inputId, previewId, defaultText, prefix = '') {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (input && preview) {
+            const value = input.value.trim();
+            preview.textContent = value ? prefix + value : prefix + defaultText;
+        }
+    }
+    
+    function updateNumberElement(inputId, previewId, defaultValue) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (input && preview) {
+            const value = input.value.trim();
+            preview.textContent = value ? parseFloat(value).toFixed(2) : defaultValue;
+        }
+    }
+    
+    function updateDateElement(inputId, previewId, defaultValue) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (input && preview) {
+            const value = input.value;
+            if (value) {
+                const date = new Date(value);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric'
+                });
+                preview.textContent = formattedDate;
+            } else {
+                preview.textContent = defaultValue;
+            }
+        }
+    }
+    
+    function updateSelectElement(inputId, previewId, defaultValue) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (input && preview) {
+            const value = input.value;
+            preview.textContent = value || defaultValue;
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,397 @@
+{% extends 'layout.html' %}
+
+{% block title %}Your Profile - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .profile-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .profile-card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .profile-meta {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .meta-item {
+        margin-right: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        background-color: #0d6efd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: 600;
+    }
+    
+    .nav-pills .nav-link {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .nav-pills .nav-link.active {
+        background-color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-circle me-4">
+                        {{ user.username[0].upper() }}
+                    </div>
+                    <div>
+                        <h1 class="mb-1">{{ user.username }}</h1>
+                        <p class="lead mb-0">{{ user.email }}</p>
+                        
+                        <div class="profile-meta">
+                            <div class="meta-item">
+                                <small class="text-muted d-block">Account Type</small>
+                                <span class="badge bg-{{ 'success' if user.plan == 'BUSINESS_BUILDER' else 'info' if user.subscription_member else 'secondary' }}">
+                                    {% if user.plan == 'BUSINESS_BUILDER' %}
+                                        Business Builder
+                                    {% elif user.subscription_member %}
+                                        Subscription Member
+                                    {% else %}
+                                        Standard
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="meta-item">
+                                <small class="text-muted d-block">Member Since</small>
+                                <span>{{ user.created_at.strftime('%b %d, %Y') }}</span>
+                            </div>
+                            {% if user.wordpress_id %}
+                                <div class="meta-item">
+                                    <small class="text-muted d-block">Account</small>
+                                    <span class="badge bg-primary">FederalFundingClub.com User</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end mt-3 mt-md-0">
+                {% if user.plan != 'BUSINESS_BUILDER' %}
+                    <a href="https://federalfundingclub.com/pricing" class="btn btn-primary">
+                        <i class="fas fa-crown me-2"></i> Upgrade to Business Builder
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <ul class="nav nav-pills mb-4" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab" aria-controls="account" aria-selected="true">Account Settings</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing" type="button" role="tab" aria-controls="billing" aria-selected="false">Billing History</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false">Account Activity</button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="profileTabsContent">
+        <!-- Account Settings Tab -->
+        <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Personal Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" value="{{ user.username }}" {% if user.wordpress_id %}disabled{% endif %}>
+                                        {% if user.wordpress_id %}
+                                            <small class="text-muted">Managed by your FederalFundingClub.com account</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" value="{{ user.email }}" {% if user.wordpress_id %}disabled{% endif %}>
+                                        {% if user.wordpress_id %}
+                                            <small class="text-muted">Managed by your FederalFundingClub.com account</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if not user.wordpress_id %}
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                    
+                    {% if not user.wordpress_id %}
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Change Password</h5>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="current_password" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="current_password">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="new_password" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="new_password">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirm_new_password" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirm_new_password">
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Update Password</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Subscription Status</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if user.plan == 'BUSINESS_BUILDER' %}
+                                <div class="alert alert-success mb-3">
+                                    <strong>Business Builder Plan</strong>
+                                    <p class="mb-0">You have full access to all tax tools!</p>
+                                </div>
+                                <p><i class="fas fa-check-circle text-success me-2"></i> Unlimited access to all tools</p>
+                                <p><i class="fas fa-check-circle text-success me-2"></i> Priority AI tips and support</p>
+                                <p><i class="fas fa-check-circle text-success me-2"></i> Manage subscription on FederalFundingClub.com</p>
+                            {% elif user.subscription_member %}
+                                <div class="alert alert-info mb-3">
+                                    <strong>Subscription Member</strong>
+                                    <p class="mb-0">You receive 50% off all tools!</p>
+                                </div>
+                                <p><i class="fas fa-check-circle text-success me-2"></i> 50% discount on all tools</p>
+                                <p><i class="fas fa-check-circle text-success me-2"></i> Free IRS letter pack with filing</p>
+                                <p><i class="fas fa-check-circle text-success me-2"></i> Manage subscription on FederalFundingClub.com</p>
+                                <div class="d-grid gap-2 mt-4">
+                                    <a href="https://federalfundingclub.com/pricing" class="btn btn-outline-primary">Upgrade to Business Builder</a>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary mb-3">
+                                    <strong>Standard Account</strong>
+                                    <p class="mb-0">Pay-as-you-go access to tax tools</p>
+                                </div>
+                                <p><i class="fas fa-times-circle text-danger me-2"></i> No automatic discounts</p>
+                                <p><i class="fas fa-times-circle text-danger me-2"></i> Purchase tools individually</p>
+                                <p><i class="fas fa-times-circle text-danger me-2"></i> Limited access to premium features</p>
+                                <div class="d-grid gap-2 mt-4">
+                                    <a href="https://federalfundingclub.com/pricing" class="btn btn-primary">Upgrade Your Account</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if user.wordpress_id %}
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Connected Account</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-link text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">FederalFundingClub.com</h6>
+                                        <p class="text-muted mb-0">Account is connected</p>
+                                    </div>
+                                </div>
+                                <small class="d-block text-muted mb-3">Account settings are managed through your main FederalFundingClub.com profile.</small>
+                                <a href="https://federalfundingclub.com/my-account" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-external-link-alt me-2"></i> Visit Main Account
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Billing History Tab -->
+        <div class="tab-pane fade" id="billing" role="tabpanel" aria-labelledby="billing-tab">
+            <div class="card profile-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment History</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.payments and user.payments|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in user.payments %}
+                                        <tr>
+                                            <td>{{ payment.created_at.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                {% if payment.feature == 'basic_diy' %}
+                                                    Basic DIY Filing
+                                                {% elif payment.feature == 'guided_filing' %}
+                                                    Guided Filing
+                                                {% elif payment.feature == 'strategy_unlock' %}
+                                                    Strategy Unlock
+                                                {% elif payment.feature == 'irs_letter_pack' %}
+                                                    IRS Letter Generator
+                                                {% else %}
+                                                    {{ payment.feature }}
+                                                {% endif %}
+                                            </td>
+                                            <td>${{ payment.amount }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if payment.status == 'completed' else 'warning' if payment.status == 'pending' else 'danger' }}">
+                                                    {{ payment.status|title }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-receipt fa-4x text-muted mb-3"></i>
+                            <h5>No Payment History</h5>
+                            <p class="text-muted">You haven't made any purchases yet.</p>
+                            <a href="{{ url_for('main.pricing') }}" class="btn btn-primary mt-2">
+                                <i class="fas fa-shopping-cart me-2"></i> View Available Tools
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account Activity Tab -->
+        <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+            <div class="card profile-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Logged in to account</h6>
+                                <small>Today, 10:42 AM</small>
+                            </div>
+                            <p class="mb-1 text-muted">Standard login from Chrome on Windows</p>
+                        </div>
+                        {% if user.tax_forms and user.tax_forms|length > 0 %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Created Tax Form</h6>
+                                    <small>{{ user.tax_forms[0].created_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                <p class="mb-1 text-muted">{{ user.tax_forms[0].form_type.value }} for tax year {{ user.tax_forms[0].tax_year }}</p>
+                            </div>
+                        {% endif %}
+                        {% if user.irs_letters and user.irs_letters|length > 0 %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Generated IRS Letter</h6>
+                                    <small>{{ user.irs_letters[0].created_at.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                <p class="mb-1 text-muted">{{ user.irs_letters[0].letter_type.value|replace('_', ' ')|title }}</p>
+                            </div>
+                        {% endif %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Account Created</h6>
+                                <small>{{ user.created_at.strftime('%b %d, %Y') }}</small>
+                            </div>
+                            <p class="mb-1 text-muted">New account registration</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card profile-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Account Security</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="me-3">
+                            <i class="fas fa-shield-alt fa-2x text-success"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">Account Protection</h5>
+                            <p class="text-muted mb-0">Your account security is important to us</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-lock me-2 text-primary"></i> Password</h6>
+                            <p class="text-muted small">
+                                {% if user.wordpress_id %}
+                                    Managed by your FederalFundingClub.com account
+                                {% else %}
+                                    Last changed: Never
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-envelope me-2 text-primary"></i> Email Verification</h6>
+                            <p class="text-muted small">Status: Verified</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'layout.html' %}
+
+{% block title %}Your Tax Strategies - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .strategy-card {
+        margin-bottom: 2rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .strategy-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .strategy-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .strategy-header h3 {
+        margin-bottom: 0;
+    }
+    
+    .savings-badge {
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .strategy-body {
+        padding: 1.5rem;
+    }
+    
+    .answer-summary {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .total-savings {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .analysis-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analysis-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>Your Tax Strategy Analysis</h1>
+            <p class="lead">We've identified the following strategies based on your answers.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/gbccc6d9efc7861cc33049df13b14b0f80022c113528ef2bc90e1efdf2da8fbe5321e13762d4b81ae40a03b511e08bd9d8865bfc07d5d08b9806605049d648b1c_1280.jpg" alt="Business Accounting" class="img-fluid rounded" style="max-height: 120px;">
+        </div>
+    </div>
+</div>
+
+<!-- Total Potential Savings -->
+{% set total_savings = 0 %}
+{% for strategy in strategies %}
+    {% if strategy.estimated_savings %}
+        {% set total_savings = total_savings + strategy.estimated_savings %}
+    {% endif %}
+{% endfor %}
+
+{% if total_savings > 0 %}
+    <div class="total-savings text-center">
+        <h2 class="mb-3">Total Potential Savings</h2>
+        <div class="savings-amount display-4 mb-3">${{ total_savings }}</div>
+        <p class="mb-0">These are estimated savings based on typical tax scenarios. Actual savings may vary.</p>
+    </div>
+{% endif %}
+
+<!-- Answer Summary -->
+<div class="answer-summary mb-4">
+    <h4 class="mb-3">Your Questionnaire Summary</h4>
+    <div class="row">
+        {% for question, answer in answers.items() %}
+            <div class="col-md-6 mb-2">
+                <div class="d-flex align-items-center">
+                    <i class="fas {% if answer %}fa-check-circle text-success{% else %}fa-times-circle text-danger{% endif %} me-2"></i>
+                    <div>
+                        <strong>{{ question|replace('_', ' ')|title }}:</strong> 
+                        <span>{% if answer %}Yes{% else %}No{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Recommended Strategies -->
+<h2 class="mb-4">Recommended Tax Strategies</h2>
+
+{% if strategies %}
+    <div class="row">
+        {% for strategy in strategies %}
+            <div class="col-12">
+                <div class="card strategy-card">
+                    <div class="strategy-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3>{{ strategy.name }}</h3>
+                            {% if strategy.estimated_savings %}
+                                <span class="badge bg-success savings-badge">${{ strategy.estimated_savings }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="strategy-body">
+                        <p class="strategy-description">{{ strategy.description }}</p>
+                        
+                        <div class="strategy-details mt-4">
+                            <h5 class="mb-3">Why This Works For You</h5>
+                            <div class="alert alert-info">
+                                {% if "home_office" in strategy.name|lower %}
+                                    <p><i class="fas fa-home me-2"></i> Based on your response that you work from home at least 20 hours a week, you may qualify for this deduction which could save you thousands in taxes.</p>
+                                {% elif "section 179" in strategy.name|lower %}
+                                    <p><i class="fas fa-laptop me-2"></i> Since you purchased new equipment this year, you could potentially write off the full cost immediately rather than depreciate it over several years.</p>
+                                {% elif "retirement" in strategy.name|lower %}
+                                    <p><i class="fas fa-piggy-bank me-2"></i> Having a business retirement plan allows you to put away more for retirement while reducing your current tax liability.</p>
+                                {% elif "qbi" in strategy.name|lower or "qualified business income" in strategy.name|lower %}
+                                    <p><i class="fas fa-percentage me-2"></i> As a provider of digital services, you may qualify for up to 20% deduction on your qualified business income under Section 199A.</p>
+                                {% elif "s corporation" in strategy.name|lower %}
+                                    <p><i class="fas fa-building me-2"></i> With your income level, an S-Corp election could potentially save you thousands in self-employment taxes while maintaining pass-through taxation.</p>
+                                {% else %}
+                                    <p><i class="fas fa-lightbulb me-2"></i> This strategy aligns with your business situation and could provide significant tax savings.</p>
+                                {% endif %}
+                            </div>
+                            
+                            <h5 class="mb-3">Next Steps</h5>
+                            <ol class="next-steps">
+                                {% if "home_office" in strategy.name|lower %}
+                                    <li>Measure the square footage of your home office space</li>
+                                    <li>Calculate the percentage of your home used for business</li>
+                                    <li>Track all home-related expenses (mortgage/rent, utilities, insurance, etc.)</li>
+                                    <li>Complete Form 8829 with your tax return</li>
+                                {% elif "section 179" in strategy.name|lower %}
+                                    <li>Compile receipts for all qualifying equipment purchases</li>
+                                    <li>Verify equipment was placed in service during the tax year</li>
+                                    <li>Complete Form 4562 with your tax return</li>
+                                    <li>Consider consulting with a tax professional to maximize benefits</li>
+                                {% elif "retirement" in strategy.name|lower %}
+                                    <li>Research retirement plan options (SEP IRA, Solo 401(k), etc.)</li>
+                                    <li>Establish a plan before the tax year ends</li>
+                                    <li>Calculate maximum allowable contributions</li>
+                                    <li>Make contributions by the applicable deadline</li>
+                                {% elif "qbi" in strategy.name|lower or "qualified business income" in strategy.name|lower %}
+                                    <li>Verify your business type qualifies as a "specified service business"</li>
+                                    <li>Calculate your qualified business income</li>
+                                    <li>Determine if income thresholds apply to your situation</li>
+                                    <li>Complete the QBI worksheets with your tax return</li>
+                                {% elif "s corporation" in strategy.name|lower %}
+                                    <li>Consult with a tax professional about S-Corp election</li>
+                                    <li>File Form 2553 to elect S-Corp status</li>
+                                    <li>Establish a reasonable salary for yourself</li>
+                                    <li>Set up payroll processing for your S-Corp</li>
+                                {% else %}
+                                    <li>Review the strategy details carefully</li>
+                                    <li>Gather relevant documentation</li>
+                                    <li>Consult with a tax professional if needed</li>
+                                    <li>Implement the strategy before the tax deadline</li>
+                                {% endif %}
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4 mb-5">
+        <a href="{{ url_for('strategy.strategy_home') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-save me-2"></i> Save Strategies to Dashboard
+        </a>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4 class="alert-heading"><i class="fas fa-info-circle me-2"></i> No Strategies Found</h4>
+        <p>Based on your answers, we couldn't identify specific tax strategies that would apply to your situation. This could be because:</p>
+        <ul>
+            <li>Your business may be in a startup phase with minimal activity</li>
+            <li>You may have already implemented common tax strategies</li>
+            <li>Your specific business situation may require more detailed analysis</li>
+        </ul>
+        <hr>
+        <p class="mb-0">Consider consulting with a tax professional for personalized advice or try the questionnaire again with different answers.</p>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('strategy.strategy_questionnaire') }}" class="btn btn-outline-primary">Retake Questionnaire</a>
+    </div>
+{% endif %}
+
+<!-- Disclaimer -->
+<div class="alert alert-warning mt-5">
+    <h4 class="alert-heading">Important Disclaimer</h4>
+    <p>The strategies provided are for informational purposes only and do not constitute tax advice. Tax laws are complex and subject to change. Actual tax savings may vary based on your specific circumstances.</p>
+    <p class="mb-0">Always consult with a qualified tax professional before implementing any tax strategy.</p>
+</div>
+{% endblock %}

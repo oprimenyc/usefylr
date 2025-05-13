@@ -1,0 +1,216 @@
+{% extends 'layout.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Welcome, {{ current_user.username }}</h1>
+        <span class="badge bg-primary p-2">Plan: {{ current_user.plan.value|capitalize }}</span>
+    </div>
+    
+    {% if access_level == 'full_access' %}
+    <div class="alert alert-success" role="alert">
+        <i class="fas fa-star me-2"></i> You have full access to all features with your Business Builder plan!
+    </div>
+    {% elif access_level == 'discounted' %}
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-tag me-2"></i> As a subscription member, you get 50% off all tax tools!
+    </div>
+    {% endif %}
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card mb-4 h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-file-alt me-2"></i> Start New Tax Form
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-lightbulb me-2"></i> Generate Tax Strategies
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope-open-text me-2"></i> Create IRS Letter
+                        </a>
+                        <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-shopping-cart me-2"></i> Browse Available Tools
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4 h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Account Overview</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Email
+                            <span>{{ current_user.email }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Member Since
+                            <span>{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Access Level
+                            <span class="badge bg-primary rounded-pill">{{ access_level|replace('_', ' ')|capitalize }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Subscription Status
+                            <span class="badge {% if current_user.subscription_member %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">
+                                {% if current_user.subscription_member %}Active{% else %}None{% endif %}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Your Tax Forms</h5>
+                    <a href="#" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i> New Form
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if forms %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Form Type</th>
+                                    <th>Tax Year</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for form in forms %}
+                                <tr>
+                                    <td>{{ form.form_type.value }}</td>
+                                    <td>{{ form.tax_year }}</td>
+                                    <td>
+                                        <span class="badge {% if form.status == 'completed' %}bg-success{% elif form.status == 'draft' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                            {{ form.status|capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>{{ form.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="#" class="btn btn-outline-primary">Edit</a>
+                                            <a href="#" class="btn btn-outline-secondary">View</a>
+                                            {% if form.status == 'completed' %}
+                                            <a href="#" class="btn btn-outline-success">Download</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                        <p class="lead">You haven't created any tax forms yet.</p>
+                        <a href="#" class="btn btn-primary">Create Your First Form</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Tax Strategies</h5>
+                    <a href="#" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i> Analyze
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if strategies %}
+                    <div class="list-group">
+                        {% for strategy in strategies %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ strategy.strategy_name }}</h6>
+                                <small class="text-muted">{{ strategy.created_at.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                            <p class="mb-1 text-truncate">{{ strategy.description }}</p>
+                            {% if strategy.estimated_savings %}
+                            <small class="text-success">
+                                <i class="fas fa-dollar-sign me-1"></i> Estimated Savings: ${{ "%.2f"|format(strategy.estimated_savings) }}
+                            </small>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
+                        <p class="lead">Discover tax strategies for your business.</p>
+                        <a href="#" class="btn btn-primary">Generate Strategies</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">IRS Letters</h5>
+                    <a href="#" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i> New Letter
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if letters %}
+                    <div class="list-group">
+                        {% for letter in letters %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ letter.letter_type.value|replace('_', ' ')|capitalize }}</h6>
+                                <small class="text-muted">{{ letter.created_at.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                            <small class="d-block">
+                                <span class="badge {% if letter.status == 'completed' %}bg-success{% elif letter.status == 'draft' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ letter.status|capitalize }}
+                                </span>
+                                {% if letter.pdf_path %}
+                                <span class="ms-2">
+                                    <i class="fas fa-file-pdf me-1"></i> PDF Available
+                                </span>
+                                {% endif %}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-envelope-open-text fa-3x text-muted mb-3"></i>
+                        <p class="lead">You haven't created any IRS letters yet.</p>
+                        <a href="#" class="btn btn-primary">Create Letter</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

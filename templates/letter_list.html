@@ -1,0 +1,172 @@
+{% extends 'layout.html' %}
+
+{% block title %}IRS Letters - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .letter-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .letter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .letter-icon {
+        font-size: 2.5rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    
+    .letter-status {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .empty-letters {
+        padding: 4rem 2rem;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+    }
+    
+    .letter-hero {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="letter-hero">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>IRS Letter Generator</h1>
+            <p class="lead">Create professional IRS response letters for penalty abatement, reasonable cause, and more.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/g9dd7e2a62feaef6eda6212040f660b1892e63779123df7a980b3846c7df33301b35626878182ff670646d91cf1c6f0995b8f076de05158ebbdd8e809c57c3e28_1280.jpg" alt="Tax Form Templates" class="img-fluid rounded" style="max-height: 120px;">
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Your IRS Letters</h5>
+                    <a href="{{ url_for('letters.new_letter') }}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i> Create New Letter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if letters %}
+    <div class="row g-4">
+        {% for letter in letters %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card letter-card">
+                    <div class="card-body position-relative">
+                        <span class="badge bg-{{ 'success' if letter.status == 'completed' else 'warning' }} letter-status">
+                            {{ letter.status|title }}
+                        </span>
+                        
+                        <div class="text-center mb-3">
+                            <i class="fas {% if letter.letter_type.value == 'penalty_abatement' %}fa-hand-holding-usd{% elif letter.letter_type.value == 'reasonable_cause' %}fa-balance-scale{% elif letter.letter_type.value == 'late_filing_relief' %}fa-calendar-times{% else %}fa-envelope-open-text{% endif %} letter-icon"></i>
+                        </div>
+                        
+                        <h5 class="card-title text-center mb-3">
+                            {{ letter.letter_type.value|replace('_', ' ')|title }}
+                        </h5>
+                        
+                        <p class="card-text text-muted text-center">
+                            Created on {{ letter.created_at.strftime('%b %d, %Y') }}
+                        </p>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <a href="{{ url_for('letters.view_letter', letter_id=letter.id) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye me-2"></i> View Letter
+                            </a>
+                            {% if letter.pdf_path %}
+                                <a href="{{ url_for('letters.download_letter', letter_id=letter.id) }}" class="btn btn-outline-success">
+                                    <i class="fas fa-download me-2"></i> Download PDF
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-letters">
+        <div class="mb-4">
+            <i class="fas fa-envelope fa-4x text-muted"></i>
+        </div>
+        <h3>No IRS Letters Found</h3>
+        <p class="text-muted mb-4">Create professional IRS response letters to address penalties, late filings, and more.</p>
+        <a href="{{ url_for('letters.new_letter') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus-circle me-2"></i> Create Your First Letter
+        </a>
+    </div>
+{% endif %}
+
+<!-- IRS Letter Info Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">About IRS Letters</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-hand-holding-usd fa-2x text-primary me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Penalty Abatement Request</h5>
+                                <p class="text-muted">Request to have penalties removed due to reasonable cause. Useful for first-time penalty relief.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-balance-scale fa-2x text-success me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Reasonable Cause Explanation</h5>
+                                <p class="text-muted">Explain circumstances that led to tax compliance issues, such as illness, natural disaster, or unavoidable absence.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-calendar-times fa-2x text-danger me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Late Filing Relief Request</h5>
+                                <p class="text-muted">Request relief for late filing penalties, especially useful for first-time offenders with clean compliance history.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

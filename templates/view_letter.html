@@ -1,0 +1,210 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ letter.letter_type.value|replace('_', ' ')|title }} - IRS Letter{% endblock %}
+
+{% block extra_head %}
+<style>
+    .letter-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .letter-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .letter-actions {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .letter-document {
+        font-family: 'Times New Roman', Times, serif;
+        padding: 2rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        background-color: white;
+        line-height: 1.5;
+    }
+    
+    .letter-meta {
+        display: flex;
+        margin-top: 1rem;
+    }
+    
+    .meta-item {
+        padding-right: 1.5rem;
+        margin-right: 1.5rem;
+        border-right: 1px solid #dee2e6;
+    }
+    
+    .meta-item:last-child {
+        border-right: none;
+    }
+    
+    .letter-section {
+        margin-bottom: 2rem;
+    }
+    
+    @media print {
+        .no-print {
+            display: none;
+        }
+        
+        .letter-document {
+            border: none;
+            padding: 0;
+        }
+        
+        body {
+            font-size: 12pt;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="letter-container">
+    <div class="letter-header no-print">
+        <h1>{{ letter.letter_type.value|replace('_', ' ')|title }}</h1>
+        
+        <div class="letter-meta">
+            <div class="meta-item">
+                <small class="text-muted d-block">Created</small>
+                <span>{{ letter.created_at.strftime('%b %d, %Y') }}</span>
+            </div>
+            
+            <div class="meta-item">
+                <small class="text-muted d-block">Status</small>
+                <span class="badge bg-{{ 'success' if letter.status == 'completed' else 'warning' }}">{{ letter.status|title }}</span>
+            </div>
+            
+            {% if letter.pdf_path %}
+                <div class="meta-item">
+                    <small class="text-muted d-block">PDF</small>
+                    <span class="badge bg-info">Available</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="letter-actions no-print">
+        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <div>
+                <a href="{{ url_for('letters.letter_list') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Letters
+                </a>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2">
+                {% if letter.pdf_path %}
+                    <a href="{{ url_for('letters.download_letter', letter_id=letter.id) }}" class="btn btn-success">
+                        <i class="fas fa-download me-2"></i> Download PDF
+                    </a>
+                {% endif %}
+                
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-2"></i> Print Letter
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="letter-document">
+        <div class="letter-section sender-info">
+            {% if letter.data.taxpayer_name %}
+                <div>{{ letter.data.taxpayer_name }}</div>
+            {% endif %}
+            
+            {% if letter.data.taxpayer_address %}
+                <div>{{ letter.data.taxpayer_address }}</div>
+            {% endif %}
+            
+            {% if letter.data.taxpayer_ein %}
+                <div>EIN/SSN: {{ letter.data.taxpayer_ein }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="letter-section date">
+            {% if letter.data.date %}
+                <div>Date: {{ letter.data.date }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="letter-section recipient">
+            <div>Internal Revenue Service</div>
+            <div>Attn: Penalty Abatement/Appeals</div>
+            <div>[IRS Address Placeholder]</div>
+        </div>
+        
+        <div class="letter-section subject">
+            <strong>
+                Subject: 
+                {% if letter.letter_type.value == 'penalty_abatement' %}
+                    Request for Abatement of Penalty - Tax Year {{ letter.data.tax_year }}
+                {% elif letter.letter_type.value == 'reasonable_cause' %}
+                    Reasonable Cause Explanation - Tax Year {{ letter.data.tax_year }}
+                {% elif letter.letter_type.value == 'late_filing_relief' %}
+                    Request for First-Time Penalty Abatement - Tax Year {{ letter.data.tax_year }}
+                {% endif %}
+            </strong>
+        </div>
+        
+        <div class="letter-section greeting">
+            <p>To Whom It May Concern:</p>
+        </div>
+        
+        <div class="letter-section body">
+            {% if letter.letter_type.value == 'penalty_abatement' %}
+                <p>I am writing to request an abatement of the penalty in the amount of ${{ letter.data.penalty_amount }} assessed for the tax year {{ letter.data.tax_year }} due to {{ letter.data.reason }}.</p>
+                
+                <p>{{ letter.data.explanation }}</p>
+                
+                <p>I have a history of compliance with tax filing and payment requirements, and this was an isolated incident due to the circumstances described above. I have since taken steps to ensure all future filings will be timely and accurate.</p>
+                
+                <p>I request that the penalty be abated based on the reasonable cause explained above. If you need any additional information or documentation to support this request, please contact me at [Contact Information].</p>
+            {% elif letter.letter_type.value == 'reasonable_cause' %}
+                <p>I am writing to explain the reasonable cause for the {{ letter.data.issue_type }} for tax year {{ letter.data.tax_year }}.</p>
+                
+                <p><strong>Circumstances:</strong><br>
+                {{ letter.data.circumstances }}</p>
+                
+                <p><strong>Resolution Steps:</strong><br>
+                {{ letter.data.resolution }}</p>
+                
+                <p>I have taken all necessary steps to resolve this issue and ensure future compliance with all tax obligations. I respectfully request that you consider these circumstances as reasonable cause and waive any associated penalties.</p>
+                
+                <p>If you require any additional information or documentation, please do not hesitate to contact me.</p>
+            {% elif letter.letter_type.value == 'late_filing_relief' %}
+                <p>I am writing to request first-time penalty abatement for the late filing of my tax return for the year {{ letter.data.tax_year }}.</p>
+                
+                <p>My return was due on {{ letter.data.due_date }} but was filed on {{ letter.data.filing_date }}.</p>
+                
+                <p><strong>Compliance History:</strong><br>
+                {{ letter.data.compliance_history }}</p>
+                
+                <p><strong>Explanation for Late Filing:</strong><br>
+                {{ letter.data.explanation }}</p>
+                
+                <p>I understand the importance of timely filing and have taken steps to ensure that all future returns will be filed on time. As this is my first instance of late filing, I respectfully request that you waive the penalties under the IRS First-Time Penalty Abatement policy.</p>
+                
+                <p>Thank you for your consideration of this request. Please contact me if you need any additional information.</p>
+            {% endif %}
+        </div>
+        
+        <div class="letter-section closing">
+            <p>Sincerely,</p>
+            <div style="margin-top: 50px;">{{ letter.data.taxpayer_name }}</div>
+        </div>
+    </div>
+    
+    <div class="alert alert-secondary mt-4 no-print">
+        <small><strong>Disclaimer:</strong> This letter is provided for informational purposes only and should not be considered legal advice. Consult with a qualified tax professional before submitting any correspondence to the IRS.</small>
+    </div>
+</div>
+{% endblock %}

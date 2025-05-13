@@ -1,0 +1,224 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ strategy.strategy_name }} - Tax Strategy{% endblock %}
+
+{% block extra_head %}
+<style>
+    .strategy-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .strategy-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .strategy-detail-card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .strategy-meta {
+        display: flex;
+        margin-top: 1rem;
+    }
+    
+    .meta-item {
+        padding-right: 1.5rem;
+        margin-right: 1.5rem;
+        border-right: 1px solid #dee2e6;
+    }
+    
+    .meta-item:last-child {
+        border-right: none;
+    }
+    
+    .savings-badge {
+        font-size: 1.25rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .answer-tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50rem;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .answer-yes {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .answer-no {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="strategy-container">
+    <div class="strategy-header">
+        <h1>{{ strategy.strategy_name }}</h1>
+        
+        <div class="strategy-meta">
+            <div class="meta-item">
+                <small class="text-muted d-block">Created</small>
+                <span>{{ strategy.created_at.strftime('%b %d, %Y') }}</span>
+            </div>
+            
+            {% if strategy.estimated_savings %}
+                <div class="meta-item">
+                    <small class="text-muted d-block">Estimated Savings</small>
+                    <span class="badge bg-success savings-badge">${{ strategy.estimated_savings }}</span>
+                </div>
+            {% endif %}
+            
+            <div class="meta-item">
+                <small class="text-muted d-block">Status</small>
+                <span class="badge bg-info">{{ strategy.status|title }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card strategy-detail-card">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">Strategy Details</h4>
+        </div>
+        <div class="card-body">
+            <div class="strategy-description mb-4">
+                {{ strategy.description|safe }}
+            </div>
+            
+            {% if strategy.answers %}
+                <h5 class="mb-3">Based on Your Answers</h5>
+                <div class="answers-summary mb-4">
+                    {% for question, answer in strategy.answers.items() %}
+                        <span class="answer-tag {% if answer %}answer-yes{% else %}answer-no{% endif %}">
+                            {{ question|replace('_', ' ')|title }}: {% if answer %}Yes{% else %}No{% endif %}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <h5 class="mb-3">Implementation Steps</h5>
+            <div class="alert alert-info">
+                {% if "home_office" in strategy.strategy_name|lower %}
+                    <ol>
+                        <li>Measure your home office space (must be used exclusively for business)</li>
+                        <li>Calculate the percentage of your home used for business (home office square footage ÷ total home square footage)</li>
+                        <li>Track all home-related expenses (mortgage/rent, utilities, insurance, repairs, etc.)</li>
+                        <li>Apply the business percentage to calculate deductible amounts</li>
+                        <li>Complete Form 8829 with your tax return</li>
+                    </ol>
+                {% elif "section 179" in strategy.strategy_name|lower %}
+                    <ol>
+                        <li>Compile receipts for all qualifying equipment purchases</li>
+                        <li>Verify equipment was placed in service during the tax year</li>
+                        <li>Confirm items meet Section 179 criteria (tangible property used for business)</li>
+                        <li>Calculate the deduction amount (up to $1,050,000 for 2021)</li>
+                        <li>Complete Form 4562 with your tax return</li>
+                    </ol>
+                {% elif "retirement" in strategy.strategy_name|lower %}
+                    <ol>
+                        <li>Research retirement plan options (SEP IRA, Solo 401(k), SIMPLE IRA)</li>
+                        <li>Establish a plan before the tax year ends (some plans must be set up earlier)</li>
+                        <li>Calculate maximum allowable contributions based on plan type and income</li>
+                        <li>Make contributions by the applicable deadline (tax filing deadline for some plans)</li>
+                        <li>Report contributions on your tax return</li>
+                    </ol>
+                {% elif "qbi" in strategy.strategy_name|lower or "qualified business income" in strategy.strategy_name|lower %}
+                    <ol>
+                        <li>Determine if your business is a "specified service business" under Section 199A</li>
+                        <li>Calculate your qualified business income (generally net income from business operations)</li>
+                        <li>Check income thresholds that may limit deduction ($164,900 for single, $329,800 for married filing jointly in 2021)</li>
+                        <li>Calculate your deduction (generally 20% of qualified business income, subject to limitations)</li>
+                        <li>Complete the QBI worksheets with your tax return</li>
+                    </ol>
+                {% elif "s corporation" in strategy.strategy_name|lower %}
+                    <ol>
+                        <li>Consult with a tax professional about S-Corp election benefits in your situation</li>
+                        <li>File Form 2553 to elect S-Corp status (deadline is 2 months and 15 days after the beginning of the tax year)</li>
+                        <li>Establish a reasonable salary for yourself (must be market rate for your role)</li>
+                        <li>Set up payroll processing for your S-Corp</li>
+                        <li>Maintain separate financial records for your S-Corp</li>
+                    </ol>
+                {% else %}
+                    <ol>
+                        <li>Review the strategy details carefully</li>
+                        <li>Gather all necessary documentation</li>
+                        <li>Consult with a tax professional as needed</li>
+                        <li>Implement the strategy before applicable deadlines</li>
+                        <li>Ensure proper documentation for future tax filings</li>
+                    </ol>
+                {% endif %}
+            </div>
+            
+            <h5 class="mb-3">Potential Challenges</h5>
+            <div class="alert alert-warning">
+                <p><strong>Be aware of these common challenges:</strong></p>
+                
+                {% if "home_office" in strategy.strategy_name|lower %}
+                    <ul>
+                        <li>Space must be used exclusively for business purposes</li>
+                        <li>May increase audit risk if deduction seems disproportionately large</li>
+                        <li>Could impact capital gains exclusion when selling your home</li>
+                    </ul>
+                {% elif "section 179" in strategy.strategy_name|lower %}
+                    <ul>
+                        <li>Limited by business income (can't create/increase a loss)</li>
+                        <li>Subject to recapture if business use drops below 50%</li>
+                        <li>Complex rules for specific asset types</li>
+                    </ul>
+                {% elif "retirement" in strategy.strategy_name|lower %}
+                    <ul>
+                        <li>Contribution limits vary by plan type and income</li>
+                        <li>Some plans have setup deadlines before year-end</li>
+                        <li>Early withdrawal penalties may apply</li>
+                    </ul>
+                {% elif "qbi" in strategy.strategy_name|lower or "qualified business income" in strategy.strategy_name|lower %}
+                    <ul>
+                        <li>Income limitations for specified service businesses</li>
+                        <li>Complex calculations for higher-income taxpayers</li>
+                        <li>Rules subject to IRS interpretation and future changes</li>
+                    </ul>
+                {% elif "s corporation" in strategy.strategy_name|lower %}
+                    <ul>
+                        <li>Requires reasonable compensation determination</li>
+                        <li>Additional administrative costs (payroll, separate tax return)</li>
+                        <li>Limited to certain entity types and ownership structures</li>
+                    </ul>
+                {% else %}
+                    <ul>
+                        <li>Tax laws change frequently, affecting strategy viability</li>
+                        <li>Implementation may require professional assistance</li>
+                        <li>Documentation requirements must be strictly followed</li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('strategy.strategy_home') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Strategies
+        </a>
+        
+        <a href="{{ url_for('strategy.strategy_questionnaire') }}" class="btn btn-primary">
+            <i class="fas fa-lightbulb me-2"></i> Find More Strategies
+        </a>
+    </div>
+    
+    <!-- Disclaimer -->
+    <div class="alert alert-secondary mt-4">
+        <small><strong>Disclaimer:</strong> This tax strategy information is provided for educational purposes only and should not be considered tax advice. Consult with a qualified tax professional before implementing any tax strategy.</small>
+    </div>
+</div>
+{% endblock %}

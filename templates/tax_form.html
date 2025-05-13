@@ -1,0 +1,292 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Form - {{ form_type }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        background-color: #f8f9fa;
+    }
+    
+    .form-section h3 {
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #0d6efd;
+        padding-bottom: 0.5rem;
+    }
+    
+    .field-hint {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .progress-bar {
+        height: 0.5rem;
+        border-radius: 1rem;
+    }
+    
+    .form-header {
+        background-color: #e9ecef;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .help-icon {
+        cursor: pointer;
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>{{ form_type }} Tax Form</h1>
+            <p class="lead mb-0">Tax Year: {{ tax_context.tax_year }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/gadd328c13cc365f616e4e1caf34cf4a38980a6b6293565df8414d0bf6205a39fc8aa2abe3dbb76a29b6fec1b082dfa2aca043782adc9fc72cb4f683e1a4993a2_1280.jpg" alt="Tax Form Template" class="img-fluid rounded" style="max-height: 100px;">
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('forms.edit_form', form_type=form_type) }}" id="taxForm">
+    <div class="form-navigation mb-4">
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="formProgress"></div>
+        </div>
+    </div>
+    
+    {% for section in template.sections %}
+        <div class="form-section" id="section-{{ loop.index }}" {% if not loop.first %}style="display: none;"{% endif %}>
+            <h3>{{ section.name }}</h3>
+            
+            <div class="row g-3">
+                {% for field in section.fields %}
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ field.name }}" class="form-label">
+                                {{ field.label }}
+                                {% if field.required %}
+                                    <span class="text-danger">*</span>
+                                {% endif %}
+                                <i class="fas fa-question-circle help-icon ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   title="Click for help with this field"
+                                   onclick="showFieldHelp('{{ field.name }}', '{{ field.label }}')"></i>
+                            </label>
+                            
+                            {% if field.type == 'text' %}
+                                <input type="text" class="form-control" id="{{ field.name }}" name="{{ field.name }}" 
+                                       {% if field.required %}required{% endif %}>
+                            {% elif field.type == 'number' %}
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="{{ field.name }}" name="{{ field.name }}" 
+                                           step="0.01" min="0" 
+                                           {% if field.required %}required{% endif %}>
+                                </div>
+                            {% elif field.type == 'date' %}
+                                <input type="date" class="form-control" id="{{ field.name }}" name="{{ field.name }}" 
+                                       {% if field.required %}required{% endif %}>
+                            {% elif field.type == 'select' %}
+                                <select class="form-select" id="{{ field.name }}" name="{{ field.name }}" 
+                                        {% if field.required %}required{% endif %}>
+                                    <option value="">Choose...</option>
+                                    {% for option in field.options %}
+                                        <option value="{{ option }}">{{ option }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% elif field.type == 'textarea' %}
+                                <textarea class="form-control" id="{{ field.name }}" name="{{ field.name }}" rows="3" 
+                                          {% if field.required %}required{% endif %}></textarea>
+                            {% endif %}
+                            
+                            <div class="field-hint">
+                                {% if field.name == 'ein' %}
+                                    Format: XX-XXXXXXX
+                                {% elif field.name == 'gross_receipts' %}
+                                    Total income from sales or services
+                                {% elif field.name == 'taxpayer_ein' %}
+                                    Your Tax ID number
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                {% if not loop.first %}
+                    <button type="button" class="btn btn-outline-secondary prev-section">
+                        <i class="fas fa-arrow-left me-2"></i> Previous
+                    </button>
+                {% else %}
+                    <div></div>
+                {% endif %}
+                
+                {% if not loop.last %}
+                    <button type="button" class="btn btn-primary next-section">
+                        Next <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle me-2"></i> Complete Form
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</form>
+
+<!-- Field Help Modal -->
+<div class="modal fade" id="fieldHelpModal" tabindex="-1" aria-labelledby="fieldHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fieldHelpModalLabel">Help: Field Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div class="spinner-border text-primary" role="status" id="helpSpinner">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="fieldHelpContent" style="display: none;">
+                    <p id="fieldDescription"></p>
+                    <div class="alert alert-info">
+                        <strong>Tip:</strong> <span id="fieldTip"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/form_utils.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initFormNavigation();
+        initToolTips();
+    });
+    
+    function showFieldHelp(fieldName, fieldLabel) {
+        // Show the modal with loading state
+        const modal = new bootstrap.Modal(document.getElementById('fieldHelpModal'));
+        document.getElementById('fieldHelpModalLabel').textContent = 'Help: ' + fieldLabel;
+        document.getElementById('helpSpinner').style.display = 'inline-block';
+        document.getElementById('fieldHelpContent').style.display = 'none';
+        modal.show();
+        
+        // In a real implementation, this would call an API to get field help
+        // For this demo, we'll simulate a delay and show static help text
+        setTimeout(() => {
+            document.getElementById('helpSpinner').style.display = 'none';
+            document.getElementById('fieldHelpContent').style.display = 'block';
+            
+            // Set help content based on field name
+            let description, tip;
+            
+            if (fieldName.includes('gross_receipts')) {
+                description = "This is the total amount your business received from sales, services, or other business activities before any deductions or expenses.";
+                tip = "Include all income, even if you didn't receive a 1099 form for it. Don't include loans, tax refunds, or capital contributions.";
+            } else if (fieldName.includes('ein')) {
+                description = "The Employer Identification Number (EIN) is a unique 9-digit number assigned by the IRS to identify your business entity.";
+                tip = "If you don't have an EIN, you'll need to apply for one using Form SS-4 or the online application on the IRS website.";
+            } else if (fieldName.includes('depreciation')) {
+                description = "Depreciation is a tax deduction that allows you to recover the cost of certain property over time. It's an annual allowance for the wear and tear, deterioration, or obsolescence of the property.";
+                tip = "Most businesses use the Modified Accelerated Cost Recovery System (MACRS) for calculating depreciation. Consider Section 179 for immediate expensing of qualified business assets.";
+            } else {
+                description = "This field is part of your tax form and may impact your overall tax liability.";
+                tip = "Enter accurate information to ensure proper tax calculation. If you're unsure, consult with a tax professional.";
+            }
+            
+            document.getElementById('fieldDescription').textContent = description;
+            document.getElementById('fieldTip').textContent = tip;
+        }, 1000);
+    }
+    
+    function initFormNavigation() {
+        const sections = document.querySelectorAll('.form-section');
+        const totalSections = sections.length;
+        const progressBar = document.getElementById('formProgress');
+        
+        // Set initial progress
+        updateProgress(1, totalSections);
+        
+        // Next button event handlers
+        document.querySelectorAll('.next-section').forEach((button, index) => {
+            button.addEventListener('click', function() {
+                // Validate current section before proceeding
+                const currentSection = sections[index];
+                const requiredFields = currentSection.querySelectorAll('[required]');
+                let valid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+                
+                if (!valid) {
+                    alert('Please fill in all required fields before proceeding.');
+                    return;
+                }
+                
+                // Hide current section, show next section
+                currentSection.style.display = 'none';
+                sections[index + 1].style.display = 'block';
+                
+                // Update progress
+                updateProgress(index + 2, totalSections);
+                
+                // Scroll to top of form
+                window.scrollTo({top: document.getElementById('taxForm').offsetTop - 20, behavior: 'smooth'});
+            });
+        });
+        
+        // Previous button event handlers
+        document.querySelectorAll('.prev-section').forEach((button, index) => {
+            button.addEventListener('click', function() {
+                // Hide current section, show previous section
+                sections[index + 1].style.display = 'none';
+                sections[index].style.display = 'block';
+                
+                // Update progress
+                updateProgress(index + 1, totalSections);
+                
+                // Scroll to top of form
+                window.scrollTo({top: document.getElementById('taxForm').offsetTop - 20, behavior: 'smooth'});
+            });
+        });
+    }
+    
+    function updateProgress(current, total) {
+        const progressBar = document.getElementById('formProgress');
+        const percentage = (current / total) * 100;
+        progressBar.style.width = percentage + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+    }
+    
+    function initToolTips() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Strategy Questionnaire - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .question-card {
+        margin-bottom: 1.5rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+    }
+    
+    .question-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .question-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0d6efd;
+        margin-right: 1rem;
+    }
+    
+    .questionnaire-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .progress {
+        height: 0.5rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="questionnaire-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>Tax Strategy Questionnaire</h1>
+            <p class="lead">Answer these questions to discover personalized tax-saving strategies for your business.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/g2f3c3dfb4c064f228b306c66ebbe8b7c7e79e43f86615f38063eaf835d7f538c554bebff0934795ddd6231580739d55a7d7bb5b35e8c13c3c178e0567e1b34f5_1280.jpg" alt="Tax Professional Working" class="img-fluid rounded" style="max-height: 120px;">
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Why This Matters</h5>
+        <p>Your answers help us identify tax strategies that may apply to your specific business situation. The more accurately you answer, the better tax-saving opportunities we can recommend.</p>
+        <div class="alert alert-info mb-0">
+            <i class="fas fa-shield-alt me-2"></i> Your responses are secure and used only to generate tax strategy recommendations.
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('strategy.strategy_questionnaire') }}" id="strategyForm">
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="formProgress"></div>
+    </div>
+    
+    {% for question in questions %}
+        {% set key = '_'.join(question.lower().split()[:3]).replace('?', '') %}
+        <div class="card question-card" id="question-{{ loop.index }}" {% if loop.index > 1 %}style="display: none;"{% endif %}>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <span class="question-number">{{ loop.index }}</span>
+                    <h5 class="card-title mb-0">{{ question }}</h5>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="{{ key }}" id="{{ key }}_yes" value="yes">
+                        <label class="form-check-label" for="{{ key }}_yes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="{{ key }}" id="{{ key }}_no" value="no" checked>
+                        <label class="form-check-label" for="{{ key }}_no">No</label>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-3">
+                    {% if not loop.first %}
+                        <button type="button" class="btn btn-outline-secondary prev-question">
+                            <i class="fas fa-arrow-left me-2"></i> Previous
+                        </button>
+                    {% else %}
+                        <div></div>
+                    {% endif %}
+                    
+                    {% if not loop.last %}
+                        <button type="button" class="btn btn-primary next-question">
+                            Next <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-lightbulb me-2"></i> Generate Strategies
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</form>
+
+<div class="alert alert-warning mt-4">
+    <h5><i class="fas fa-info-circle me-2"></i> Disclaimer</h5>
+    <p class="mb-0">The strategies provided are for informational purposes only and should not be considered tax advice. Consult with a qualified tax professional before implementing any tax strategy.</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const questions = document.querySelectorAll('.question-card');
+        const totalQuestions = questions.length;
+        const progressBar = document.getElementById('formProgress');
+        
+        // Set initial progress
+        updateProgress(1, totalQuestions);
+        
+        // Next button event handlers
+        document.querySelectorAll('.next-question').forEach((button, index) => {
+            button.addEventListener('click', function() {
+                // Hide current question, show next question
+                questions[index].style.display = 'none';
+                questions[index + 1].style.display = 'block';
+                
+                // Update progress
+                updateProgress(index + 2, totalQuestions);
+                
+                // Scroll to top of form
+                window.scrollTo({top: document.getElementById('strategyForm').offsetTop - 20, behavior: 'smooth'});
+            });
+        });
+        
+        // Previous button event handlers
+        document.querySelectorAll('.prev-question').forEach((button, index) => {
+            button.addEventListener('click', function() {
+                // Hide current question, show previous question
+                questions[index + 1].style.display = 'none';
+                questions[index].style.display = 'block';
+                
+                // Update progress
+                updateProgress(index + 1, totalQuestions);
+                
+                // Scroll to top of form
+                window.scrollTo({top: document.getElementById('strategyForm').offsetTop - 20, behavior: 'smooth'});
+            });
+        });
+    });
+    
+    function updateProgress(current, total) {
+        const progressBar = document.getElementById('formProgress');
+        const percentage = (current / total) * 100;
+        progressBar.style.width = percentage + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+    }
+</script>
+{% endblock %}

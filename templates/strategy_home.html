@@ -1,0 +1,162 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Strategies - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .strategy-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .strategy-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .strategy-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .savings-badge {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .empty-strategies {
+        padding: 4rem 2rem;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+    }
+    
+    .strategy-hero {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="strategy-hero">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>Tax Strategies</h1>
+            <p class="lead">Discover personalized tax-saving opportunities for your business.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/g95b26e1227fdc3626e47986bcfbfccfc8c27a4ff0782460e290acbba288299f2b9c99ba24c0897e0c20c6bc0c7090040d05e8fcafc4c4c24fb73e66c5a4736ea_1280.jpg" alt="Tax Professional Working" class="img-fluid rounded" style="max-height: 120px;">
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Your Tax Strategy Dashboard</h5>
+                    <a href="{{ url_for('strategy.strategy_questionnaire') }}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i> Find New Strategies
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if strategies %}
+    <div class="row g-4">
+        {% for strategy in strategies %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card strategy-card">
+                    <div class="card-header strategy-header">
+                        <h5 class="card-title mb-0">{{ strategy.strategy_name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ strategy.description|truncate(150) }}</p>
+                        
+                        {% if strategy.estimated_savings %}
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted">Estimated Savings:</span>
+                                <span class="badge bg-success savings-badge">${{ strategy.estimated_savings }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="text-end">
+                            <a href="{{ url_for('strategy.view_strategy', strategy_id=strategy.id) }}" class="btn btn-outline-primary">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Generated on {{ strategy.created_at.strftime('%b %d, %Y') }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-strategies">
+        <div class="mb-4">
+            <i class="fas fa-lightbulb fa-4x text-warning"></i>
+        </div>
+        <h3>No Tax Strategies Found</h3>
+        <p class="text-muted mb-4">Discover personalized tax-saving strategies by completing our questionnaire.</p>
+        <a href="{{ url_for('strategy.strategy_questionnaire') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-search me-2"></i> Find Tax Strategies
+        </a>
+    </div>
+{% endif %}
+
+<!-- Tax Strategy Benefits Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Why Use Tax Strategies?</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-coins fa-2x text-warning me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Maximize Deductions</h5>
+                                <p class="text-muted">Identify all eligible deductions to reduce your taxable income legally.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-balance-scale fa-2x text-primary me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Optimize Entity Structure</h5>
+                                <p class="text-muted">Find the most tax-efficient business structure for your situation.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-calendar-alt fa-2x text-success me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Strategic Timing</h5>
+                                <p class="text-muted">Plan expenses and income to minimize taxes across multiple years.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

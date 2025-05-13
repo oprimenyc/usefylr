@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .login-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .login-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .login-header {
+        background: linear-gradient(135deg, #0d6efd, #0a4cb1);
+        color: white;
+        padding: 2rem;
+    }
+    
+    .login-body {
+        padding: 2rem;
+    }
+    
+    .login-option {
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .login-option:hover {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+    
+    .login-option.active {
+        border-color: #0d6efd;
+        background-color: #e9f1ff;
+    }
+    
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+    }
+    
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .divider span {
+        padding: 0 1rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container my-5">
+    <div class="login-card">
+        <div class="login-header text-center">
+            <h2>Welcome Back</h2>
+            <p class="mb-0">Log in to access your tax tools</p>
+        </div>
+        <div class="login-body">
+            <!-- Standard Login Form -->
+            <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <!-- WordPress Login Option -->
+            <div class="login-option" id="wpLoginOption">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-globe fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">FederalFundingClub.com Account</h5>
+                        <p class="text-muted mb-0">Use your existing website account</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hidden WordPress Login Form -->
+            <form method="POST" action="{{ url_for('auth.login') }}" id="wpLoginForm" style="display: none;">
+                <input type="hidden" name="wp_auth" value="true">
+                <input type="hidden" name="wp_token" id="wp_token">
+            </form>
+            
+            <div class="text-center mt-4">
+                <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register now</a></p>
+                <p class="text-muted small">Forgot your password? <a href="#">Reset it here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const wpLoginOption = document.getElementById('wpLoginOption');
+        
+        wpLoginOption.addEventListener('click', function() {
+            // In a real implementation, this would open a popup window or redirect to WordPress OAuth
+            // For this implementation, we'll simulate a successful WordPress login
+            
+            wpLoginOption.classList.add('active');
+            
+            // Display loading state
+            wpLoginOption.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="spinner-border text-primary me-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Connecting to FederalFundingClub.com</h5>
+                        <p class="text-muted mb-0">Please wait...</p>
+                    </div>
+                </div>
+            `;
+            
+            // Simulate authorization delay
+            setTimeout(function() {
+                // This would be an actual token from WordPress in a real implementation
+                document.getElementById('wp_token').value = 'sample_wp_auth_token';
+                document.getElementById('wpLoginForm').submit();
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}

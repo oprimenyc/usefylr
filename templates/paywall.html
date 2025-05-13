@@ -1,0 +1,262 @@
+{% extends 'layout.html' %}
+
+{% block title %}Pricing - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .pricing-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 1rem;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .pricing-header {
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .price-tag {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 1rem 0;
+        color: #0d6efd;
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .feature-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    
+    .feature-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .pricing-footer {
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+    }
+    
+    .popular-badge {
+        position: absolute;
+        top: 0;
+        right: 1.5rem;
+        background-color: #28a745;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0 0 0.5rem 0.5rem;
+        font-weight: 600;
+    }
+    
+    .discount-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: #dc3545;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 0.25rem;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+    }
+    
+    .pricing-hero {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .access-badge {
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pricing-hero">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>Pricing Plans</h1>
+            <p class="lead">Choose the right tools for your business tax needs.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/gbccc6d9efc7861cc33049df13b14b0f80022c113528ef2bc90e1efdf2da8fbe5321e13762d4b81ae40a03b511e08bd9d8865bfc07d5d08b9806605049d648b1c_1280.jpg" alt="Business Accounting" class="img-fluid rounded" style="max-height: 120px;">
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="alert alert-info mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h5 class="mb-2">Your Current Access: {{ access_level|title }}</h5>
+            {% if access_level == 'full_access' %}
+                <p class="mb-0">As a Business Builder Plan member, you have access to all features!</p>
+            {% elif access_level == 'discounted' %}
+                <p class="mb-0">As a Subscription Member, you receive 50% off all tools. Look for the discounted prices below.</p>
+            {% else %}
+                <p class="mb-0">With Standard Access, you can purchase tools individually as needed.</p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-md-end">
+            <span class="access-badge bg-{{ 'success' if access_level == 'full_access' else 'info' if access_level == 'discounted' else 'secondary' }}">
+                {{ access_level|title|replace('_', ' ') }} Plan
+            </span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+    {% for key, tier in pricing_tiers.items() %}
+        <div class="col-lg-3 col-md-6">
+            <div class="card pricing-card h-100 position-relative">
+                {% if key == 'strategy_unlock' %}
+                    <div class="popular-badge">Popular</div>
+                {% endif %}
+                
+                <div class="pricing-header text-center">
+                    <h3 class="card-title">{{ tier.name }}</h3>
+                    <div class="price-tag">
+                        ${{ tier.price if access_level != 'discounted' else tier.price // 2 }}
+                        {% if access_level == 'discounted' %}
+                            <span class="discount-badge">50% OFF</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted mb-0">One-time purchase</p>
+                </div>
+                
+                <div class="card-body">
+                    <ul class="feature-list">
+                        {% for feature in tier.features %}
+                            <li><i class="fas fa-check text-success me-2"></i> {{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="pricing-footer text-center">
+                    {% if access_level == 'full_access' %}
+                        <span class="btn btn-success disabled">
+                            <i class="fas fa-check-circle me-2"></i> Included in Your Plan
+                        </span>
+                    {% else %}
+                        <form action="{{ url_for('billing.create_checkout_session', product_id=key) }}" method="POST">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-unlock-alt me-2"></i> Purchase Now
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="card mt-5">
+    <div class="card-header">
+        <h4 class="mb-0">Access Level Comparison</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th class="text-center">Standard</th>
+                        <th class="text-center">Subscription Member</th>
+                        <th class="text-center">Business Builder</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Basic Account Access</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Tool Pricing</td>
+                        <td class="text-center">Full Price</td>
+                        <td class="text-center"><span class="badge bg-info">50% Off</span></td>
+                        <td class="text-center"><span class="badge bg-success">All Included</span></td>
+                    </tr>
+                    <tr>
+                        <td>Basic DIY Filing</td>
+                        <td class="text-center">$25</td>
+                        <td class="text-center">$12.50</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Guided Filing</td>
+                        <td class="text-center">$99</td>
+                        <td class="text-center">$49.50</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Strategy Unlock</td>
+                        <td class="text-center">$149</td>
+                        <td class="text-center">$74.50</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>IRS Letter Generator</td>
+                        <td class="text-center">$39</td>
+                        <td class="text-center">$19.50</td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Priority AI Tips</td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Free IRS Letter Pack with Paid Filing</td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4 bg-light">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h4>Upgrade to Business Builder Plan</h4>
+                <p class="mb-0">Get unlimited access to all tax tools, plus priority support and additional benefits by upgrading to our Business Builder Plan on FederalFundingClub.com</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="https://federalfundingclub.com/pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-crown me-2"></i> Upgrade Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-warning mt-4">
+    <h5><i class="fas fa-info-circle me-2"></i> Disclaimer</h5>
+    <p class="mb-0">All tools are provided for informational purposes only and should not be considered tax advice. Consult with a qualified tax professional before filing your taxes.</p>
+</div>
+{% endblock %}

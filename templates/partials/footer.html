@@ -1,0 +1,43 @@
+<footer class="bg-dark text-light mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Federal Funding Club</h5>
+                <p>Helping small businesses thrive through simplified tax solutions and financial services.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ url_for('main.index') }}" class="text-light">Home</a></li>
+                    <li><a href="{{ url_for('main.pricing') }}" class="text-light">Pricing</a></li>
+                    {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}" class="text-light">Dashboard</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}" class="text-light">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}" class="text-light">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5>Contact Us</h5>
+                <p>
+                    <i class="fas fa-envelope me-2"></i> support@federalfundingclub.com<br>
+                    <i class="fas fa-phone me-2"></i> (800) 555-FUND<br>
+                    <i class="fas fa-globe me-2"></i> federalfundingclub.com
+                </p>
+            </div>
+        </div>
+        <hr class="my-3">
+        <div class="row">
+            <div class="col-md-6">
+                <p>&copy; 2025 Federal Funding Club. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-light me-3"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,48 @@
+1. Legal Disclaimers (for your dashboard & footer)
+DISCLAIMER: This tool is provided for informational and educational purposes only and does not constitute tax, legal, or financial advice. Use of this platform does not establish a client-accountant relationship. All users are solely responsible for the accuracy of the information they provide and for any filings they submit to the IRS or other authorities. We are not liable for penalties, interest, or other consequences resulting from incorrect or incomplete information.
+
+2. Terms of Use (simplified version)
+Location: /legal/terms.html or shown on signup
+<h1>Terms of Use</h1>
+<p>By using the DIY Business Tax Tool ("the Tool") on FederalFundingClub.com, you agree to the following:</p>
+<ol>
+  <li>You are solely responsible for the accuracy and completeness of the information you provide.</li>
+  <li>This Tool does not constitute professional tax or legal advice.</li>
+  <li>We do not review, audit, or submit your tax return. You are responsible for all IRS submissions.</li>
+  <li>We disclaim all liability for any damages or losses resulting from the use of this Tool.</li>
+  <li>Access to certain features may depend on your subscription tier or service agreement.</li>
+  <li>We reserve the right to update or modify these Terms at any time.</li>
+</ol>
+<p>If you do not agree with these terms, do not use the Tool.</p>
+
+3. Privacy Policy (basic draft)
+Location: /legal/privacy.html
+<h1>Privacy Policy</h1>
+<p>We value your privacy. This policy explains how we collect, use, and protect your information:</p>
+
+<ul>
+  <li><strong>Data Collected:</strong> Name, email, business info, tax inputs, and billing details.</li>
+  <li><strong>Usage:</strong> To provide and improve the Tax Tool, process payments, and generate your tax documents.</li>
+  <li><strong>Security:</strong> We use industry-standard encryption and never share or sell your data.</li>
+  <li><strong>Access:</strong> You may request deletion of your data at any time via email.</li>
+  <li><strong>Cookies:</strong> We may use cookies to enhance your experience.</li>
+</ul>
+
+<p>By using this site, you consent to this policy.</p>
+
+4. Mandatory Acknowledgment Page
+Location: /legal/acknowledgment.html
+Required Step Before Generating Documents
+<h1>Legal Acknowledgment & Disclosure</h1>
+<p>You must read and agree to the following before using the Federal Funding Club DIY Tax Tool:</p>
+
+<form id="legalAckForm">
+  <p><input type="checkbox" required> I affirm that all information I enter is true and complete to the best of my knowledge.</p>
+  <p><input type="checkbox" required> I understand this tool does not constitute legal or tax advice.</p>
+  <p><input type="checkbox" required> I understand I am responsible for any tax filings made using this tool.</p>
+  <p><input type="checkbox" required> I acknowledge that Federal Funding Club and Grey Taurus Media are not liable for any IRS penalties, interest, or legal consequences resulting from incorrect or incomplete filings.</p>
+  <p><input type="checkbox" required> I understand that tax laws vary by location and change regularly. I am responsible for doing my own due diligence.</p>
+  <p><input type="checkbox" required> I accept the Terms of Use and Privacy Policy.</p>
+
+  <button type="submit">I Acknowledge and Accept</button>
+</form>

@@ -1,0 +1,109 @@
+{% extends 'layout.html' %}
+
+{% block title %}Purchase Successful - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .success-icon {
+        font-size: 5rem;
+        color: #28a745;
+    }
+    
+    .success-container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .next-steps {
+        margin-top: 2rem;
+        text-align: left;
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+    }
+    
+    .next-steps-list {
+        padding-left: 1rem;
+    }
+    
+    .next-steps-list li {
+        margin-bottom: 0.75rem;
+    }
+    
+    .cta-section {
+        margin-top: 2.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-icon mb-4">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    
+    <h1 class="mb-3">Thank You for Your Purchase!</h1>
+    <p class="lead mb-4">Your payment was processed successfully and your access has been activated.</p>
+    
+    <div class="alert alert-success">
+        <h5 class="mb-2">Purchase Details</h5>
+        <p class="mb-0">
+            {% if payment_for == 'basic_diy' %}
+                <strong>Basic DIY Filing</strong> - Zero-activity return generator, PDF download, and email support
+            {% elif payment_for == 'guided_filing' %}
+                <strong>Guided Filing</strong> - Step-by-step input, Form 1120/1065/Schedule C generation, and state filing add-on
+            {% elif payment_for == 'strategy_unlock' %}
+                <strong>Strategy Unlock</strong> - QBI deduction check, entity optimization guide, Section 179 & R&D credits, and S Corp vs C Corp modeling
+            {% elif payment_for == 'irs_letter_pack' %}
+                <strong>IRS Letter Generator</strong> - Penalty abatement letters, reasonable cause templates, and late filing relief letter
+            {% else %}
+                <strong>Tax Tool Access</strong> - Your account has been successfully updated with your purchase
+            {% endif %}
+        </p>
+    </div>
+    
+    <div class="next-steps">
+        <h4 class="mb-3">Next Steps</h4>
+        <ol class="next-steps-list">
+            {% if payment_for == 'basic_diy' %}
+                <li>Go to your <a href="{{ url_for('main.dashboard') }}">Dashboard</a> to see your available tools</li>
+                <li>Start by <a href="{{ url_for('forms.new_form') }}">creating a new tax form</a></li>
+                <li>Follow the step-by-step process to generate your zero-activity return</li>
+                <li>Download your completed PDF when finished</li>
+            {% elif payment_for == 'guided_filing' %}
+                <li>Go to your <a href="{{ url_for('main.dashboard') }}">Dashboard</a> to see your available tools</li>
+                <li>Start by <a href="{{ url_for('forms.new_form') }}">selecting your form type</a> (1120, 1065, or Schedule C)</li>
+                <li>Follow the guided process to input your business tax information</li>
+                <li>Review and download your completed form when finished</li>
+            {% elif payment_for == 'strategy_unlock' %}
+                <li>Go to your <a href="{{ url_for('main.dashboard') }}">Dashboard</a> to see your available tools</li>
+                <li>Start by taking the <a href="{{ url_for('strategy.strategy_questionnaire') }}">tax strategy questionnaire</a></li>
+                <li>Review your personalized tax strategy recommendations</li>
+                <li>Implement the suggested strategies to maximize your tax savings</li>
+            {% elif payment_for == 'irs_letter_pack' %}
+                <li>Go to your <a href="{{ url_for('main.dashboard') }}">Dashboard</a> to see your available tools</li>
+                <li>Start by <a href="{{ url_for('letters.new_letter') }}">selecting a letter template</a></li>
+                <li>Fill in your specific information for the IRS letter</li>
+                <li>Download the completed letter for submission to the IRS</li>
+            {% else %}
+                <li>Go to your <a href="{{ url_for('main.dashboard') }}">Dashboard</a> to see your available tools</li>
+                <li>Explore the tools and features now available to you</li>
+                <li>Start using the tax tools to manage your business tax needs</li>
+                <li>Contact support if you have any questions about your purchase</li>
+            {% endif %}
+        </ol>
+    </div>
+    
+    <div class="cta-section">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+        </a>
+    </div>
+    
+    <div class="mt-5">
+        <h5>Need Help?</h5>
+        <p>If you have any questions about your purchase or how to use the tools, please <a href="#">contact our support team</a>.</p>
+    </div>
+</div>
+{% endblock %}

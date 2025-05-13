@@ -1,0 +1,264 @@
+{% extends 'layout.html' %}
+
+{% block title %}Register - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .register-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .register-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .register-header {
+        background: linear-gradient(135deg, #0d6efd, #0a4cb1);
+        color: white;
+        padding: 2rem;
+    }
+    
+    .register-body {
+        padding: 2rem;
+    }
+    
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+    }
+    
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .divider span {
+        padding: 0 1rem;
+        color: #6c757d;
+    }
+    
+    .register-option {
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .register-option:hover {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+    
+    .password-strength {
+        height: 5px;
+        border-radius: 2px;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container my-5">
+    <div class="register-card">
+        <div class="register-header text-center">
+            <h2>Create Account</h2>
+            <p class="mb-0">Register to access business tax tools</p>
+        </div>
+        <div class="register-body">
+            <!-- Registration Form -->
+            <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required onkeyup="checkPasswordStrength()">
+                    <div class="d-flex password-strength" id="passwordStrength">
+                        <div class="col-3" id="strength1"></div>
+                        <div class="col-3" id="strength2"></div>
+                        <div class="col-3" id="strength3"></div>
+                        <div class="col-3" id="strength4"></div>
+                    </div>
+                    <small class="text-muted" id="passwordFeedback">Password must be at least 8 characters</small>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required onkeyup="checkPasswordMatch()">
+                    <div class="invalid-feedback" id="passwordMatchFeedback">
+                        Passwords do not match
+                    </div>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                    <label class="form-check-label" for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary" id="registerButton">Create Account</button>
+                </div>
+            </form>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <!-- WordPress Account Option -->
+            <div class="register-option" id="wpRegisterOption">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-globe fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Use Your FederalFundingClub.com Account</h5>
+                        <p class="text-muted mb-0">Already a member? Sign in with your existing website account</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function checkPasswordStrength() {
+        const password = document.getElementById('password').value;
+        const strength1 = document.getElementById('strength1');
+        const strength2 = document.getElementById('strength2');
+        const strength3 = document.getElementById('strength3');
+        const strength4 = document.getElementById('strength4');
+        const feedback = document.getElementById('passwordFeedback');
+        
+        // Reset
+        strength1.style.backgroundColor = '#dee2e6';
+        strength2.style.backgroundColor = '#dee2e6';
+        strength3.style.backgroundColor = '#dee2e6';
+        strength4.style.backgroundColor = '#dee2e6';
+        
+        // Check strength
+        let strengthLevel = 0;
+        
+        if (password.length >= 8) {
+            strengthLevel++;
+        }
+        
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+            strengthLevel++;
+        }
+        
+        if (password.match(/\d/)) {
+            strengthLevel++;
+        }
+        
+        if (password.match(/[^a-zA-Z\d]/)) {
+            strengthLevel++;
+        }
+        
+        // Update visual indicator
+        if (strengthLevel >= 1) {
+            strength1.style.backgroundColor = '#dc3545'; // Weak
+        }
+        
+        if (strengthLevel >= 2) {
+            strength1.style.backgroundColor = '#ffc107'; // Fair
+            strength2.style.backgroundColor = '#ffc107';
+        }
+        
+        if (strengthLevel >= 3) {
+            strength1.style.backgroundColor = '#28a745'; // Good
+            strength2.style.backgroundColor = '#28a745';
+            strength3.style.backgroundColor = '#28a745';
+        }
+        
+        if (strengthLevel === 4) {
+            strength1.style.backgroundColor = '#198754'; // Strong
+            strength2.style.backgroundColor = '#198754';
+            strength3.style.backgroundColor = '#198754';
+            strength4.style.backgroundColor = '#198754';
+        }
+        
+        // Update feedback
+        switch (strengthLevel) {
+            case 0:
+                feedback.textContent = 'Password must be at least 8 characters';
+                break;
+            case 1:
+                feedback.textContent = 'Weak - Add uppercase letters, numbers, or symbols';
+                break;
+            case 2:
+                feedback.textContent = 'Fair - Add more variety to strengthen';
+                break;
+            case 3:
+                feedback.textContent = 'Good - Consider adding more complexity';
+                break;
+            case 4:
+                feedback.textContent = 'Strong password!';
+                break;
+        }
+    }
+    
+    function checkPasswordMatch() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const feedback = document.getElementById('passwordMatchFeedback');
+        const confirmInput = document.getElementById('confirm_password');
+        
+        if (confirmPassword === '') {
+            confirmInput.classList.remove('is-invalid');
+            confirmInput.classList.remove('is-valid');
+        } else if (password === confirmPassword) {
+            confirmInput.classList.remove('is-invalid');
+            confirmInput.classList.add('is-valid');
+        } else {
+            confirmInput.classList.add('is-invalid');
+            confirmInput.classList.remove('is-valid');
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const wpRegisterOption = document.getElementById('wpRegisterOption');
+        const registerForm = document.getElementById('registerForm');
+        
+        wpRegisterOption.addEventListener('click', function() {
+            // In a real implementation, this would redirect to WordPress registration/login
+            window.location.href = 'https://federalfundingclub.com/register';
+        });
+        
+        registerForm.addEventListener('submit', function(e) {
+            // Simple validation before submission
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                document.getElementById('confirm_password').classList.add('is-invalid');
+                return false;
+            }
+            
+            if (password.length < 8) {
+                e.preventDefault();
+                alert('Please use a stronger password (minimum 8 characters)');
+                return false;
+            }
+            
+            // Form is valid, continue with submission
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,241 @@
+{% extends 'layout.html' %}
+
+{% block title %}Select Tax Form - DIY Business Tax Tool{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-option {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 2px solid transparent;
+    }
+    
+    .form-option:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .form-option.selected {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+    
+    .form-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-select-header {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-description {
+        height: 80px;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-select-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>Select a Tax Form</h1>
+            <p class="lead">Choose the form that best fits your business structure.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="https://pixabay.com/get/gadd328c13cc365f616e4e1caf34cf4a38980a6b6293565df8414d0bf6205a39fc8aa2abe3dbb76a29b6fec1b082dfa2aca043782adc9fc72cb4f683e1a4993a2_1280.jpg" alt="Tax Form Templates" class="img-fluid rounded" style="max-height: 120px;">
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Step 1: Select Your Form Type and Tax Year</h5>
+        <p>Choose the tax form that matches your business entity type and the tax year you need to file for.</p>
+        <div class="alert alert-info mb-0">
+            <i class="fas fa-info-circle me-2"></i> Not sure which form to choose? <a href="#form-guide" class="alert-link">See our guide below</a> for help selecting the right form.
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('forms.new_form') }}" id="formSelectForm">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Step 1: Select Form Type</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        {% for form_type in form_types %}
+                            <div class="col-md-4">
+                                <div class="card form-option" data-form-type="{{ form_type.value }}">
+                                    <div class="card-body text-center">
+                                        <div class="form-icon">
+                                            <i class="fas {% if form_type.value == '1120' %}fa-building text-primary{% elif form_type.value == '1065' %}fa-handshake text-success{% elif form_type.value == 'Schedule C' %}fa-user-tie text-danger{% else %}fa-file-invoice text-info{% endif %}"></i>
+                                        </div>
+                                        
+                                        <h5 class="card-title">{{ form_type.value }}</h5>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input form-radio" type="radio" name="form_type" id="form_{{ form_type.value }}" value="{{ form_type.value }}" required>
+                                            <label class="form-check-label" for="form_{{ form_type.value }}">
+                                                Select
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Step 2: Select Tax Year</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="tax_year" class="form-label">Choose a Tax Year</label>
+                        <select class="form-select" id="tax_year" name="tax_year" required>
+                            <option value="">Select Tax Year</option>
+                            {% for year in available_years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary btn-lg" id="continueButton">
+            <i class="fas fa-arrow-right me-2"></i> Continue to Form
+        </button>
+    </div>
+</form>
+
+<!-- Form Guide Section -->
+<div class="card mt-5" id="form-guide">
+    <div class="card-header">
+        <h5 class="mb-0">Form Selection Guide</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-building text-primary me-2"></i>
+                        <h6 class="mb-0">Form 1120</h6>
+                    </div>
+                    <div class="card-body">
+                        <h6>For C Corporations</h6>
+                        <p class="text-muted">The standard corporate tax return for entities that are taxed separately from their owners.</p>
+                        <p><strong>Choose this if:</strong></p>
+                        <ul>
+                            <li>Your business is incorporated as a C Corp</li>
+                            <li>You file corporate taxes separately from personal</li>
+                            <li>Your business has shareholders</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-handshake text-success me-2"></i>
+                        <h6 class="mb-0">Form 1065</h6>
+                    </div>
+                    <div class="card-body">
+                        <h6>For Partnerships & Multi-Member LLCs</h6>
+                        <p class="text-muted">An information return for business entities that pass profits and losses to their owners.</p>
+                        <p><strong>Choose this if:</strong></p>
+                        <ul>
+                            <li>Your business is a partnership</li>
+                            <li>You have a multi-member LLC not taxed as a corporation</li>
+                            <li>You have multiple business owners sharing profits/losses</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-user-tie text-danger me-2"></i>
+                        <h6 class="mb-0">Schedule C</h6>
+                    </div>
+                    <div class="card-body">
+                        <h6>For Sole Proprietors & Single-Member LLCs</h6>
+                        <p class="text-muted">Attaches to your personal Form 1040 to report business income and expenses.</p>
+                        <p><strong>Choose this if:</strong></p>
+                        <ul>
+                            <li>You're a sole proprietor</li>
+                            <li>You have a single-member LLC not taxed as a corporation</li>
+                            <li>Your business profits/losses flow to your personal tax return</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-warning mt-4">
+    <h5><i class="fas fa-info-circle me-2"></i> Important Note</h5>
+    <p class="mb-0">The forms generated by this tool are for informational purposes only and should be reviewed by a tax professional before filing with the IRS.</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formOptions = document.querySelectorAll('.form-option');
+        const formRadios = document.querySelectorAll('.form-radio');
+        
+        // Add click handler to form option cards
+        formOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const formType = this.dataset.formType;
+                const radio = document.getElementById('form_' + formType);
+                
+                // Clear all selections
+                formOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Select this option
+                this.classList.add('selected');
+                radio.checked = true;
+            });
+        });
+        
+        // Also handle direct radio button clicks
+        formRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    // Clear all selections
+                    formOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Select the parent card
+                    const formType = this.value;
+                    const card = document.querySelector(`.form-option[data-form-type="${formType}"]`);
+                    if (card) {
+                        card.classList.add('selected');
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

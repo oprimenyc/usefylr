@@ -1,0 +1,189 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h1 class="fw-bold">DIY Business Tax Filing Tool</h1>
+            <p class="lead">Simplified tax filing for small businesses, solo entrepreneurs, and side hustlers. Create, file, and optimize your business taxes without hiring an expensive CPA.</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="{{ url_for('main.pricing') }}" class="btn btn-primary btn-lg px-4 gap-3">View Pricing</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">Go to Dashboard</a>
+                {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-secondary btn-lg px-4">Create Account</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Features -->
+    <div class="row mt-5 mb-4">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">What We Offer</h2>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-alt fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Basic DIY Filing</h5>
+                    <p class="card-text">Generate zero-activity business tax returns in minutes. Perfect for newly formed entities or minimal activity businesses.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-clipboard-list fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Guided Filing</h5>
+                    <p class="card-text">Step-by-step guidance through Form 1120, 1065, or Schedule C with explanation of each section.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-lightbulb fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Strategy Unlock</h5>
+                    <p class="card-text">AI-powered tax saving strategies customized to your business type, income level, and business activities.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-envelope-open-text fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">IRS Letter Generator</h5>
+                    <p class="card-text">Professionally crafted response letters for IRS notices, penalty abatement, and late filing relief.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Process Steps -->
+    <div class="row mt-5 mb-4">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">How It Works</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3 text-center">
+            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <h2 class="mb-0">1</h2>
+            </div>
+            <h5>Select Your Tool</h5>
+            <p>Choose from our range of tax tools based on your business needs.</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <h2 class="mb-0">2</h2>
+            </div>
+            <h5>Answer Questions</h5>
+            <p>Complete our simple questionnaire about your business activities.</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <h2 class="mb-0">3</h2>
+            </div>
+            <h5>Review & Edit</h5>
+            <p>Review the auto-filled forms and make any necessary adjustments.</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <h2 class="mb-0">4</h2>
+            </div>
+            <h5>Download & File</h5>
+            <p>Download your completed forms ready for filing with the IRS.</p>
+        </div>
+    </div>
+    
+    <!-- Testimonials -->
+    <div class="row mt-5 mb-4">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">What Our Customers Say</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="card-text">"I was three years behind on filing my LLC taxes. This tool helped me get caught up in a single weekend. Worth every penny!"</p>
+                    <div class="d-flex align-items-center">
+                        <div class="ms-2">
+                            <h6 class="mb-0">Michael T.</h6>
+                            <small class="text-muted">Small Business Owner</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="card-text">"The Strategy Unlock feature saved me over $4,200 in taxes by identifying deductions I didn't know I qualified for. Incredible value."</p>
+                    <div class="d-flex align-items-center">
+                        <div class="ms-2">
+                            <h6 class="mb-0">Sarah L.</h6>
+                            <small class="text-muted">E-commerce Entrepreneur</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                    </div>
+                    <p class="card-text">"I received an IRS penalty notice for late filing. Used the IRS Letter Generator to request abatement and got the $950 penalty removed!"</p>
+                    <div class="d-flex align-items-center">
+                        <div class="ms-2">
+                            <h6 class="mb-0">David R.</h6>
+                            <small class="text-muted">Freelance Consultant</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CTA -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="p-5 bg-light rounded-3">
+                <h2>Ready to simplify your business taxes?</h2>
+                <p class="lead">Join thousands of small business owners saving time and money on their tax filings.</p>
+                <a href="{{ url_for('main.pricing') }}" class="btn btn-primary btn-lg">Get Started Today</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
