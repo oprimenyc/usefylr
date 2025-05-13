@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle with Gradient -->
+  <circle cx="100" cy="100" r="95" fill="url(#icon_gradient)" filter="drop-shadow(0px 8px 24px rgba(0, 0, 0, 0.2))"/>
+  
+  <!-- Inner Circles for Depth -->
+  <circle cx="100" cy="100" r="80" fill="white" fill-opacity="0.1"/>
+  <circle cx="100" cy="100" r="60" fill="white" fill-opacity="0.05"/>
+  
+  <!-- F Letter -->
+  <path d="M60 60H100V80H80V90H95V110H80V140H60V60Z" fill="white" filter="drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.25))"/>
+  
+  <!-- Stylish Accent Elements -->
+  <circle cx="140" cy="70" r="20" fill="#f4a261" fill-opacity="0.9"/>
+  <circle cx="140" cy="70" r="12" fill="white" fill-opacity="0.2"/>
+  
+  <!-- Abstract Design Elements -->
+  <path d="M130 120C130 108.954 138.954 100 150 100V140C138.954 140 130 131.046 130 120Z" fill="#e76f51" fill-opacity="0.8"/>
+  <path d="M130 120C130 131.046 121.046 140 110 140V100C121.046 100 130 108.954 130 120Z" fill="#e76f51" fill-opacity="0.5"/>
+  
+  <!-- Dollar Sign Overlay for Finance Theme -->
+  <path d="M100 90V105M100 135V150M90 105H105C111.075 105 116 109.925 116 116C116 122.075 111.075 127 105 127H90C83.9249 127 79 122.075 79 116C79 109.925 83.9249 105 90 105Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Decorative Corner Elements -->
+  <circle cx="40" cy="40" r="6" fill="white" fill-opacity="0.5"/>
+  <circle cx="160" cy="40" r="6" fill="white" fill-opacity="0.5"/>
+  <circle cx="40" cy="160" r="6" fill="white" fill-opacity="0.5"/>
+  <circle cx="160" cy="160" r="6" fill="white" fill-opacity="0.5"/>
+  
+  <!-- Linear Gradient Definition -->
+  <defs>
+    <linearGradient id="icon_gradient" x1="10" y1="10" x2="190" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2A9D8F"/>
+      <stop offset="1" stop-color="#264653"/>
+    </linearGradient>
+  </defs>
+</svg>

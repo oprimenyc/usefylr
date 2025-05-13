@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="100" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Stylish Background with Gradient -->
+  <rect x="10" y="10" width="220" height="80" rx="12" fill="url(#premium_gradient)" filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.15))"/>
+  
+  <!-- FYLR Text -->
+  <g filter="drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.15))">
+    <path d="M50 30H65V35H57V40H63V45H57V60H50V30Z" fill="white"/>
+    <path d="M75 30H90L90 35L82 35V60H75V30Z" fill="white"/>
+    <path d="M95 30H102V50H115V60H95V30Z" fill="white"/>
+    <path d="M125 30H140V35H132V40H139V45H132V55H140V60H125V30Z" fill="white"/>
+  </g>
+  
+  <!-- Circular Design Element -->
+  <circle cx="160" cy="35" r="18" fill="#e76f51" fill-opacity="0.7"/>
+  <circle cx="160" cy="35" r="14" fill="#ffffff" fill-opacity="0.2"/>
+  <circle cx="160" cy="35" r="10" fill="#ffffff" fill-opacity="0.3"/>
+  
+  <!-- Stylized Dollar Sign Icon -->
+  <path d="M32 48C32 37.5066 40.5066 29 51 29C61.4934 29 70 37.5066 70 48C70 58.4934 61.4934 67 51 67C40.5066 67 32 58.4934 32 48Z" fill="#f4a261" fill-opacity="0.2"/>
+  <path d="M51 36V42M51 54V60M47 42H53C55.7614 42 58 44.2386 58 47C58 49.7614 55.7614 52 53 52H47C44.2386 52 42 49.7614 42 47C42 44.2386 44.2386 42 47 42Z" stroke="#f4a261" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Decorative Dots -->
+  <circle cx="180" cy="50" r="2" fill="white" fill-opacity="0.8"/>
+  <circle cx="190" cy="50" r="2" fill="white" fill-opacity="0.8"/>
+  <circle cx="200" cy="50" r="2" fill="white" fill-opacity="0.8"/>
+  
+  <!-- Tagline Text -->
+  <text x="78" y="75" font-family="Montserrat, sans-serif" font-size="10" font-weight="500" fill="white" opacity="0.9">by federalfundingclub.com</text>
+  
+  <!-- Linear Gradient Definition -->
+  <defs>
+    <linearGradient id="premium_gradient" x1="0" y1="0" x2="220" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2A9D8F"/>
+      <stop offset="1" stop-color="#264653"/>
+    </linearGradient>
+  </defs>
+</svg>

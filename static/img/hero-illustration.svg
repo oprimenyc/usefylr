@@ -1,80 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background Elements -->
-  <path d="M0 300C0 300 200 200 400 300C600 400 800 300 800 300V600H0V300Z" fill="#F8F9FD"/>
-  <path d="M0 350C0 350 200 250 400 350C600 450 800 350 800 350V600H0V350Z" fill="#E0F5F2"/>
+  <!-- Main Dashboard Panel -->
+  <rect x="50" y="50" width="700" height="500" rx="16" fill="white" filter="drop-shadow(0px 20px 40px rgba(0, 0, 0, 0.15))"/>
   
-  <!-- Decorative Wave Pattern -->
-  <path d="M0 400C0 400 100 370 200 400C300 430 400 370 500 400C600 430 700 380 800 400V600H0V400Z" fill="#2A9D8F" fill-opacity="0.1"/>
+  <!-- Top Navigation Bar -->
+  <rect x="50" y="50" width="700" height="70" rx="16" fill="#2A9D8F"/>
+  <rect x="50" y="70" width="700" height="50" fill="#2A9D8F"/>
   
-  <!-- Main Dashboard UI -->
-  <rect x="150" y="100" width="500" height="350" rx="12" fill="white" stroke="#2A9D8F" stroke-width="2"/>
+  <!-- Logo Area -->
+  <rect x="70" y="65" width="120" height="40" rx="6" fill="white" fill-opacity="0.2"/>
+  <path d="M85 75H95V80H90V82H94V87H90V95H85V75Z" fill="white"/>
+  <path d="M100 75H110V80H105V95H100V75Z" fill="white"/>
+  <path d="M115 75H120V85H130V95H115V75Z" fill="white"/>
+  <path d="M135 75H145V80H140V82H144V87H140V90H145V95H135V75Z" fill="white"/>
   
-  <!-- Dashboard Header -->
-  <rect x="150" y="100" width="500" height="60" rx="12" fill="url(#header_gradient)"/>
-  <text x="180" y="138" font-family="Montserrat, sans-serif" font-size="20" font-weight="bold" fill="white">FYLR Dashboard</text>
+  <!-- Top Navigation Items -->
+  <rect x="220" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.2"/>
+  <rect x="310" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.1"/>
+  <rect x="400" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.1"/>
+  <rect x="490" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.1"/>
   
-  <!-- Dashboard Navigation -->
-  <rect x="150" y="160" width="120" height="290" fill="#F8F9FD"/>
-  <circle cx="190" cy="200" r="20" fill="#F4A261" fill-opacity="0.2"/>
-  <path d="M180 200L188 208L200 194" stroke="#F4A261" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="220" y="205" font-family="Montserrat, sans-serif" font-size="14" fill="#264653">Forms</text>
+  <!-- User Profile Area -->
+  <circle cx="700" cy="85" r="20" fill="white" fill-opacity="0.2"/>
+  <path d="M700 78C698.343 78 697 79.3431 697 81C697 82.6569 698.343 84 700 84C701.657 84 703 82.6569 703 81C703 79.3431 701.657 78 700 78Z" fill="white"/>
+  <path d="M700 85C697.239 85 695 87.2386 695 90V91H705V90C705 87.2386 702.761 85 700 85Z" fill="white"/>
   
-  <circle cx="190" cy="250" r="20" fill="#2A9D8F" fill-opacity="0.2"/>
-  <path d="M184 250H196M190 244V256" stroke="#2A9D8F" stroke-width="3" stroke-linecap="round"/>
-  <text x="220" y="255" font-family="Montserrat, sans-serif" font-size="14" fill="#264653">Strategy</text>
+  <!-- Sidebar Navigation -->
+  <rect x="50" y="120" width="160" height="430" fill="#F8F9FA"/>
+  <rect x="65" y="150" width="130" height="40" rx="8" fill="#E9ECEF"/>
+  <rect x="75" y="165" width="20" height="10" rx="2" fill="#2A9D8F"/>
+  <rect x="105" y="165" width="80" height="10" rx="2" fill="#2A9D8F" fill-opacity="0.7"/>
   
-  <circle cx="190" cy="300" r="20" fill="#E76F51" fill-opacity="0.2"/>
-  <path d="M184 300H196M190 294L190 306" stroke="#E76F51" stroke-width="3" stroke-linecap="round" transform="rotate(45 190 300)"/>
-  <text x="220" y="305" font-family="Montserrat, sans-serif" font-size="14" fill="#264653">Letters</text>
+  <rect x="65" y="200" width="130" height="40" rx="8" fill="#F8F9FA"/>
+  <rect x="75" y="215" width="20" height="10" rx="2" fill="#ADB5BD"/>
+  <rect x="105" y="215" width="80" height="10" rx="2" fill="#CED4DA"/>
   
-  <!-- Main Content Area - Analytics -->
-  <rect x="290" y="180" width="340" height="120" rx="8" fill="#F8F9FD" stroke="#E0E0E0" stroke-width="1"/>
-  <text x="310" y="210" font-family="Montserrat, sans-serif" font-size="16" font-weight="600" fill="#264653">Tax Savings Overview</text>
+  <rect x="65" y="250" width="130" height="40" rx="8" fill="#F8F9FA"/>
+  <rect x="75" y="265" width="20" height="10" rx="2" fill="#ADB5BD"/>
+  <rect x="105" y="265" width="80" height="10" rx="2" fill="#CED4DA"/>
   
-  <!-- Bar Chart -->
-  <rect x="320" y="240" width="40" height="40" fill="#2A9D8F" rx="4"/>
-  <rect x="370" y="220" width="40" height="60" fill="#2A9D8F" rx="4"/>
-  <rect x="420" y="200" width="40" height="80" fill="#2A9D8F" rx="4"/>
-  <rect x="470" y="230" width="40" height="50" fill="#2A9D8F" rx="4"/>
-  <rect x="520" y="180" width="40" height="100" fill="#F4A261" rx="4"/>
-  <text x="520" y="170" font-family="Montserrat, sans-serif" font-size="12" font-weight="600" fill="#F4A261">+28%</text>
+  <rect x="65" y="300" width="130" height="40" rx="8" fill="#F8F9FA"/>
+  <rect x="75" y="315" width="20" height="10" rx="2" fill="#ADB5BD"/>
+  <rect x="105" y="315" width="80" height="10" rx="2" fill="#CED4DA"/>
   
-  <!-- Recent Activity Section -->
-  <rect x="290" y="320" width="340" height="110" rx="8" fill="#F8F9FD" stroke="#E0E0E0" stroke-width="1"/>
-  <text x="310" y="350" font-family="Montserrat, sans-serif" font-size="16" font-weight="600" fill="#264653">Recent Activity</text>
+  <!-- Main Content Area -->
+  <rect x="230" y="140" width="500" height="80" rx="10" fill="#E9ECEF"/>
+  <rect x="250" y="160" width="200" height="20" rx="4" fill="#2A9D8F" fill-opacity="0.7"/>
+  <rect x="250" y="190" width="120" height="10" rx="2" fill="#6C757D"/>
   
-  <!-- Activity Items -->
-  <circle cx="330" cy="380" r="15" fill="#2A9D8F" fill-opacity="0.2"/>
-  <text x="330" y="385" font-family="Montserrat, sans-serif" font-size="12" font-weight="bold" fill="#2A9D8F" text-anchor="middle">F</text>
-  <text x="360" y="385" font-family="Montserrat, sans-serif" font-size="14" fill="#264653">Form 1120 completed</text>
-  <text x="580" y="385" font-family="Montserrat, sans-serif" font-size="12" fill="#6D7A8C" text-anchor="end">Today</text>
+  <!-- Stats Cards -->
+  <rect x="230" y="240" width="150" height="100" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
+  <rect x="250" y="260" width="80" height="15" rx="2" fill="#2A9D8F" fill-opacity="0.7"/>
+  <rect x="250" y="285" width="50" height="30" rx="2" fill="#2A9D8F"/>
+  <rect x="250" y="320" width="110" height="10" rx="2" fill="#CED4DA"/>
   
-  <!-- 3D Elements -->
-  <rect x="600" y="80" width="80" height="80" rx="8" fill="#F4A261" transform="rotate(-15 600 80)"/>
-  <text x="625" y="120" font-family="Montserrat, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">1120</text>
+  <rect x="400" y="240" width="150" height="100" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
+  <rect x="420" y="260" width="80" height="15" rx="2" fill="#f4a261" fill-opacity="0.7"/>
+  <rect x="420" y="285" width="50" height="30" rx="2" fill="#f4a261"/>
+  <rect x="420" y="320" width="110" height="10" rx="2" fill="#CED4DA"/>
   
-  <rect x="100" y="140" width="60" height="60" rx="8" fill="#2A9D8F" transform="rotate(15 100 140)"/>
-  <text x="125" y="170" font-family="Montserrat, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">$</text>
+  <rect x="570" y="240" width="150" height="100" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
+  <rect x="590" y="260" width="80" height="15" rx="2" fill="#e76f51" fill-opacity="0.7"/>
+  <rect x="590" y="285" width="50" height="30" rx="2" fill="#e76f51"/>
+  <rect x="590" y="320" width="110" height="10" rx="2" fill="#CED4DA"/>
   
-  <rect x="670" y="450" width="70" height="70" rx="8" fill="#E76F51" transform="rotate(-10 670 450)"/>
-  <text x="700" y="480" font-family="Montserrat, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">IRS</text>
+  <!-- Chart Area -->
+  <rect x="230" y="360" width="500" height="170" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
+  <rect x="250" y="380" width="150" height="15" rx="2" fill="#2A9D8F"/>
+  <rect x="250" y="400" width="80" height="10" rx="2" fill="#6C757D"/>
   
-  <!-- Floating Money Icons -->
-  <circle cx="700" cy="250" r="20" fill="#F4A261" fill-opacity="0.2"/>
-  <text x="700" y="255" font-family="Montserrat, sans-serif" font-size="20" font-weight="bold" fill="#F4A261" text-anchor="middle">$</text>
+  <!-- Chart Visualization -->
+  <path d="M250 490L290 450L330 470L370 420L410 440L450 400L490 420L530 390L570 420L610 380L650 410L690 370" stroke="#2A9D8F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M250 490L290 460L330 480L370 450L410 470L450 440L490 460L530 450L570 470L610 450L650 470L690 460" stroke="#f4a261" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   
-  <circle cx="80" cy="280" r="25" fill="#F4A261" fill-opacity="0.2"/>
-  <text x="80" y="285" font-family="Montserrat, sans-serif" font-size="25" font-weight="bold" fill="#F4A261" text-anchor="middle">$</text>
+  <!-- Chart Axis -->
+  <line x1="250" y1="490" x2="690" y2="490" stroke="#CED4DA" stroke-width="1"/>
+  <line x1="250" y1="490" x2="250" y2="410" stroke="#CED4DA" stroke-width="1"/>
   
-  <circle cx="750" cy="360" r="15" fill="#F4A261" fill-opacity="0.2"/>
-  <text x="750" y="365" font-family="Montserrat, sans-serif" font-size="15" font-weight="bold" fill="#F4A261" text-anchor="middle">$</text>
+  <!-- Axis Labels -->
+  <rect x="280" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
+  <rect x="330" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
+  <rect x="380" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
+  <rect x="430" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
+  <rect x="480" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
+  <rect x="530" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
+  <rect x="580" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
+  <rect x="630" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
   
-  <!-- Gradients Definition -->
-  <defs>
-    <linearGradient id="header_gradient" x1="150" y1="100" x2="650" y2="160" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2A9D8F"/>
-      <stop offset="1" stop-color="#66B2B2"/>
-    </linearGradient>
-  </defs>
+  <rect x="230" y="430" width="5" height="20" rx="1" fill="#ADB5BD"/>
+  <rect x="230" y="460" width="5" height="20" rx="1" fill="#ADB5BD"/>
+
+  <!-- Decorative Element -->
+  <circle cx="650" cy="330" r="30" fill="#2A9D8F" fill-opacity="0.1"/>
+  <circle cx="650" cy="330" r="20" fill="#2A9D8F" fill-opacity="0.2"/>
+  <circle cx="650" cy="330" r="10" fill="#2A9D8F"/>
 </svg>

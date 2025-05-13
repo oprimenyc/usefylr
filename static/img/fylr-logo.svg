@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background Gradient -->
-  <rect width="200" height="80" rx="8" fill="url(#paint0_linear)" />
+<svg width="180" height="60" viewBox="0 0 180 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Rectangle with Gradient -->
+  <rect width="180" height="60" rx="8" fill="url(#logo_gradient)"/>
   
   <!-- FYLR Text -->
-  <path d="M44 30H68V36H52V42H66V48H52V60H44V30Z" fill="white"/>
-  <path d="M70 30H94V36H78V42H78V60H70V30Z" fill="white"/>
-  <path d="M96 30H104V52H120V60H96V30Z" fill="white"/>
-  <path d="M122 30H146V36H130V42H142V48H130V54H146V60H122V30Z" fill="white"/>
-  
-  <!-- Tagline -->
-  <text x="45" y="70" font-family="Montserrat, sans-serif" font-size="10" font-weight="500" fill="white" opacity="0.9">by federalfundingclub.com</text>
+  <path d="M30 15H50V22H40V26H48V33H40V45H30V15Z" fill="white"/>
+  <path d="M60 15H80V22H70V45H60V15Z" fill="white"/>
+  <path d="M90 15H100V35H120V45H90V15Z" fill="white"/>
+  <path d="M130 15H150V22H140V26H148V33H140V38H150V45H130V15Z" fill="white"/>
   
   <!-- Decorative Elements -->
-  <circle cx="30" cy="40" r="15" fill="#F4A261" fill-opacity="0.9"/>
-  <path d="M24 40L30 46L38 36" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="40" cy="45" r="4" fill="#f4a261"/>
+  <circle cx="70" cy="45" r="4" fill="#f4a261"/>
+  <circle cx="100" cy="45" r="4" fill="#f4a261"/>
+  <circle cx="140" cy="45" r="4" fill="#f4a261"/>
   
   <!-- Linear Gradient Definition -->
   <defs>
-    <linearGradient id="paint0_linear" x1="0" y1="0" x2="200" y2="80" gradientUnits="userSpaceOnUse">
+    <linearGradient id="logo_gradient" x1="0" y1="0" x2="180" y2="60" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#2A9D8F"/>
-      <stop offset="1" stop-color="#66B2B2"/>
+      <stop offset="1" stop-color="#264653"/>
     </linearGradient>
   </defs>
 </svg>
