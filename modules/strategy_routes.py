@@ -21,12 +21,23 @@ def questionnaire():
     # This is a placeholder for the strategy questionnaire page
     return render_template('strategies/questionnaire.html')
 
-@strategy_bp.route('/analysis')
+@strategy_bp.route('/analysis', methods=['GET', 'POST'])
 @login_required
 def analysis():
     """Tax strategy analysis based on questionnaire answers"""
-    # Placeholder for strategy analysis page
-    return render_template('strategies/analysis.html')
+    if request.method == 'POST':
+        # In production, this would process the questionnaire data
+        # and generate AI-powered tax strategies
+        flash('Your answers have been analyzed. Here are your personalized tax strategies.', 'success')
+        
+        # This is a placeholder - in production, we would use AI to analyze the answers
+        # and generate personalized tax strategies
+        
+        # For development/demo purposes only
+        return render_template('strategies/analysis.html')
+    else:
+        # If accessed directly via GET, redirect to questionnaire
+        return redirect(url_for('strategy.questionnaire'))
 
 @strategy_bp.route('/view/<int:strategy_id>')
 @login_required

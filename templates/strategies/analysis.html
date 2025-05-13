@@ -1,0 +1,169 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Strategy Analysis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="h2 mb-0">Your Tax Strategy Analysis</h1>
+        <p class="lead text-muted">Personalized tax strategies based on your business profile</p>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Development Notice:</strong> This is a placeholder for the AI-generated tax strategy analysis. In the production version, you'll see personalized strategies based on your questionnaire answers.
+    </div>
+    
+    <!-- Overview Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Strategy Overview</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <h6 class="text-muted small text-uppercase">Business Type</h6>
+                        <p class="mb-0">Single-Member LLC</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted small text-uppercase">Industry</h6>
+                        <p class="mb-0">Technology</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted small text-uppercase">Annual Revenue</h6>
+                        <p class="mb-0">$100,000 - $250,000</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <h6 class="text-muted small text-uppercase">Total Potential Savings</h6>
+                        <p class="mb-0 fs-4 fw-bold text-success">$8,450.00</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted small text-uppercase">Strategies Identified</h6>
+                        <p class="mb-0">5 strategies</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Strategy 1 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Home Office Deduction Maximizer</h5>
+                <span class="badge bg-success fs-6">$2,450 Potential Savings</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <h6 class="text-primary">Strategy Overview</h6>
+            <p>Based on your responses, you may be eligible for an expanded home office deduction. This strategy involves properly calculating the percentage of your home used for business and maximizing all related expenses.</p>
+            
+            <h6 class="text-primary">Implementation Steps</h6>
+            <ol>
+                <li>Accurately measure your dedicated home office space</li>
+                <li>Calculate the percentage of your home used for business</li>
+                <li>Track all related expenses (utilities, internet, insurance, etc.)</li>
+                <li>Use the simplified method ($5/sq ft) or the regular method based on your situation</li>
+                <li>Maintain thorough documentation including photos and expense records</li>
+            </ol>
+            
+            <h6 class="text-primary">Requirements & Considerations</h6>
+            <ul>
+                <li>Space must be used regularly and exclusively for business</li>
+                <li>If using the regular method, indirect expenses are prorated based on percentage of home used</li>
+                <li>Direct expenses (like paint for office only) are 100% deductible</li>
+                <li>Proper documentation is essential in case of audit</li>
+            </ul>
+            
+            <div class="alert alert-warning mt-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Important:</strong> This strategy requires regular and exclusive use of the designated area for business. Occasional personal use may disqualify the deduction.
+            </div>
+        </div>
+    </div>
+    
+    <!-- Strategy 2 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Vehicle Expense Optimization</h5>
+                <span class="badge bg-success fs-6">$3,275 Potential Savings</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <h6 class="text-primary">Strategy Overview</h6>
+            <p>Based on your business activities, you may benefit from optimizing your vehicle expense deductions. Comparing the standard mileage rate versus actual expenses can lead to significant tax savings.</p>
+            
+            <h6 class="text-primary">Implementation Steps</h6>
+            <ol>
+                <li>Keep detailed mileage logs (date, destination, purpose, miles)</li>
+                <li>Track all vehicle expenses (gas, insurance, repairs, depreciation)</li>
+                <li>Calculate deduction using both methods (standard rate vs. actual)</li>
+                <li>Choose the method that maximizes your deduction</li>
+                <li>Document business purpose for all trips</li>
+            </ol>
+            
+            <h6 class="text-primary">Requirements & Considerations</h6>
+            <ul>
+                <li>If using standard mileage rate for a leased vehicle, you must use it for the entire lease period</li>
+                <li>If using actual expenses, track business use percentage carefully</li>
+                <li>Consider Section 179 deduction for vehicle purchases over 6,000 pounds</li>
+                <li>Commuting miles are generally not deductible</li>
+            </ul>
+            
+            <div class="alert alert-warning mt-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Important:</strong> Detailed contemporaneous records are critical. The IRS often scrutinizes vehicle deductions during audits.
+            </div>
+        </div>
+    </div>
+    
+    <!-- Strategy 3 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Retirement Plan Tax Strategy</h5>
+                <span class="badge bg-success fs-6">$5,800 Potential Savings</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <h6 class="text-primary">Strategy Overview</h6>
+            <p>Based on your revenue and goals, establishing a Solo 401(k) rather than relying solely on an IRA could significantly increase your retirement contributions while reducing taxable income.</p>
+            
+            <h6 class="text-primary">Implementation Steps</h6>
+            <ol>
+                <li>Establish a Solo 401(k) plan before December 31</li>
+                <li>Make employee contributions up to $22,500 (2023 limit)</li>
+                <li>Add employer profit-sharing contributions up to 25% of compensation</li>
+                <li>Total combined contributions can reach $66,000 (2023 limit)</li>
+                <li>Consider Roth options for diversified tax treatment</li>
+            </ol>
+            
+            <h6 class="text-primary">Requirements & Considerations</h6>
+            <ul>
+                <li>Must have self-employment income with no full-time employees</li>
+                <li>Plan must be established by December 31, but contributions for employer portion can be made until tax filing</li>
+                <li>Required annual filing of Form 5500-EZ once plan assets exceed $250,000</li>
+                <li>Can be combined with health savings accounts (HSA) for additional tax benefits</li>
+            </ul>
+            
+            <div class="alert alert-warning mt-3">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Important:</strong> Contribution limits are subject to change annually. Consult with a financial advisor to maximize contributions while staying compliant.
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('strategy.questionnaire') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Questionnaire
+        </a>
+        <a href="{{ url_for('strategy.home') }}" class="btn btn-primary">
+            Save Analysis <i class="fas fa-check ms-2"></i>
+        </a>
+    </div>
+</div>
+{% endblock %}

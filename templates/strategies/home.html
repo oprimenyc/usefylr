@@ -1,0 +1,172 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Strategy Explorer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5">Tax Strategy Explorer</h1>
+        <p class="lead text-muted">Discover personalized tax strategies to maximize your business deductions</p>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <img src="{{ url_for('static', filename='img/strategy.svg') }}" alt="Strategy" style="width: 120px;" class="mb-4">
+                    <h4 class="mb-3">AI-Powered Tax Strategy Analysis</h4>
+                    <p class="mb-4">Answer a few questions about your business to receive personalized tax strategy recommendations that could save you thousands in taxes.</p>
+                    <div>
+                        <a href="{{ url_for('strategy.questionnaire') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-lightbulb me-2"></i> Start Your Strategy Analysis
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center mb-5">
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5 class="card-title">Personalized Analysis</h5>
+                    <p class="card-text text-muted">Get tax strategies tailored to your specific business situation, industry, and goals.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+                        <i class="fas fa-search-dollar"></i>
+                    </div>
+                    <h5 class="card-title">Maximize Deductions</h5>
+                    <p class="card-text text-muted">Discover hidden tax deductions you might be missing that could save you thousands.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h5 class="card-title">Compliance Focused</h5>
+                    <p class="card-text text-muted">All strategies are reviewed to ensure they comply with current tax laws and regulations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if strategies %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Your Strategy Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Strategy Name</th>
+                                <th>Estimated Savings</th>
+                                <th>Date Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for strategy in strategies %}
+                            <tr>
+                                <td>{{ strategy.strategy_name }}</td>
+                                <td>{{ "${:,.2f}".format(strategy.estimated_savings) if strategy.estimated_savings else "N/A" }}</td>
+                                <td>{{ strategy.created_at.strftime('%m/%d/%Y') }}</td>
+                                <td>
+                                    <a href="{{ url_for('strategy.view_strategy', strategy_id=strategy.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Sample Strategies for Development -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Sample Strategies (Development Only)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Strategy Name</th>
+                            <th>Estimated Savings</th>
+                            <th>Date Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Home Office Deduction Maximizer</td>
+                            <td>$2,450.00</td>
+                            <td>05/10/2025</td>
+                            <td>
+                                <a href="{{ url_for('strategy.view_strategy', strategy_id=1) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Vehicle Expense Optimization</td>
+                            <td>$3,275.00</td>
+                            <td>05/08/2025</td>
+                            <td>
+                                <a href="{{ url_for('strategy.view_strategy', strategy_id=2) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Retirement Plan Tax Strategy</td>
+                            <td>$5,800.00</td>
+                            <td>05/01/2025</td>
+                            <td>
+                                <a href="{{ url_for('strategy.view_strategy', strategy_id=3) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 0.75rem;
+    font-size: 2rem;
+}
+</style>
+{% endblock %}

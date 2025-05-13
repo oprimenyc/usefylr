@@ -1,0 +1,178 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Strategy Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="h2 mb-0">Tax Strategy Details</h1>
+        <p class="lead text-muted">Home Office Deduction Maximizer</p>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Development Notice:</strong> This is a placeholder for viewing a specific tax strategy. In the production version, you'll see the complete details of your saved tax strategy.
+    </div>
+    
+    <!-- Strategy Details -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Home Office Deduction Maximizer</h5>
+                <span class="badge bg-light text-dark">Generated: 05/10/2025</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted small text-uppercase">Estimated Annual Savings</h6>
+                    <p class="mb-0 fs-3 fw-bold text-success">$2,450.00</p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted small text-uppercase">Implementation Complexity</h6>
+                    <div>
+                        <span class="badge bg-success">Low</span>
+                        <span class="text-muted ms-2">Simple record-keeping required</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="border-bottom pb-2">Strategy Overview</h5>
+                <p>Based on your responses, you may be eligible for an expanded home office deduction. This strategy involves properly calculating the percentage of your home used for business and maximizing all related expenses.</p>
+                <p>The home office deduction is available for both homeowners and renters, and applies to all types of homes. For your business profile as a technology consultant working primarily from home, this deduction represents one of the most accessible tax benefits available.</p>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="border-bottom pb-2">Implementation Steps</h5>
+                <ol>
+                    <li class="mb-2">
+                        <strong>Measure your dedicated home office space</strong>
+                        <p class="text-muted small">Accurately measure the square footage of your dedicated office area. This must be a space used regularly and exclusively for business.</p>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Calculate the percentage of your home used for business</strong>
+                        <p class="text-muted small">Divide your office square footage by your home's total square footage to determine the business percentage.</p>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Track all related expenses</strong>
+                        <p class="text-muted small">Keep thorough records of all expenses including:
+                            <ul>
+                                <li>Mortgage interest or rent</li>
+                                <li>Property taxes</li>
+                                <li>Homeowners/renters insurance</li>
+                                <li>Utilities (electricity, gas, water)</li>
+                                <li>Internet and phone service</li>
+                                <li>Home maintenance and repairs</li>
+                                <li>Depreciation (if you own)</li>
+                            </ul>
+                        </p>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Choose the right calculation method</strong>
+                        <p class="text-muted small">Compare the simplified method ($5 per square foot, up to 300 sq ft) against the regular method (based on actual expenses) to determine which provides the larger deduction.</p>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Maintain thorough documentation</strong>
+                        <p class="text-muted small">Take photos of your home office, keep receipts for all expenses, and document the business use of the space in case of audit.</p>
+                    </li>
+                </ol>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="border-bottom pb-2">Requirements & Considerations</h5>
+                <ul>
+                    <li class="mb-2">
+                        <strong>Regular and exclusive use</strong>
+                        <p class="text-muted small">The area must be used exclusively for business. A guest bedroom that occasionally houses visitors would not qualify.</p>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Principal place of business</strong>
+                        <p class="text-muted small">The home office must be your principal place of business, used regularly for business activities.</p>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Direct vs. indirect expenses</strong>
+                        <p class="text-muted small">Direct expenses (like painting only the office) are 100% deductible. Indirect expenses (like utilities) are deductible based on the percentage of home used for business.</p>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Depreciation recapture</strong>
+                        <p class="text-muted small">If you own your home and claim depreciation, you may face depreciation recapture when you sell your home.</p>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="border-bottom pb-2">Calculation Example</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item</th>
+                                <th>Regular Method</th>
+                                <th>Simplified Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Home Office Size</td>
+                                <td>200 sq ft (10% of 2,000 sq ft home)</td>
+                                <td>200 sq ft</td>
+                            </tr>
+                            <tr>
+                                <td>Mortgage Interest & Property Taxes</td>
+                                <td>$15,000 × 10% = $1,500</td>
+                                <td>Claimed in full on Schedule A</td>
+                            </tr>
+                            <tr>
+                                <td>Utilities & Services</td>
+                                <td>$6,000 × 10% = $600</td>
+                                <td>Not applicable</td>
+                            </tr>
+                            <tr>
+                                <td>Maintenance & Repairs</td>
+                                <td>$2,000 × 10% = $200</td>
+                                <td>Not applicable</td>
+                            </tr>
+                            <tr>
+                                <td>Insurance</td>
+                                <td>$1,200 × 10% = $120</td>
+                                <td>Not applicable</td>
+                            </tr>
+                            <tr>
+                                <td>Depreciation</td>
+                                <td>$300,000 × 10% × 0.02564 = $769</td>
+                                <td>Not applicable</td>
+                            </tr>
+                            <tr>
+                                <td>Simplified Method</td>
+                                <td>Not applicable</td>
+                                <td>200 sq ft × $5 = $1,000</td>
+                            </tr>
+                            <tr class="table-light">
+                                <th>Total Deduction</th>
+                                <th>$3,189</th>
+                                <th>$1,000</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted small mt-2">In this example, the regular method provides a larger deduction ($3,189 vs. $1,000).</p>
+            </div>
+            
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Important:</strong> This strategy requires regular and exclusive use of the designated area for business. Occasional personal use may disqualify the deduction. The IRS often scrutinizes home office deductions, so maintain thorough documentation.
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('strategy.home') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Strategies
+        </a>
+        <a href="#" class="btn btn-primary" onclick="window.print(); return false;">
+            <i class="fas fa-print me-2"></i> Print Strategy
+        </a>
+    </div>
+</div>
+{% endblock %}

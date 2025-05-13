@@ -1,0 +1,295 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Strategy Questionnaire{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="h2 mb-0">Tax Strategy Questionnaire</h1>
+        <p class="lead text-muted">Answer these questions to receive personalized tax strategies</p>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Development Notice:</strong> This is a placeholder for the tax strategy questionnaire. In the production version, your answers will be analyzed by our AI to generate personalized tax strategies.
+    </div>
+    
+    <!-- Questionnaire Progress -->
+    <div class="form-progress-container mb-4">
+        <div class="form-progress" style="width: 20%;"></div>
+    </div>
+    
+    <form action="{{ url_for('strategy.analysis') }}" method="POST">
+        <!-- Business Information Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Business Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="business_type" class="form-label">Business Entity Type</label>
+                        <select class="form-select" id="business_type" name="business_type" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="sole_proprietorship">Sole Proprietorship</option>
+                            <option value="single_member_llc">Single-Member LLC</option>
+                            <option value="partnership">Partnership</option>
+                            <option value="multi_member_llc">Multi-Member LLC</option>
+                            <option value="s_corporation">S Corporation</option>
+                            <option value="c_corporation">C Corporation</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="business_age" class="form-label">How long have you been in business?</label>
+                        <select class="form-select" id="business_age" name="business_age" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="less_than_1">Less than 1 year</option>
+                            <option value="1_to_3">1-3 years</option>
+                            <option value="4_to_5">4-5 years</option>
+                            <option value="6_to_10">6-10 years</option>
+                            <option value="more_than_10">More than 10 years</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="industry" class="form-label">Primary Industry</label>
+                        <select class="form-select" id="industry" name="industry" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="retail">Retail</option>
+                            <option value="construction">Construction</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="real_estate">Real Estate</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="hospitality">Hospitality</option>
+                            <option value="technology">Technology</option>
+                            <option value="financial_services">Financial Services</option>
+                            <option value="professional_services">Professional Services</option>
+                            <option value="education">Education</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="annual_revenue" class="form-label">Annual Revenue</label>
+                        <select class="form-select" id="annual_revenue" name="annual_revenue" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="less_than_50k">Less than $50,000</option>
+                            <option value="50k_to_100k">$50,000 - $100,000</option>
+                            <option value="100k_to_250k">$100,000 - $250,000</option>
+                            <option value="250k_to_500k">$250,000 - $500,000</option>
+                            <option value="500k_to_1m">$500,000 - $1 million</option>
+                            <option value="1m_to_5m">$1 million - $5 million</option>
+                            <option value="more_than_5m">More than $5 million</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="num_employees" class="form-label">Number of Employees (including yourself)</label>
+                        <select class="form-select" id="num_employees" name="num_employees" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="1">Just me (1)</option>
+                            <option value="2_to_5">2-5 employees</option>
+                            <option value="6_to_10">6-10 employees</option>
+                            <option value="11_to_25">11-25 employees</option>
+                            <option value="26_to_50">26-50 employees</option>
+                            <option value="more_than_50">More than 50 employees</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="profitability" class="form-label">Current Profitability</label>
+                        <select class="form-select" id="profitability" name="profitability" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="very_profitable">Very profitable (20%+ margin)</option>
+                            <option value="profitable">Profitable (10-20% margin)</option>
+                            <option value="break_even">Breaking even</option>
+                            <option value="losing_money">Currently losing money</option>
+                            <option value="startup">Startup phase (pre-revenue)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tax Situation Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Tax Situation</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Which of the following tax deductions are you currently taking? (Select all that apply)</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="home_office" name="deductions[]" value="home_office">
+                            <label class="form-check-label" for="home_office">Home office deduction</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="vehicle_expenses" name="deductions[]" value="vehicle_expenses">
+                            <label class="form-check-label" for="vehicle_expenses">Vehicle expenses</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="travel_expenses" name="deductions[]" value="travel_expenses">
+                            <label class="form-check-label" for="travel_expenses">Travel expenses</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="meals" name="deductions[]" value="meals">
+                            <label class="form-check-label" for="meals">Meals and entertainment</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="retirement_plan" name="deductions[]" value="retirement_plan">
+                            <label class="form-check-label" for="retirement_plan">Retirement plan contributions</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="health_insurance" name="deductions[]" value="health_insurance">
+                            <label class="form-check-label" for="health_insurance">Health insurance premiums</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="section_179" name="deductions[]" value="section_179">
+                            <label class="form-check-label" for="section_179">Section 179 deduction</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="qbi_deduction" name="deductions[]" value="qbi_deduction">
+                            <label class="form-check-label" for="qbi_deduction">Qualified Business Income (QBI) deduction</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="tax_planning" class="form-label">How would you describe your current tax planning approach?</label>
+                        <select class="form-select" id="tax_planning" name="tax_planning" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="proactive">Proactive (Regular planning throughout the year)</option>
+                            <option value="reactive">Reactive (Plan near tax deadline)</option>
+                            <option value="minimal">Minimal (Basic compliance only)</option>
+                            <option value="none">None (No specific approach)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="major_purchases" class="form-label">Are you planning any major business purchases in the next 12 months?</label>
+                        <select class="form-select" id="major_purchases" name="major_purchases" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="yes_vehicles">Yes, vehicles or equipment</option>
+                            <option value="yes_property">Yes, property or real estate</option>
+                            <option value="yes_both">Yes, both vehicles/equipment and property</option>
+                            <option value="yes_other">Yes, other major purchases</option>
+                            <option value="no">No major purchases planned</option>
+                            <option value="undecided">Undecided</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="business_growth" class="form-label">Do you expect your business to grow in the next 12 months?</label>
+                        <select class="form-select" id="business_growth" name="business_growth" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="significant_growth">Yes, significant growth (>25%)</option>
+                            <option value="moderate_growth">Yes, moderate growth (10-25%)</option>
+                            <option value="slight_growth">Yes, slight growth (<10%)</option>
+                            <option value="stable">No, expect to remain stable</option>
+                            <option value="decline">No, expect a decline</option>
+                            <option value="uncertain">Uncertain</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="retirement_planning" class="form-label">What is your current retirement planning status?</label>
+                        <select class="form-select" id="retirement_planning" name="retirement_planning" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="none">No retirement plan</option>
+                            <option value="ira">Individual IRA only</option>
+                            <option value="sep_ira">SEP IRA</option>
+                            <option value="simple_ira">SIMPLE IRA</option>
+                            <option value="solo_401k">Solo 401(k)</option>
+                            <option value="traditional_401k">Traditional 401(k)</option>
+                            <option value="other">Other retirement plan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Goals Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Goals & Priorities</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label">What are your top tax-related goals? (Select up to 3)</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="reduce_tax_bill" name="goals[]" value="reduce_tax_bill">
+                            <label class="form-check-label" for="reduce_tax_bill">Reduce overall tax bill</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="maximize_deductions" name="goals[]" value="maximize_deductions">
+                            <label class="form-check-label" for="maximize_deductions">Maximize available deductions</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="retirement_savings" name="goals[]" value="retirement_savings">
+                            <label class="form-check-label" for="retirement_savings">Increase retirement savings</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="better_record_keeping" name="goals[]" value="better_record_keeping">
+                            <label class="form-check-label" for="better_record_keeping">Improve record keeping</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="avoid_audit" name="goals[]" value="avoid_audit">
+                            <label class="form-check-label" for="avoid_audit">Reduce audit risk</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="business_structure" name="goals[]" value="business_structure">
+                            <label class="form-check-label" for="business_structure">Optimize business structure</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="employee_benefits" name="goals[]" value="employee_benefits">
+                            <label class="form-check-label" for="employee_benefits">Tax-efficient employee benefits</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="risk_tolerance" class="form-label">How would you describe your tax strategy risk tolerance?</label>
+                        <select class="form-select" id="risk_tolerance" name="risk_tolerance" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="conservative">Very conservative (No gray areas)</option>
+                            <option value="moderate">Moderate (Some common strategies)</option>
+                            <option value="aggressive">Aggressive (All legal strategies)</option>
+                            <option value="unsure">Unsure</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="time_commitment" class="form-label">How much time are you willing to commit to tax planning?</label>
+                        <select class="form-select" id="time_commitment" name="time_commitment" required>
+                            <option value="" selected disabled>Select One</option>
+                            <option value="minimal">Minimal (A few hours per year)</option>
+                            <option value="moderate">Moderate (Monthly attention)</option>
+                            <option value="significant">Significant (Regular planning)</option>
+                            <option value="professional">Will hire professional help</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="additional_info" class="form-label">Is there anything else about your business or tax situation you'd like us to consider?</label>
+                    <textarea class="form-control" id="additional_info" name="additional_info" rows="3" placeholder="Optional additional information..."></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('strategy.home') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back
+            </a>
+            <button type="submit" class="btn btn-primary">
+                Generate Strategies <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
