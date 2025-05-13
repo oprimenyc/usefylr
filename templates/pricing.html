@@ -1,262 +1,235 @@
 {% extends 'layout.html' %}
 
-{% block title %}Pricing{% endblock %}
+{% block title %}Pricing Plans{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="row text-center mb-5">
-        <div class="col-lg-8 mx-auto">
-            <h1 class="display-4">Choose Your Tax Tool</h1>
-            <p class="lead">Select the option that best fits your business tax needs.</p>
-            
-            {% if current_user.is_authenticated and current_user.get_access_level() == 'full_access' %}
-            <div class="alert alert-success" role="alert">
-                <i class="fas fa-check-circle me-2"></i> 
-                <strong>Business Builder Plan Active</strong> - You have full access to all tax tools.
-            </div>
-            {% elif current_user.is_authenticated and current_user.get_access_level() == 'discounted' %}
-            <div class="alert alert-info" role="alert">
-                <i class="fas fa-tag me-2"></i> 
-                <strong>Subscription Member Discount</strong> - Enjoy 50% off all tax tools.
-            </div>
-            {% endif %}
-        </div>
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">DIY Business Tax Tool Pricing</h1>
+        <p class="lead text-muted">Choose the plan that's right for your business tax needs</p>
     </div>
+    
+    {% if current_user.is_authenticated %}
+        {% if current_user.plan == 'BUSINESS_BUILDER' %}
+            <div class="alert alert-success mb-5">
+                <i class="fas fa-star me-2"></i>
+                You're a <strong>Business Builder</strong> member! You have full access to all tools and features.
+            </div>
+        {% elif current_user.subscription_member %}
+            <div class="alert alert-info mb-5">
+                <i class="fas fa-tag me-2"></i>
+                As a subscription member, you enjoy <strong>50% off</strong> all tools!
+            </div>
+        {% endif %}
+    {% endif %}
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 mb-3 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
         <!-- Basic DIY Filing -->
         <div class="col">
-            <div class="card h-100 shadow-sm">
-                <div class="card-header py-3 text-center">
-                    <h4 class="my-0 fw-normal">{{ pricing.basic_diy.name }}</h4>
+            <div class="card h-100 pricing-card">
+                <div class="card-header bg-light text-center">
+                    <h2 class="h4 mb-0">Basic DIY Filing</h2>
                 </div>
-                <div class="card-body d-flex flex-column">
-                    <h1 class="card-title text-center mb-4">
-                        {% if current_user.is_authenticated and current_user.get_access_level() == 'discounted' %}
-                        <span class="text-decoration-line-through text-muted fs-4">${{ pricing.basic_diy.price }}</span>
-                        <span>${{ pricing.basic_diy.price / 2 }}</span>
-                        {% else %}
-                        <span>${{ pricing.basic_diy.price }}</span>
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="price mb-4">
+                        $25
+                        {% if current_user.is_authenticated and current_user.subscription_member %}
+                            <small class="text-success d-block">$12.50 for you</small>
                         {% endif %}
-                    </h1>
-                    <ul class="list-unstyled mb-4">
-                        {% for feature in pricing.basic_diy.features %}
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i> {{ feature }}
-                        </li>
-                        {% endfor %}
+                    </div>
+                    <ul class="list-unstyled text-start mb-4">
+                        <li><i class="fas fa-check text-success me-2"></i> Zero-activity return generator</li>
+                        <li><i class="fas fa-check text-success me-2"></i> PDF download</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Email support</li>
                     </ul>
-                    <div class="mt-auto pt-3">
-                        {% if user_plans.basic_diy or (current_user.is_authenticated and current_user.get_access_level() == 'full_access') %}
-                        <a href="#" class="w-100 btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i> Already Purchased
-                        </a>
-                        {% elif current_user.is_authenticated %}
-                        <a href="{{ url_for('billing.create_checkout_session', product_id='basic_diy') }}" class="w-100 btn btn-primary">
-                            Get Started
-                        </a>
+                    <div class="mt-auto">
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('basic_diy', False) %}
+                                <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary">Access Now</a>
+                            {% else %}
+                                <a href="{{ url_for('billing.create_checkout_session', product_id='basic_diy') }}" class="btn btn-primary">
+                                    Buy Now
+                                </a>
+                            {% endif %}
                         {% else %}
-                        <a href="{{ url_for('auth.login') }}?next={{ url_for('billing.create_checkout_session', product_id='basic_diy') }}" class="w-100 btn btn-primary">
-                            Sign In to Purchase
-                        </a>
+                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary">
+                                Sign In to Purchase
+                            </a>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Guided Filing -->
         <div class="col">
-            <div class="card h-100 shadow-sm">
-                <div class="card-header py-3 text-center">
-                    <h4 class="my-0 fw-normal">{{ pricing.guided_filing.name }}</h4>
+            <div class="card h-100 pricing-card featured">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="h4 mb-0">Guided Filing</h2>
+                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 mt-2 me-2">Popular</span>
                 </div>
-                <div class="card-body d-flex flex-column">
-                    <h1 class="card-title text-center mb-4">
-                        {% if current_user.is_authenticated and current_user.get_access_level() == 'discounted' %}
-                        <span class="text-decoration-line-through text-muted fs-4">${{ pricing.guided_filing.price }}</span>
-                        <span>${{ pricing.guided_filing.price / 2 }}</span>
-                        {% else %}
-                        <span>${{ pricing.guided_filing.price }}</span>
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="price mb-4">
+                        $99
+                        {% if current_user.is_authenticated and current_user.subscription_member %}
+                            <small class="text-success d-block">$49.50 for you</small>
                         {% endif %}
-                    </h1>
-                    <ul class="list-unstyled mb-4">
-                        {% for feature in pricing.guided_filing.features %}
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i> {{ feature }}
-                        </li>
-                        {% endfor %}
+                    </div>
+                    <ul class="list-unstyled text-start mb-4">
+                        <li><i class="fas fa-check text-success me-2"></i> Step-by-step input</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Form 1120/1065/Schedule C generation</li>
+                        <li><i class="fas fa-check text-success me-2"></i> State filing add-on</li>
                     </ul>
-                    <div class="mt-auto pt-3">
-                        {% if user_plans.guided_filing or (current_user.is_authenticated and current_user.get_access_level() == 'full_access') %}
-                        <a href="#" class="w-100 btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i> Already Purchased
-                        </a>
-                        {% elif current_user.is_authenticated %}
-                        <a href="{{ url_for('billing.create_checkout_session', product_id='guided_filing') }}" class="w-100 btn btn-primary">
-                            Get Started
-                        </a>
+                    <div class="mt-auto">
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('guided_filing', False) %}
+                                <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary">Access Now</a>
+                            {% else %}
+                                <a href="{{ url_for('billing.create_checkout_session', product_id='guided_filing') }}" class="btn btn-primary">
+                                    Buy Now
+                                </a>
+                            {% endif %}
                         {% else %}
-                        <a href="{{ url_for('auth.login') }}?next={{ url_for('billing.create_checkout_session', product_id='guided_filing') }}" class="w-100 btn btn-primary">
-                            Sign In to Purchase
-                        </a>
+                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary">
+                                Sign In to Purchase
+                            </a>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Strategy Unlock -->
         <div class="col">
-            <div class="card h-100 shadow-sm border-primary">
-                <div class="card-header py-3 text-white bg-primary text-center">
-                    <h4 class="my-0 fw-normal">{{ pricing.strategy_unlock.name }}</h4>
+            <div class="card h-100 pricing-card">
+                <div class="card-header bg-light text-center">
+                    <h2 class="h4 mb-0">Strategy Unlock</h2>
                 </div>
-                <div class="card-body d-flex flex-column">
-                    <h1 class="card-title text-center mb-4">
-                        {% if current_user.is_authenticated and current_user.get_access_level() == 'discounted' %}
-                        <span class="text-decoration-line-through text-muted fs-4">${{ pricing.strategy_unlock.price }}</span>
-                        <span>${{ pricing.strategy_unlock.price / 2 }}</span>
-                        {% else %}
-                        <span>${{ pricing.strategy_unlock.price }}</span>
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="price mb-4">
+                        $149
+                        {% if current_user.is_authenticated and current_user.subscription_member %}
+                            <small class="text-success d-block">$74.50 for you</small>
                         {% endif %}
-                    </h1>
-                    <ul class="list-unstyled mb-4">
-                        {% for feature in pricing.strategy_unlock.features %}
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i> {{ feature }}
-                        </li>
-                        {% endfor %}
+                    </div>
+                    <ul class="list-unstyled text-start mb-4">
+                        <li><i class="fas fa-check text-success me-2"></i> QBI deduction check</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Entity optimization guide</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Section 179 & R&D credits</li>
+                        <li><i class="fas fa-check text-success me-2"></i> S Corp vs C Corp modeling</li>
                     </ul>
-                    <div class="mt-auto pt-3">
-                        {% if user_plans.strategy_unlock or (current_user.is_authenticated and current_user.get_access_level() == 'full_access') %}
-                        <a href="#" class="w-100 btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i> Already Purchased
-                        </a>
-                        {% elif current_user.is_authenticated %}
-                        <a href="{{ url_for('billing.create_checkout_session', product_id='strategy_unlock') }}" class="w-100 btn btn-primary">
-                            Get Started
-                        </a>
+                    <div class="mt-auto">
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('strategy_unlock', False) %}
+                                <a href="{{ url_for('strategy.home') }}" class="btn btn-outline-primary">Access Now</a>
+                            {% else %}
+                                <a href="{{ url_for('billing.create_checkout_session', product_id='strategy_unlock') }}" class="btn btn-primary">
+                                    Buy Now
+                                </a>
+                            {% endif %}
                         {% else %}
-                        <a href="{{ url_for('auth.login') }}?next={{ url_for('billing.create_checkout_session', product_id='strategy_unlock') }}" class="w-100 btn btn-primary">
-                            Sign In to Purchase
-                        </a>
+                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary">
+                                Sign In to Purchase
+                            </a>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- IRS Letter Generator -->
         <div class="col">
-            <div class="card h-100 shadow-sm">
-                <div class="card-header py-3 text-center">
-                    <h4 class="my-0 fw-normal">{{ pricing.irs_letter_pack.name }}</h4>
+            <div class="card h-100 pricing-card">
+                <div class="card-header bg-light text-center">
+                    <h2 class="h4 mb-0">IRS Letter Generator</h2>
                 </div>
-                <div class="card-body d-flex flex-column">
-                    <h1 class="card-title text-center mb-4">
-                        {% if current_user.is_authenticated and current_user.get_access_level() == 'discounted' %}
-                        <span class="text-decoration-line-through text-muted fs-4">${{ pricing.irs_letter_pack.price }}</span>
-                        <span>${{ pricing.irs_letter_pack.price / 2 }}</span>
-                        {% else %}
-                        <span>${{ pricing.irs_letter_pack.price }}</span>
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="price mb-4">
+                        $39
+                        {% if current_user.is_authenticated and current_user.subscription_member %}
+                            <small class="text-success d-block">$19.50 for you</small>
                         {% endif %}
-                    </h1>
-                    <ul class="list-unstyled mb-4">
-                        {% for feature in pricing.irs_letter_pack.features %}
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i> {{ feature }}
-                        </li>
-                        {% endfor %}
+                    </div>
+                    <ul class="list-unstyled text-start mb-4">
+                        <li><i class="fas fa-check text-success me-2"></i> Penalty abatement letters</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Reasonable cause templates</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Late filing relief letter</li>
                     </ul>
-                    <div class="mt-auto pt-3">
-                        {% if user_plans.irs_letter_pack or (current_user.is_authenticated and current_user.get_access_level() == 'full_access') %}
-                        <a href="#" class="w-100 btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i> Already Purchased
-                        </a>
-                        {% elif current_user.is_authenticated %}
-                        <a href="{{ url_for('billing.create_checkout_session', product_id='irs_letter_pack') }}" class="w-100 btn btn-primary">
-                            Get Started
-                        </a>
+                    <div class="mt-auto">
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('irs_letter_pack', False) %}
+                                <a href="{{ url_for('letter.new_letter') }}" class="btn btn-outline-primary">Access Now</a>
+                            {% else %}
+                                <a href="{{ url_for('billing.create_checkout_session', product_id='irs_letter_pack') }}" class="btn btn-primary">
+                                    Buy Now
+                                </a>
+                            {% endif %}
                         {% else %}
-                        <a href="{{ url_for('auth.login') }}?next={{ url_for('billing.create_checkout_session', product_id='irs_letter_pack') }}" class="w-100 btn btn-primary">
-                            Sign In to Purchase
-                        </a>
+                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary">
+                                Sign In to Purchase
+                            </a>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Business Builder Upgrade -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <div class="row align-items-center">
-                        <div class="col-lg-8">
-                            <h3 class="mb-3">Business Builder Plan</h3>
-                            <p class="lead">Get full access to all tax tools, plus exclusive benefits</p>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Unlimited access to all tax tools</li>
-                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> 1 free filing per year</li>
-                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Priority AI tax tips</li>
-                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> IRS letters included at no extra cost</li>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="h4 mb-0">Business Builder Plan</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="me-4">
+                            <i class="fas fa-crown fa-3x text-warning"></i>
+                        </div>
+                        <div>
+                            <h4>Get Everything Included</h4>
+                            <p class="mb-0">Join the Federal Funding Club Business Builder plan for complete access to all tax tools and additional benefits.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-check-circle text-success me-2"></i> Plan Benefits</h5>
+                            <ul>
+                                <li>All modules included</li>
+                                <li>1 free filing per year</li>
+                                <li>Priority AI tips</li>
+                                <li>IRS letters free</li>
                             </ul>
                         </div>
-                        <div class="col-lg-4 text-center">
-                            <h2 class="mb-3">$29/month</h2>
-                            {% if current_user.is_authenticated and current_user.get_access_level() == 'full_access' %}
-                            <button class="btn btn-success btn-lg" disabled>
-                                <i class="fas fa-check-circle me-2"></i> Already Active
-                            </button>
-                            {% else %}
-                            <a href="https://federalfundingclub.com/join" class="btn btn-primary btn-lg">Upgrade Now</a>
-                            {% endif %}
-                            <p class="mt-2 text-muted small">Billed through FederalFundingClub.com</p>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-plus-circle text-primary me-2"></i> Additional Perks</h5>
+                            <ul>
+                                <li>Business funding opportunities</li>
+                                <li>Grant application assistance</li>
+                                <li>Exclusive webinars & trainings</li>
+                                <li>Networking events</li>
+                            </ul>
                         </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="https://federalfundingclub.com/business-builder-plan/" class="btn btn-dark btn-lg">
+                            <i class="fas fa-external-link-alt me-2"></i> Learn More About Business Builder
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- FAQ -->
-    <div class="row mt-5">
-        <div class="col-12 text-center mb-4">
-            <h2>Frequently Asked Questions</h2>
-        </div>
-    </div>
-
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <div class="mb-4">
-                <h5>What's included in the Basic DIY Filing?</h5>
-                <p>Basic DIY Filing includes a simplified tax form generator for businesses with zero or minimal activity. It's perfect for newly formed entities or businesses that were inactive during the tax year.</p>
-            </div>
-            <div class="mb-4">
-                <h5>How does the Guided Filing work?</h5>
-                <p>Guided Filing walks you step-by-step through completing Form 1120, 1065, or Schedule C with explanations of each section and input field. You'll be able to download a completed PDF ready for filing with the IRS.</p>
-            </div>
-            <div class="mb-4">
-                <h5>Do I need accounting experience to use these tools?</h5>
-                <p>No accounting experience is necessary. Our tools are designed to guide you through the process with simple questions and explanations of tax terminology.</p>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-4">
-                <h5>What's the Strategy Unlock feature?</h5>
-                <p>Strategy Unlock uses AI technology to analyze your business information and suggest tax-saving strategies tailored to your specific situation, potentially saving you thousands in taxes.</p>
-            </div>
-            <div class="mb-4">
-                <h5>Can I use this for past tax years?</h5>
-                <p>Yes, our tools support tax years from 2019-2025, making them perfect for catching up on unfiled returns or amending previous filings.</p>
-            </div>
-            <div class="mb-4">
-                <h5>What if I'm a Federal Funding Club member?</h5>
-                <p>Federal Funding Club members with the Business Builder plan get full access to all tax tools at no additional cost. Subscription members receive a 50% discount on all tools.</p>
-            </div>
+    
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 text-center">
+            <h3>Questions About Our Pricing?</h3>
+            <p class="lead">Contact our support team for assistance or special arrangements.</p>
+            <a href="mailto:support@federalfundingclub.com" class="btn btn-outline-primary">
+                <i class="fas fa-envelope me-2"></i> Contact Support
+            </a>
         </div>
     </div>
 </div>

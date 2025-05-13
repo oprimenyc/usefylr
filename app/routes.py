@@ -142,18 +142,29 @@ def acknowledgment():
     return render_template('legal/acknowledgment.html')
 
 @main_bp.route('/process-acknowledgment', methods=['POST'])
+@login_required
 def process_acknowledgment():
     """Process legal acknowledgment form"""
     if request.method == 'POST':
         # Store acknowledgment in session
         session['legal_acknowledged'] = True
         
-        # Get the acknowledgments that were checked
-        acknowledgments = request.form.getlist('acknowledgments[]')
+        # Check if all required checkboxes are present
+        required_fields = ['ack1', 'ack2', 'ack3', 'ack4', 'ack5', 'ack6']
+        all_checked = all(field in request.form for field in required_fields)
         
-        # Check if all required acknowledgments were made
-        required_acks = ['accurate_info', 'not_advice', 'responsible_filings', 'not_liable', 'due_diligence', 'terms_accepted']
-        if all(ack in acknowledgments for ack in required_acks):
+        if all_checked:
+            # Log the acknowledgment
+            if current_user.is_authenticated:
+                log = AuditLog(
+                    user_id=current_user.id,
+                    action="legal_acknowledgment",
+                    details="User acknowledged legal terms",
+                    ip_address=request.remote_addr
+                )
+                db.session.add(log)
+                db.session.commit()
+            
             flash('Thank you for acknowledging our legal terms.', 'success')
             
             # Redirect based on where they were going

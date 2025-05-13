@@ -7,30 +7,54 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h1 class="mb-4">Terms of Use</h1>
-                    
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">Terms of Use</h1>
+                </div>
+                <div class="card-body">
                     <p>By using the DIY Business Tax Tool ("the Tool") on FederalFundingClub.com, you agree to the following:</p>
-                    
-                    <ol class="mb-4">
-                        <li class="mb-2">You are solely responsible for the accuracy and completeness of the information you provide.</li>
-                        <li class="mb-2">This Tool does not constitute professional tax or legal advice.</li>
-                        <li class="mb-2">We do not review, audit, or submit your tax return. You are responsible for all IRS submissions.</li>
-                        <li class="mb-2">We disclaim all liability for any damages or losses resulting from the use of this Tool.</li>
-                        <li class="mb-2">Access to certain features may depend on your subscription tier or service agreement.</li>
-                        <li class="mb-2">We reserve the right to update or modify these Terms at any time.</li>
+                    <ol>
+                        <li>You are solely responsible for the accuracy and completeness of the information you provide.</li>
+                        <li>This Tool does not constitute professional tax or legal advice.</li>
+                        <li>We do not review, audit, or submit your tax return. You are responsible for all IRS submissions.</li>
+                        <li>We disclaim all liability for any damages or losses resulting from the use of this Tool.</li>
+                        <li>Access to certain features may depend on your subscription tier or service agreement.</li>
+                        <li>We reserve the right to update or modify these Terms at any time.</li>
                     </ol>
+                    <p>If you do not agree with these terms, do not use the Tool.</p>
                     
-                    <div class="alert alert-warning">
-                        <p class="mb-0"><strong>DISCLAIMER:</strong> This tool is provided for informational and educational purposes only and does not constitute tax, legal, or financial advice. Use of this platform does not establish a client-accountant relationship. All users are solely responsible for the accuracy of the information they provide and for any filings they submit to the IRS or other authorities. We are not liable for penalties, interest, or other consequences resulting from incorrect or incomplete information.</p>
-                    </div>
+                    <h2 class="h4 mt-4">Additional Terms</h2>
                     
-                    <p class="mt-4 mb-0"><strong>If you do not agree with these terms, do not use the Tool.</strong></p>
+                    <h3 class="h5 mt-3">1. Account Registration and Security</h3>
+                    <p>When you create an account, you must provide accurate and complete information. You are responsible for maintaining the confidentiality of your password and account information. You agree to notify us immediately of any unauthorized use of your account.</p>
                     
-                    <div class="text-center mt-5">
-                        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Back to Home</a>
+                    <h3 class="h5 mt-3">2. Intellectual Property</h3>
+                    <p>All content, features, and functionality of the Tool, including but not limited to text, graphics, logos, and software, are owned by FederalFundingClub.com and are protected by United States and international copyright, trademark, and other intellectual property laws.</p>
+                    
+                    <h3 class="h5 mt-3">3. Prohibited Uses</h3>
+                    <p>You agree not to:</p>
+                    <ul>
+                        <li>Use the Tool in any way that violates any applicable federal, state, local or international law or regulation</li>
+                        <li>Attempt to gain unauthorized access to the Tool, user accounts, or computer systems</li>
+                        <li>Use the Tool to transmit or upload any viruses, malware, or other malicious code</li>
+                        <li>Use the Tool for any unauthorized commercial purposes</li>
+                    </ul>
+                    
+                    <h3 class="h5 mt-3">4. Termination</h3>
+                    <p>We reserve the right to terminate or suspend your account and access to the Tool at our sole discretion, without notice, for any reason, including if you violate these Terms of Use.</p>
+                    
+                    <h3 class="h5 mt-3">5. Governing Law</h3>
+                    <p>These Terms shall be governed by and construed in accordance with the laws of the United States, without regard to its conflict of law provisions.</p>
+                    
+                    <div class="alert alert-warning mt-4">
+                        <strong>DISCLAIMER:</strong> This tool is provided for informational and educational purposes only and does not constitute tax, legal, or financial advice. Use of this platform does not establish a client-accountant relationship.
                     </div>
                 </div>
+                <div class="card-footer">
+                    <p class="mb-0 text-muted">Last updated: May 13, 2025</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ url_for('main.index') }}" class="btn btn-primary">Return to Homepage</a>
             </div>
         </div>
     </div>
