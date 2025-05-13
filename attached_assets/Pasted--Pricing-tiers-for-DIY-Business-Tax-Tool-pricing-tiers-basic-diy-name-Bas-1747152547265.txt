@@ -1,0 +1,171 @@
+# Pricing tiers for DIY Business Tax Tool
+
+pricing_tiers = {
+    "basic_diy": {
+        "name": "Basic DIY Filing",
+        "price": 25,
+        "features": ["Zero-activity return generator", "PDF download", "Email support"]
+    },
+    "guided_filing": {
+        "name": "Guided Filing",
+        "price": 99,
+        "features": ["Step-by-step input", "Form 1120/1065/Schedule C generation", "State filing add-on"]
+    },
+    "strategy_unlock": {
+        "name": "Strategy Unlock",
+        "price": 149,
+        "features": ["QBI deduction check", "Entity optimization guide", "Section 179 & R&D credits", "S Corp vs C Corp modeling"]
+    },
+    "irs_letter_pack": {
+        "name": "IRS Letter Generator",
+        "price": 39,
+        "features": ["Penalty abatement letters", "Reasonable cause templates", "Late filing relief letter"]
+    }
+}
+
+User Access Logic
+
+
+# Determine access level based on subscription status
+
+def get_user_access(user):
+    if user.plan == "business_builder":
+        return "full_access"
+    elif user.subscription_member:
+        return "discounted"
+    else:
+        return "standard"
+
+3. FEATURES BY PLAN
+# Define which features each user type gets
+
+features_by_access = {
+    "full_access": ["All modules included", "1 free filing/year", "Priority AI tips", "IRS letters free"],
+    "discounted": ["50% off all tools", "Free IRS letter pack with 1 paid filing"],
+    "standard": ["Pay-as-you-go", "Upsell prompts after basic filing"]
+}
+4. AI PROMPTS / DECISION LOGIC
+# Example prompt sequence for advanced strategy module
+
+strategy_questions = [
+    "Do you have any employees besides yourself?",
+    "Did you purchase any new equipment this year?",
+    "Do you rent or own your office/workspace?",
+    "Did you earn income from software, consulting, or digital services?",
+    "Do you have a retirement plan through your business?",
+    "Do you work from home at least 20 hours a week?",
+    "Was your net income above $50,000 this year?",
+    "Did you pay yourself via payroll or owner draws?"
+]
+
+def suggest_strategies(answers):
+    strategies = []
+    if answers["home_office"]:
+        strategies.append("Consider Home Office Deduction.")
+    if answers["equipment"]:
+        strategies.append("You may qualify for Section 179 or Bonus Depreciation.")
+    if answers["retirement_plan"]:
+        strategies.append("Consider SEP IRA or Solo 401(k) deductions.")
+    if answers["digital_income"]:
+        strategies.append("Explore Qualified Business Income (QBI) Deduction.")
+    return strategies
+
+5. STRIPE + ACCESS GATE
+# Access control via Stripe payment status
+
+def unlock_tool(user, tool_name):
+    if user.plan == "business_builder":
+        return True
+    elif user.subscription_member:
+        # Apply 50% discount automatically
+        return user.has_paid(tool_name, discounted=True)
+    else:
+        return user.has_paid(tool_name)
+6. REPLIT MODULE IDEAS
+You can break the app into Replit modules (Python or Node.js) like this:
+login.py – User login/authentication
+
+
+dashboard.py – User selects form (1120, 1065, Schedule C)
+
+
+form_logic.py – Step-by-step input/questions
+
+
+strategy_module.py – Suggests deductions and credits
+
+
+pdf_generator.py – Fills & downloads forms
+
+
+irs_letter_generator.py – Fills abatement letters
+
+
+billing.py – Stripe integration and discount logic
+
+
+admin.py – Track who’s used what feature
+
+
+/tax-tool/
+│
+├── /app/                         # Core application logic
+│   ├── main.py                   # App entry point (Flask or FastAPI)
+│   ├── routes.py                 # Handles API or web routes
+│   ├── auth.py                   # Login, registration, role check
+│   ├── billing.py                # Stripe integration, coupon logic
+│   ├── session.py                # Tracks user session states
+│   └── access_control.py         # Restrict features by plan
+│
+├── /modules/                     # Tax prep logic + tools
+│   ├── form_generator.py         # Build 1120, 1065, Schedule C, etc.
+│   ├── strategy_engine.py        # Deduction/credit advice engine
+│   ├── irs_letters.py            # Late filing & penalty abatement letters
+│   └── pdf_utils.py              # Fillable form overlays, PDF tools
+│
+├── /ai/                          # Embedded AI prompt systems
+│   ├── prompts.json              # Stored GPT prompt templates
+│   ├── analyzer.py               # GPT tax analyzer + chat logic
+│   └── openai_interface.py       # Handles GPT API calls
+│
+├── /frontend/                    # Static UI (HTML, JS, CSS)
+│   ├── index.html                # Public landing
+│   ├── dashboard.html            # Main logged-in dashboard
+│   ├── paywall.html              # Upgrade prompt page
+│   ├── styles.css
+│   └── scripts.js
+│
+├── /templates/                   # Jinja2 templates (if using Flask)
+│   ├── layout.html
+│   └── partials/
+│       ├── navbar.html
+│       └── footer.html
+│
+├── /static/                      # Assets
+│   ├── /img/
+│   ├── /pdf_templates/           # Preloaded IRS forms for overlay
+│   └── /docs/                    # Downloadable templates, guides
+│
+├── /data/                        # Placeholder user + form data
+│   ├── users.json                # Simulated user data (for dev)
+│   └── usage_logs.json           # Track access per module
+│
+├── /admin/                       # Admin & reporting features
+│   ├── user_overview.py          # See user history / tool usage
+│   ├── audit_logs.py             # Logs changes, errors, payments
+│   ├── email_admin.py            # Email support / password resets
+│   └── refund_manager.py         # Handle refund/cancellation requests
+│
+├── /tests/                       # Unit tests
+│   ├── test_form_generator.py
+│   ├── test_strategy_engine.py
+│   └── test_auth_routes.py
+│
+├── .replit                       # Replit config file
+├── replit.nix                    # Language/dependency setup
+├── requirements.txt              # Python: Flask, ReportLab, Stripe, OpenAI
+├── README.md                     # How-to-use instructions
+├── config.py                     # All keys & environment setup
+└── env.example                   # Template for .env (OpenAI, Stripe, DB)
+
+

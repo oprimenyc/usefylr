@@ -1,0 +1,62 @@
+Federal Funding Club – DIY Business Tax Tool
+
+Project Type: SaaS / Fintech / Tax Automation
+Tech Stack: Python (Flask or FastAPI), Stripe, OpenAI API, HTML/CSS/JS
+Hosted on: FederalFundingClub.com
+Repository: /tax-tool/
+
+⸻
+
+Overview
+
+This is a modular, AI-assisted tax filing tool for small business owners (C Corps, S Corps, LLCs, Sole Props) who need to file back taxes or simple zero-income returns without hiring a CPA.
+
+It is part of a broader financial services platform offered by FederalFundingClub.com. The tool is designed to:
+	•	Generate and fill business tax forms (e.g., 1120, 1065, Schedule C)
+	•	Offer IRS letter templates (e.g., first-time abatement, penalty removal)
+	•	Provide advanced tax-saving strategies using AI prompts and deduction logic
+	•	Sell DIY and done-for-you filing tiers, with discounts for subscription members
+
+⸻
+
+Who It’s For
+	•	Business owners with unfiled tax years (2019–2025)
+	•	Side hustlers, solopreneurs, and real estate professionals
+	•	Anyone wanting to file low-activity or no-income business returns fast
+	•	Users seeking IRS penalty relief letters or write-off optimization
+	•	Federal Funding Club members with business builder plans
+
+⸻
+
+Key Modules
+	•	/modules/form_generator.py – Tax form logic (1120, 1065, etc.)
+	•	/modules/strategy_engine.py – Detects possible deductions/credits (QBI, 179, R&D)
+	•	/modules/irs_letters.py – Letter builder for late filing and abatement
+	•	/ai/analyzer.py – GPT-powered strategy recommender
+	•	/app/billing.py – Stripe billing logic with gated feature access
+	•	/frontend/ – Clean web UI or dashboard pages
+
+⸻
+
+Access Tiers
+	1.	Free Access – Browse-only or sample PDF
+	2.	Basic DIY Filing ($25–$99) – One-time form creation, printable PDFs
+	3.	Strategy Unlock ($149) – AI tax optimizer with write-off playbook
+	4.	IRS Letter Pack ($39) – Auto-fill late/penalty response templates
+	5.	All Access (Free for Business Builder Plan) – Full access to all tools
+
+⸻
+
+Admin Features
+	•	/admin/user_overview.py – View user activity and tax years filed
+	•	/admin/refund_manager.py – Manage refund requests
+	•	/admin/email_admin.py – Handle support tickets or account access
+
+⸻
+
+Next Steps
+	•	Connect Stripe live + test keys
+	•	Finalize PDF overlay for Form 1120
+	•	Add GPT model prompts to /ai/prompts.json
+	•	Deploy to Replit or Docker for scalable hosting
+	•	Link login with FederalFundingClub.com users
