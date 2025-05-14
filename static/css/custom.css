@@ -1,0 +1,88 @@
+:root {
+  --fylr-green: #A8E063;
+  --fylr-green-dark: #95c757;
+  --fylr-green-light: #b2e478;
+  --fylr-dark: #264653;
+  --fylr-accent: #f4a261;
+}
+
+.bg-fylr-green {
+  background-color: var(--fylr-green) !important;
+}
+
+.text-fylr-green {
+  color: var(--fylr-green) !important;
+}
+
+.btn-fylr-green {
+  background-color: var(--fylr-green);
+  color: white;
+  border-color: var(--fylr-green);
+}
+
+.btn-fylr-green:hover {
+  background-color: var(--fylr-green-dark);
+  border-color: var(--fylr-green-dark);
+  color: white;
+}
+
+.btn-outline-fylr-green {
+  color: var(--fylr-green);
+  border-color: var(--fylr-green);
+}
+
+.btn-outline-fylr-green:hover {
+  background-color: var(--fylr-green);
+  color: white;
+}
+
+.navbar-dark.bg-primary {
+  background-color: var(--fylr-dark) !important;
+}
+
+.nav-item .nav-link:hover {
+  color: var(--fylr-green) !important;
+}
+
+.premium-card {
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.premium-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.badge-premium {
+  background-color: var(--fylr-green);
+  color: white;
+}
+
+.border-fylr {
+  border-color: var(--fylr-green) !important;
+}
+
+/* Price cards highlight */
+.pricing-price {
+  color: var(--fylr-green) !important;
+  font-weight: bold;
+}
+
+.pricing-card.featured {
+  border-top: 5px solid var(--fylr-green) !important;
+  transform: scale(1.05);
+}
+
+/* Custom divider */
+.fylr-divider {
+  width: 80px;
+  height: 4px;
+  background-color: var(--fylr-green);
+  margin: 1.5rem auto;
+}
+
+.fylr-gradient {
+  background: linear-gradient(135deg, var(--fylr-green) 0%, #56c596 100%);
+}
