@@ -1,12 +1,12 @@
 {% extends 'layout.html' %}
 
-{% block title %}FYLR by Federal Funding Club{% endblock %}
+{% block title %}.fylr | Tap. File. Done.{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <section class="py-0 position-relative overflow-hidden">
     <!-- Background Gradient -->
-    <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, #2a9d8f 0%, #66b2b2 100%); z-index: -2;"></div>
+    <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, #264653 0%, #1a323e 100%); z-index: -2;"></div>
     
     <!-- Background Pattern -->
     <div class="position-absolute w-100 h-100" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjEwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIxMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjEwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNzAiIGN5PSIxMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iMTAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjEwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iMTAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjIwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjIwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNzAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjIwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iMTAiIGN5PSIzMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPGNpcmNsZSBjeD0iNzAiIGN5PSIzMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+'); opacity: 0.2; z-index: -1;"></div>
@@ -15,8 +15,8 @@
         <div class="row align-items-center py-5">
             <div class="col-lg-5 mb-5 mb-lg-0 order-2 order-lg-1">
                 <span class="badge bg-white text-primary px-3 py-2 mb-3" style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">ENTERPRISE-GRADE</span>
-                <h1 class="display-3 fw-bold mb-4" style="font-family: 'Montserrat', sans-serif; letter-spacing: -1px; line-height: 1.1;">Streamline Your Business Tax Process</h1>
-                <p class="lead mb-5 text-white opacity-90" style="font-size: 1.25rem; font-weight: 400;">The premium solution that makes tax filing as simple as answering a few questions. Save time, maximize deductions, and ensure compliance.</p>
+                <h1 class="display-3 fw-bold mb-4" style="font-family: 'Montserrat', sans-serif; letter-spacing: -1px; line-height: 1.1;">Tap. File. Done.</h1>
+                <p class="lead mb-5 text-white opacity-90" style="font-size: 1.25rem; font-weight: 400;">No CPAs. No Excuses. The premium solution that makes tax filing as simple as answering a few questions. Save time, maximize deductions, and ensure compliance.</p>
                 <div class="d-flex flex-column flex-md-row gap-3">
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('main.dashboard') }}" class="btn btn-light btn-lg px-4">

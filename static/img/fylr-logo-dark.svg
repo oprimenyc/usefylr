@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="100" viewBox="0 0 240 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with Gradient -->
+  <rect x="10" y="10" width="220" height="80" rx="12" fill="url(#dark_gradient)" filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.15))"/>
+  
+  <!-- Dot Symbol -->
+  <circle cx="50" cy="50" r="15" fill="#f4a261"/>
+  
+  <!-- FYLR Text -->
+  <g filter="drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.15))">
+    <path d="M80 30H95V35H87V40H93V45H87V60H80V30Z" fill="white"/>
+    <path d="M105 30H120L120 35L112 35V60H105V30Z" fill="white"/>
+    <path d="M125 30H132V50H145V60H125V30Z" fill="white"/>
+    <path d="M155 30H170V35H162V40H169V45H162V55H170V60H155V30Z" fill="white"/>
+  </g>
+  
+  <!-- Tagline -->
+  <text x="80" y="75" font-family="Montserrat, sans-serif" font-size="10" font-weight="500" fill="white" opacity="0.9">Tap. File. Done.</text>
+  
+  <!-- Linear Gradient Definition -->
+  <defs>
+    <linearGradient id="dark_gradient" x1="0" y1="0" x2="220" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#264653"/>
+      <stop offset="1" stop-color="#1a323e"/>
+    </linearGradient>
+  </defs>
+</svg>
