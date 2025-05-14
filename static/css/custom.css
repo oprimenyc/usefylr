@@ -1,9 +1,9 @@
 :root {
-  --fylr-green: #A8E063;
-  --fylr-green-dark: #95c757;
-  --fylr-green-light: #b2e478;
+  --fylr-green: #FF6B00; /* Neon orange */
+  --fylr-green-dark: #e55e00;
+  --fylr-green-light: #ff7f22;
   --fylr-dark: #264653;
-  --fylr-accent: #f4a261;
+  --fylr-accent: #FF6B00;
 }
 
 .bg-fylr-green {
@@ -84,5 +84,10 @@
 }
 
 .fylr-gradient {
-  background: linear-gradient(135deg, var(--fylr-green) 0%, #56c596 100%);
+  background: linear-gradient(135deg, var(--fylr-green) 0%, #cc3600 100%);
+}
+
+.neon-gradient {
+  background: linear-gradient(135deg, #FF6B00 0%, #ff4500 70%, #cc3600 100%);
+  box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
 }
