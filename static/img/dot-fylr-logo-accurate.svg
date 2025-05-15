@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="200" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- .fylr logo with proper dot positioning -->
+  <g>
+    <!-- Dot positioned correctly as period -->
+    <circle cx="67" cy="150" r="30" fill="#FF6B00"/>
+    
+    <!-- F letter -->
+    <path d="M90 50C90 45 100 40 120 40C140 40 150 45 150 50V70H120V90H140V110H120V160H90V50Z" fill="#FF6B00"/>
+    
+    <!-- Y letter -->
+    <path d="M160 90C160 70 175 70 195 70C215 70 230 70 230 90V160H200V95C200 90 195 90 195 90C195 90 190 90 190 95V160H160V90Z" fill="#FF6B00"/>
+    
+    <!-- L letter -->
+    <path d="M240 40H270V160H240V40Z" fill="#FF6B00"/>
+    
+    <!-- R letter -->
+    <path d="M280 70H310V90C310 105 330 105 330 105V160H300V105C300 105 290 105 290 90V160H280V70Z" fill="#FF6B00"/>
+  </g>
+</svg>
