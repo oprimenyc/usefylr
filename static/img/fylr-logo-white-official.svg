@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="200" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- .fylr logo traced from provided image -->
+  <g>
+    <!-- Period -->
+    <circle cx="70" cy="150" r="25" fill="#FFFFFF"/>
+    
+    <!-- F letter -->
+    <path d="M100 70C100 60 110 50 135 50C160 50 170 55 170 65V85H138V105H160V125H138V170H100V70Z" fill="#FFFFFF"/>
+    
+    <!-- Y letter -->
+    <path d="M180 90C180 75 190 75 210 75C230 75 240 75 240 90V170H215V95C215 90 210 90 210 90C210 90 205 90 205 95V170H180V90Z" fill="#FFFFFF"/>
+    
+    <!-- L letter -->
+    <path d="M250 50H280V170H250V50Z" fill="#FFFFFF"/>
+    
+    <!-- R letter -->
+    <path d="M290 75H320V95C320 110 340 110 340 110V170H315V115C315 115 305 115 305 100V170H290V75Z" fill="#FFFFFF"/>
+  </g>
+</svg>
