@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Exact .fylr logo based on provided image -->
+  <g>
+    <!-- Period -->
+    <circle cx="140" cy="350" r="50" fill="#FFFFFF"/>
+    
+    <!-- F letter -->
+    <path d="M200 150C200 120 230 100 280 100C330 100 350 110 350 140V180H280V220H320V260H280V350H200V150Z" fill="#FFFFFF"/>
+    
+    <!-- Y letter -->
+    <path d="M370 220C370 180 400 180 440 180C480 180 510 180 510 220V350H450V230C450 220 440 220 440 220C440 220 430 220 430 230V350H370V220Z" fill="#FFFFFF"/>
+    
+    <!-- L letter -->
+    <path d="M530 100H590V350H530V100Z" fill="#FFFFFF"/>
+    
+    <!-- R letter -->
+    <path d="M620 180H680V220C680 250 720 250 720 250V350H660V250C660 250 640 250 640 220V350H620V180Z" fill="#FFFFFF"/>
+  </g>
+</svg>
