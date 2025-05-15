@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Period/Dot Symbol -->
+  <circle cx="20" cy="40" r="8" fill="#FFFFFF"/>
+  
+  <!-- fylr Text -->
+  <g>
+    <!-- lowercase f -->
+    <path d="M40 25C40 20 45 20 50 20V25H45V55H40V40H35V35H40V25Z" fill="#FFFFFF"/>
+    
+    <!-- lowercase y -->
+    <path d="M55 35C55 30 60 30 65 30C70 30 75 30 75 35V55H70V35C70 33 65 33 65 33C65 33 60 33 60 35V55H55V35Z" fill="#FFFFFF"/>
+    
+    <!-- lowercase l -->
+    <path d="M80 20H85V55H80V20Z" fill="#FFFFFF"/>
+    
+    <!-- lowercase r -->
+    <path d="M95 30H90V55H95V45C95 40 105 40 105 40V35C105 35 95 35 95 40V30Z" fill="#FFFFFF"/>
+  </g>
+  
+  <!-- Neon Glow Effects -->
+  <circle cx="20" cy="40" r="10" fill="#FFFFFF" opacity="0.3"/>
+  
+  <!-- Tagline -->
+  <text x="40" y="70" font-family="Montserrat, sans-serif" font-size="12" font-weight="500" fill="#FFFFFF">Tap. File. Done.</text>
+</svg>
