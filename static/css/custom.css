@@ -71,6 +71,11 @@ body {
   align-items: center;
 }
 
+.theme-switch-wrapper span {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
 .theme-switch {
   display: inline-block;
   height: 24px;
