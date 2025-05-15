@@ -58,6 +58,14 @@
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
+                    <li class="nav-item me-2">
+                        <div class="theme-switch-wrapper mt-2">
+                            <label class="theme-switch" for="theme-toggle">
+                                <input type="checkbox" id="theme-toggle" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
@@ -153,6 +161,32 @@
     
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+      // Theme toggle functionality
+      const toggleSwitch = document.getElementById('theme-toggle');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme) {
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        if (currentTheme === 'dark') {
+          toggleSwitch.checked = true;
+        }
+      }
+      
+      function switchTheme(e) {
+        if (e.target.checked) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+        }
+      }
+      
+      toggleSwitch.addEventListener('change', switchTheme, false);
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

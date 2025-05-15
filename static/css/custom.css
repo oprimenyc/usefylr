@@ -1,9 +1,94 @@
 :root {
-  --fylr-green: #FF6B00; /* Neon orange */
-  --fylr-green-dark: #e55e00;
-  --fylr-green-light: #ff7f22;
+  /* Light Theme Colors (Default) */
+  --fylr-orange: #FF6B00; /* Neon orange */
+  --fylr-orange-dark: #e55e00;
+  --fylr-orange-light: #ff7f22;
   --fylr-dark: #264653;
   --fylr-accent: #FF6B00;
+  --fylr-bg-primary: #ffffff;
+  --fylr-bg-secondary: #f5f7fa;
+  --fylr-text-primary: #264653;
+  --fylr-text-secondary: #4b5563;
+  --fylr-card-bg: #ffffff;
+  --fylr-header-bg: #264653;
+  --fylr-green: #FF6B00; /* Keeping for backward compatibility */
+  --fylr-green-dark: #e55e00;
+  --fylr-green-light: #ff7f22;
+}
+
+/* Dark Theme Colors */
+[data-theme="dark"] {
+  --fylr-bg-primary: #121212;
+  --fylr-bg-secondary: #1e1e1e;
+  --fylr-text-primary: #f5f5f5;
+  --fylr-text-secondary: #b0b0b0;
+  --fylr-card-bg: #1e1e1e;
+  --fylr-header-bg: #000000;
+}
+
+/* Apply theme variables */
+body {
+  background-color: var(--fylr-bg-primary);
+  color: var(--fylr-text-primary);
+  transition: all 0.3s ease;
+}
+
+.bg-primary {
+  background-color: var(--fylr-header-bg) !important;
+}
+
+.card {
+  background-color: var(--fylr-card-bg);
+  transition: all 0.3s ease;
+}
+
+/* Theme Toggle Switch */
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 24px;
+  position: relative;
+  width: 50px;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  background-color: white;
+  bottom: 4px;
+  content: "";
+  height: 16px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 16px;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #FF6B00;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
 }
 
 .bg-fylr-green {
