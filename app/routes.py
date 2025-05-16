@@ -11,7 +11,7 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route("/")
 def index():
     """Home page route"""
-    return render_template("index.html")
+    return render_template("home.html")
 
 @main_bp.route("/dashboard")
 @login_required
