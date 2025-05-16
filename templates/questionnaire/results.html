@@ -236,6 +236,30 @@
                 </div>
             </div>
             
+            <!-- Filing Deadline Information -->
+            <div class="card mt-4 border-0 shadow mb-4">
+                <div class="card-header bg-primary text-white py-3" style="background-color: #FF6B00 !important;">
+                    <h4 class="mb-0">Important Filing Deadlines</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-light border">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-calendar-alt fa-2x text-primary" style="color: #FF6B00 !important;"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-2">Key Dates for Tax Year {{ answers.tax_year }}</h5>
+                                <ul class="mb-0">
+                                    <li><strong>April 15, {{ answers.tax_year }}</strong> - Federal filing deadline for most business types</li>
+                                    <li><strong>March 15, {{ answers.tax_year }}</strong> - Filing deadline for S-corporations and partnerships</li>
+                                    <li><strong>Quarterly Estimated Taxes</strong> - Due April 15, June 15, September 15, and January 15</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Disclaimer Footer -->
             <div class="card mt-4 border-0 shadow">
                 <div class="card-body p-3">

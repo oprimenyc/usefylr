@@ -15,9 +15,23 @@ class TaxFormType(enum.Enum):
     SCHEDULE_C = "Schedule C"
     
 class LetterType(enum.Enum):
+    # Standard IRS response letters
     PENALTY_ABATEMENT = "penalty_abatement"
-    REASONABLE_CAUSE = "reasonable_cause"
+    REASONABLE_CAUSE = "reasonable_cause" 
     LATE_FILING_RELIEF = "late_filing_relief"
+    
+    # Advanced IRS response letters
+    AUDIT_RESPONSE = "audit_response"
+    CP2000_RESPONSE = "cp2000_response"
+    INSTALLMENT_REQUEST = "installment_request"
+    OFFER_IN_COMPROMISE = "offer_in_compromise"
+    INNOCENT_SPOUSE_RELIEF = "innocent_spouse_relief"
+    
+    # Business tax notices
+    EMPLOYMENT_TAX_ISSUE = "employment_tax_issue"
+    BACKUP_WITHHOLDING = "backup_withholding"
+    ESTIMATED_TAX_PENALTY = "estimated_tax_penalty"
+    TRUST_FUND_RECOVERY = "trust_fund_recovery"
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
