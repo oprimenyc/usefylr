@@ -1040,7 +1040,7 @@ def get_sample_balance_sheet(tax_year):
             "equity": {
                 "owner_capital": 100000.00,
                 "retained_earnings": 52500.75,
-                "net_income": 100000.00,
+                "net_income": {tax_year}: 100000.00,
                 "total_equity": 152500.75
             },
             "total_liabilities_and_equity": 292501.50
