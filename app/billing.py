@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify, redirect, url_for, render_template, flash, current_app
 from flask_login import login_required, current_user
+import stripe
 
 # Import with try-except to handle missing Stripe API key
 try:
@@ -13,7 +14,7 @@ except (ImportError, ModuleNotFoundError):
     stripe_available = False
 
 from app.app import db
-from app.models import Payment, Subscription, AuditLog
+from app.models import User, Payment, Subscription, AuditLog, UserPlan, SubscriptionType
 
 # Create blueprint
 billing_bp = Blueprint('billing', __name__, url_prefix='/billing')
@@ -111,13 +112,12 @@ def create_checkout_session(product_id):
     if not stripe_available or not os.environ.get('STRIPE_SECRET_KEY'):
         flash('Payment processing is currently unavailable. Please try again later.', 'warning')
         # Create record for demo purposes
-        payment = Payment(
-            user_id=current_user.id,
-            stripe_payment_id="demo_" + datetime.now().strftime("%Y%m%d%H%M%S"),
-            amount=price,
-            feature=product_id,
-            status='demo'
-        )
+        payment = Payment()
+        payment.user_id = current_user.id
+        payment.stripe_payment_id = "demo_" + datetime.now().strftime("%Y%m%d%H%M%S")
+        payment.amount = price
+        payment.feature = product_id
+        payment.status = 'demo'
         db.session.add(payment)
         db.session.commit()
         
@@ -157,27 +157,31 @@ def create_checkout_session(product_id):
         )
         
         # Create payment record
-        payment = Payment(
-            user_id=current_user.id,
-            stripe_payment_id=checkout_session.id,
-            amount=price,
-            feature=product_id,
-            status='pending'
-        )
+        payment = Payment()
+        payment.user_id = current_user.id
+        payment.stripe_payment_id = checkout_session.id
+        payment.amount = price
+        payment.feature = product_id
+        payment.status = 'pending'
         db.session.add(payment)
         
         # Log checkout initiation
-        log = AuditLog(
-            user_id=current_user.id,
-            action="checkout_initiated",
-            details=f"Checkout initiated for {product['name']}",
-            ip_address=request.remote_addr
-        )
+        log = AuditLog()
+        log.user_id = current_user.id
+        log.action = "checkout_initiated"
+        log.details = f"Checkout initiated for {product['name']}"
+        log.ip_address = request.remote_addr
+        log.created_at = datetime.utcnow()
         db.session.add(log)
         db.session.commit()
         
         # Redirect to Stripe checkout
-        return redirect(checkout_session.url)
+        if hasattr(checkout_session, 'url') and checkout_session.url is not None:
+            return redirect(checkout_session.url)
+        else:
+            # Fallback if URL is not available
+            flash('Unable to create checkout session. Please try again.', 'danger')
+            return redirect(url_for('main.pricing'))
     except Exception as e:
         logging.error(f"Error creating checkout session: {e}")
         flash('An error occurred while processing your payment. Please try again.', 'danger')
@@ -210,10 +214,10 @@ def webhook():
         # Invalid payload
         logging.error(f"Invalid payload: {e}")
         return jsonify({'status': 'error', 'message': 'Invalid payload'}), 400
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        logging.error(f"Invalid signature: {e}")
-        return jsonify({'status': 'error', 'message': 'Invalid signature'}), 400
+    except Exception as e:
+        # Invalid signature or other error
+        logging.error(f"Webhook error: {e}")
+        return jsonify({'status': 'error', 'message': 'Invalid signature or other error'}), 400
     
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
@@ -225,7 +229,7 @@ def webhook():
     return jsonify({'status': 'success'})
 
 def fulfill_order(session):
-    """Process a successful payment"""
+    """Process a successful payment and update the user's plan"""
     try:
         # Get metadata from session
         metadata = session.get('metadata', {})
@@ -241,13 +245,67 @@ def fulfill_order(session):
         if payment:
             payment.status = 'completed'
             
-            # Log payment completion
-            log = AuditLog(
-                user_id=user_id,
-                action="payment_completed",
-                details=f"Payment completed for {product_id}",
-                ip_address=request.remote_addr if request else None
-            )
+            # Get product information
+            product = pricing_tiers.get(product_id)
+            if not product:
+                logging.error(f"Unknown product_id: {product_id}")
+                db.session.commit()
+                return
+            
+            # Get the user
+            user = db.session.get(User, user_id)
+            if not user:
+                logging.error(f"User not found: {user_id}")
+                db.session.commit()
+                return
+            
+            # Get plan type from product
+            plan_type = product.get('plan_type')
+            billing_type = product.get('billing_type')
+            
+            # Update user's plan based on the purchase
+            if plan_type == 'pro':
+                user.plan = UserPlan.PRO
+            elif plan_type == 'fylr_plus':
+                user.plan = UserPlan.FYLR_PLUS
+            elif plan_type == 'basic':
+                user.plan = UserPlan.BASIC
+                
+            # Create subscription record for recurring payments
+            if billing_type == 'recurring':
+                # For subscription, create a Subscription record
+                subscription_type = None
+                if product_id == 'fylr_plus_monthly':
+                    subscription_type = SubscriptionType.FYLR_PLUS_MONTHLY
+                
+                if subscription_type:
+                    # Calculate end date for monthly subscription (1 month from now)
+                    end_date = datetime.utcnow() + timedelta(days=30)
+                    
+                    # Create new subscription
+                    subscription = Subscription()
+                    subscription.user_id = user_id
+                    subscription.subscription_type = subscription_type
+                    subscription.price = product.get('price', 0)
+                    subscription.is_recurring = True
+                    subscription.billing_period = product.get('billing_period', 'monthly')
+                    subscription.starts_at = datetime.utcnow()
+                    subscription.ends_at = end_date
+                    subscription.status = 'active'
+                    
+                    db.session.add(subscription)
+            
+            # For one-time purchases, we just need to update the user's plan
+            # which was already done above
+            
+            # Log payment completion with more details
+            log = AuditLog()
+            log.user_id = user_id
+            log.action = "payment_completed"
+            log.details = f"Payment completed for {product.get('name')}. Plan upgraded to {plan_type}."
+            log.ip_address = request.remote_addr if request else None
+            log.created_at = datetime.utcnow()
+            
             db.session.add(log)
             db.session.commit()
     except Exception as e:
