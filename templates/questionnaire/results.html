@@ -1,0 +1,253 @@
+{% extends 'layout.html' %}
+
+{% block title %}Tax Form Recommendations | .fylr{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Results Card -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header text-center bg-dark text-white py-3">
+                    <h2 class="h3 mb-0">Your Tax Form Recommendations</h2>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-warning mb-4">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="alert-heading">This is an AI-generated draft.</h5>
+                                <p class="mb-0">It is your responsibility to review and file correctly. No legal advice is provided.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Business Summary -->
+                    <div class="mb-4">
+                        <h4 class="mb-3 border-bottom pb-2">Business Summary</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span class="fw-bold">Business Type:</span>
+                                        <span>{{ business_types[answers.business_type] }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span class="fw-bold">State of Registration:</span>
+                                        <span>{{ states[answers.state] }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span class="fw-bold">Tax Year:</span>
+                                        <span>{{ answers.tax_year }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span class="fw-bold">Revenue:</span>
+                                        <span>{{ 'Yes' if answers.has_revenue else 'No' }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span class="fw-bold">Expenses:</span>
+                                        <span>{{ 'Yes' if answers.has_expenses else 'No' }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span class="fw-bold">Employees/Contractors:</span>
+                                        <span>{{ 'Yes' if answers.has_employees else 'No' }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Return Complexity -->
+                    <div class="mb-4">
+                        <h4 class="mb-3 border-bottom pb-2">Return Complexity</h4>
+                        <div class="d-flex align-items-center">
+                            {% if complexity == 'zero' %}
+                                <div class="badge bg-success p-2 me-3">
+                                    <i class="fas fa-check-circle me-1"></i> Zero Activity Return
+                                </div>
+                                <p class="text-muted mb-0">Your return is classified as a zero activity return (no revenue or expenses reported).</p>
+                            {% elif complexity == 'basic' %}
+                                <div class="badge bg-primary p-2 me-3">
+                                    <i class="fas fa-file-alt me-1"></i> Basic Activity Return
+                                </div>
+                                <p class="text-muted mb-0">Your return is classified as a basic activity return (revenue/expenses under $10K).</p>
+                            {% elif complexity == 'complex' %}
+                                <div class="badge bg-warning text-dark p-2 me-3">
+                                    <i class="fas fa-file-invoice-dollar me-1"></i> Complex Return
+                                </div>
+                                <p class="text-muted mb-0">Your return is classified as complex (revenue/expenses over $10K, employees, or multiple states).</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Required Forms -->
+                    <div class="mb-4">
+                        <h4 class="mb-3 border-bottom pb-2">Required Tax Forms</h4>
+                        {% if required_forms %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Form</th>
+                                            <th>Description</th>
+                                            <th>Filing Deadline</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for form in required_forms %}
+                                            <tr>
+                                                <td>{{ form.name }}</td>
+                                                <td>{{ form.description }}</td>
+                                                <td>{{ form.deadline }}</td>
+                                                <td>
+                                                    {% if current_user.has_paid('save_progress') %}
+                                                        <a href="{{ url_for('form.new_form') }}?form_type={{ form.id }}&tax_year={{ answers.tax_year }}" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-file-alt me-1"></i> Generate
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{{ url_for('form.new_form') }}?form_type={{ form.id }}" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-file-alt me-1"></i> Generate
+                                                        </a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> No specific forms could be determined. Please consult with a tax professional.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Digital Signature Section -->
+                    <div class="mb-4">
+                        <h4 class="mb-3 border-bottom pb-2">Digital Signature</h4>
+                        <div class="alert alert-light border">
+                            <p class="mb-2">When filing your tax forms, most will require a signature. Forms will include:</p>
+                            <ul>
+                                <li>A signature line for you or your authorized representative</li>
+                                <li>Date of signature</li>
+                                <li>Title/Position in the business (if applicable)</li>
+                            </ul>
+                            <p class="mb-0">E-filing often requires a PIN instead of a physical signature.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Filing Instructions -->
+                    <div class="mb-4">
+                        <h4 class="mb-3 border-bottom pb-2">Filing Instructions</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <h5 class="mb-0"><i class="fas fa-mail-bulk me-2"></i> Mailing Instructions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>To mail your tax forms:</p>
+                                        <ol>
+                                            <li>Generate and print the required forms</li>
+                                            <li>Sign and date where indicated</li>
+                                            <li>Include all required schedules and attachments</li>
+                                            <li>Mail to the appropriate IRS service center (based on your location)</li>
+                                            <li>Use certified mail with return receipt for tracking</li>
+                                        </ol>
+                                        <p class="mb-0 small text-muted">Note: Mailing addresses vary by form type and your location.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <h5 class="mb-0"><i class="fas fa-laptop me-2"></i> E-filing Instructions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>To e-file your tax forms:</p>
+                                        <ol>
+                                            <li>Generate the required forms</li>
+                                            <li>Export them from .fylr or prepare them in approved e-filing software</li>
+                                            <li>Follow the software's instructions to submit electronically</li>
+                                            <li>Save your confirmation number or acknowledgment</li>
+                                        </ol>
+                                        <p class="mb-0 small text-muted">Note: Some forms may require an electronic filing PIN or additional verification.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Next Steps -->
+                    <div class="mb-4">
+                        <h4 class="mb-3 border-bottom pb-2">Recommended Next Steps</h4>
+                        <div class="card">
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% for step in next_steps %}
+                                        <li class="list-group-item px-0">
+                                            <i class="fas fa-arrow-right me-2" style="color: #FF6B00;"></i> {{ step }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if should_upgrade %}
+                    <!-- Upgrade Prompt for Complex Returns -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-lg-8">
+                                    <h5><i class="fas fa-crown me-2" style="color: #FF6B00;"></i> Your return is classified as complex</h5>
+                                    <p class="mb-lg-0">Upgrade to .fylr+ or .fylr Pro to unlock additional features that will help with complex returns, including enhanced AI support, save & resume functionality, and advanced audit protection.</p>
+                                </div>
+                                <div class="col-lg-4 text-center text-lg-end mt-3 mt-lg-0">
+                                    <a href="{{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                        <i class="fas fa-arrow-circle-up me-2"></i> View Upgrade Options
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="border-top pt-4 text-center">
+                        <div class="alert alert-secondary mb-3">
+                            <i class="fas fa-question-circle me-2"></i> Questions about your tax forms? Access our AI-powered form help to get specific guidance for each form.
+                        </div>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="{{ url_for('questionnaire.start') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-2"></i> Start Over
+                            </a>
+                            <a href="{{ url_for('form.new_form') }}" class="btn btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                <i class="fas fa-file-alt me-2"></i> Generate Forms
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disclaimer Footer -->
+            <div class="card mt-4 border-0 shadow">
+                <div class="card-body p-3">
+                    <div class="alert alert-warning mb-0">
+                        <div class="text-center">
+                            <h5 class="alert-heading">This is an AI-generated draft.</h5>
+                            <p class="mb-0">It is your responsibility to review and file correctly. No legal advice is provided.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

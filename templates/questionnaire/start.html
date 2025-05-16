@@ -1,0 +1,133 @@
+{% extends 'layout.html' %}
+
+{% block title %}Business Tax Questionnaire | .fylr{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center bg-dark text-white py-3">
+                    <h2 class="h3 mb-0">Business Tax Questionnaire</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="{{ url_for('questionnaire.start') }}">
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-4 mb-md-0">
+                                <div class="form-group">
+                                    <label for="business_type" class="form-label fw-bold">1. What is your business type?</label>
+                                    <select class="form-select" id="business_type" name="business_type" required>
+                                        <option value="" selected disabled>Select your business type</option>
+                                        {% for key, value in business_types.items() %}
+                                            <option value="{{ key }}">{{ value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="state" class="form-label fw-bold">2. State of registration</label>
+                                    <select class="form-select" id="state" name="state" required>
+                                        <option value="" selected disabled>Select your state</option>
+                                        {% for abbr, name in states.items() %}
+                                            <option value="{{ abbr }}">{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label for="tax_year" class="form-label fw-bold">3. Tax year</label>
+                            <select class="form-select" id="tax_year" name="tax_year" required>
+                                <option value="" selected disabled>Select tax year</option>
+                                {% for year in tax_years %}
+                                    <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-4 mb-md-0">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">4. Revenue this year?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_revenue" id="has_revenue_yes" value="yes" required>
+                                        <label class="form-check-label" for="has_revenue_yes">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_revenue" id="has_revenue_no" value="no">
+                                        <label class="form-check-label" for="has_revenue_no">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">5. Expenses this year?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_expenses" id="has_expenses_yes" value="yes" required>
+                                        <label class="form-check-label" for="has_expenses_yes">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_expenses" id="has_expenses_no" value="no">
+                                        <label class="form-check-label" for="has_expenses_no">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-4 mb-md-0">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">6. Any employees or contractors?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_employees" id="has_employees_yes" value="yes" required>
+                                        <label class="form-check-label" for="has_employees_yes">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_employees" id="has_employees_no" value="no">
+                                        <label class="form-check-label" for="has_employees_no">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">7. EIN or State Tax ID available?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_ein" id="has_ein_yes" value="yes" required>
+                                        <label class="form-check-label" for="has_ein_yes">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_ein" id="has_ein_no" value="no">
+                                        <label class="form-check-label" for="has_ein_no">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div>
+                                    <strong>Notice:</strong> This is an AI-generated questionnaire. This information will be used to recommend tax forms but will not be reviewed by a tax professional. It is your responsibility to select and file the correct forms.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ url_for('questionnaire.index') }}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-2"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                <i class="fas fa-check-circle me-2"></i> Get Form Recommendations
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

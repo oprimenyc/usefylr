@@ -64,6 +64,7 @@ with app.app_context():
     from modules.form_routes import form_bp
     from modules.strategy_routes import strategy_bp
     from modules.letter_routes import letter_bp
+    from modules.tax_questionnaire import questionnaire_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
@@ -71,6 +72,7 @@ with app.app_context():
     app.register_blueprint(form_bp)
     app.register_blueprint(strategy_bp)
     app.register_blueprint(letter_bp)
+    app.register_blueprint(questionnaire_bp)
     
     # Error handlers
     from app.routes import page_not_found, server_error
