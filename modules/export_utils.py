@@ -1,293 +1,170 @@
 """
-Document Export Utilities
+Export Utilities Module
 
-This module provides utilities for exporting tax documents in various formats.
+This module provides functions for exporting tax strategies, forms,
+and other data in various formats (PDF, JSON, HTML).
 """
 
-from flask import Blueprint, render_template, send_file, request, jsonify, current_app
-from flask_login import login_required, current_user
+from flask import render_template, make_response, jsonify, send_file
 import json
-import os
+from datetime import datetime
 import tempfile
-import datetime
-from weasyprint import HTML, CSS
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
-from app.models import TaxForm, IRSLetter, TaxStrategy
+import os
+from weasyprint import HTML
 
-# Create blueprint
-export_bp = Blueprint('export', __name__, url_prefix='/export')
-
-@export_bp.route('/form/<int:form_id>')
-@login_required
-def export_form(form_id):
-    """Export a tax form in the requested format"""
-    # Get the form
-    form = TaxForm.query.filter_by(id=form_id, user_id=current_user.id).first_or_404()
+def export_strategy_as_pdf(strategy):
+    """
+    Export a tax strategy as a PDF document
     
-    # Get requested format
-    export_format = request.args.get('format', 'pdf')
+    Args:
+        strategy: The TaxStrategy object to export
+        
+    Returns:
+        Flask response with PDF attachment
+    """
+    # Generate HTML content first
+    html_content = render_template('export/strategy_html.html', 
+                                  strategy=strategy)
     
-    if export_format == 'pdf':
-        return export_form_pdf(form)
-    elif export_format == 'json':
-        return export_form_json(form)
-    elif export_format == 'html':
-        return export_form_html(form)
-    else:
-        return jsonify({'error': 'Unsupported export format'}), 400
-
-@export_bp.route('/letter/<int:letter_id>')
-@login_required
-def export_letter(letter_id):
-    """Export an IRS letter in the requested format"""
-    # Get the letter
-    letter = IRSLetter.query.filter_by(id=letter_id, user_id=current_user.id).first_or_404()
-    
-    # Get requested format
-    export_format = request.args.get('format', 'pdf')
-    
-    if export_format == 'pdf':
-        return export_letter_pdf(letter)
-    elif export_format == 'json':
-        return export_letter_json(letter)
-    elif export_format == 'html':
-        return export_letter_html(letter)
-    else:
-        return jsonify({'error': 'Unsupported export format'}), 400
-
-@export_bp.route('/strategy/<int:strategy_id>')
-@login_required
-def export_strategy(strategy_id):
-    """Export a tax strategy in the requested format"""
-    # Get the strategy
-    strategy = TaxStrategy.query.filter_by(id=strategy_id, user_id=current_user.id).first_or_404()
-    
-    # Get requested format
-    export_format = request.args.get('format', 'pdf')
-    
-    if export_format == 'pdf':
-        return export_strategy_pdf(strategy)
-    elif export_format == 'json':
-        return export_strategy_json(strategy)
-    elif export_format == 'html':
-        return export_strategy_html(strategy)
-    else:
-        return jsonify({'error': 'Unsupported export format'}), 400
-
-def export_form_pdf(form):
-    """Export a tax form as PDF"""
-    # Generate the HTML representation of the form
-    html_content = render_template('export/form_pdf.html', form=form)
-    
-    # Create a temporary file
+    # Create a temporary file for the PDF
     with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
-        temp_filename = temp_file.name
+        temp_path = temp_file.name
     
     # Convert HTML to PDF
-    HTML(string=html_content).write_pdf(
-        temp_filename,
-        stylesheets=[CSS(string='@page { size: letter; margin: 1cm }')]
-    )
+    HTML(string=html_content).write_pdf(temp_path)
     
-    # Generate a meaningful filename
-    filename = f"{form.form_type.value}_tax_year_{form.tax_year}_{datetime.date.today().strftime('%Y%m%d')}.pdf"
+    # Create response with PDF attachment
+    filename = f"tax_strategy_{strategy.strategy_name.replace(' ', '_').lower()}_{datetime.now().strftime('%Y%m%d')}.pdf"
     
-    # Send the file
-    return send_file(
-        temp_filename,
-        mimetype='application/pdf',
-        as_attachment=True,
-        download_name=filename
-    )
-
-def export_form_json(form):
-    """Export a tax form as JSON"""
-    # Prepare form data
-    form_data = {
-        'id': form.id,
-        'form_type': form.form_type.value,
-        'tax_year': form.tax_year,
-        'status': form.status,
-        'data': form.data,
-        'created_at': form.created_at.isoformat(),
-        'updated_at': form.updated_at.isoformat()
-    }
+    response = make_response(send_file(temp_path, as_attachment=True, 
+                                      download_name=filename))
     
-    # Generate a meaningful filename
-    filename = f"{form.form_type.value}_tax_year_{form.tax_year}_{datetime.date.today().strftime('%Y%m%d')}.json"
+    # Clean up the temporary file (will be deleted when the request is complete)
+    os.unlink(temp_path)
     
-    # Return JSON response with attachment headers
-    response = jsonify(form_data)
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
 
-def export_form_html(form):
-    """Export a tax form as HTML (email-ready)"""
-    # Generate the HTML representation of the form
-    html_content = render_template('export/form_html.html', form=form)
+def export_strategy_as_json(strategy):
+    """
+    Export a tax strategy as a JSON file
     
-    # Generate a meaningful filename
-    filename = f"{form.form_type.value}_tax_year_{form.tax_year}_{datetime.date.today().strftime('%Y%m%d')}.html"
-    
-    # Create a response with the HTML content
-    response = current_app.response_class(
-        response=html_content,
-        status=200,
-        mimetype='text/html'
-    )
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
-
-def export_letter_pdf(letter):
-    """Export an IRS letter as PDF"""
-    # Generate the HTML representation of the letter
-    html_content = render_template('export/letter_pdf.html', letter=letter)
-    
-    # Create a temporary file
-    with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
-        temp_filename = temp_file.name
-    
-    # Convert HTML to PDF
-    HTML(string=html_content).write_pdf(
-        temp_filename,
-        stylesheets=[CSS(string='@page { size: letter; margin: 1cm }')]
-    )
-    
-    # Generate a meaningful filename
-    filename = f"IRS_letter_{letter.letter_type.value}_{datetime.date.today().strftime('%Y%m%d')}.pdf"
-    
-    # Send the file
-    return send_file(
-        temp_filename,
-        mimetype='application/pdf',
-        as_attachment=True,
-        download_name=filename
-    )
-
-def export_letter_json(letter):
-    """Export an IRS letter as JSON"""
-    # Prepare letter data
-    letter_data = {
-        'id': letter.id,
-        'letter_type': letter.letter_type.value,
-        'data': letter.data,
-        'status': letter.status,
-        'created_at': letter.created_at.isoformat(),
-        'updated_at': letter.updated_at.isoformat()
-    }
-    
-    # Generate a meaningful filename
-    filename = f"IRS_letter_{letter.letter_type.value}_{datetime.date.today().strftime('%Y%m%d')}.json"
-    
-    # Return JSON response with attachment headers
-    response = jsonify(letter_data)
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
-
-def export_letter_html(letter):
-    """Export an IRS letter as HTML (email-ready)"""
-    # Generate the HTML representation of the letter
-    html_content = render_template('export/letter_html.html', letter=letter)
-    
-    # Generate a meaningful filename
-    filename = f"IRS_letter_{letter.letter_type.value}_{datetime.date.today().strftime('%Y%m%d')}.html"
-    
-    # Create a response with the HTML content
-    response = current_app.response_class(
-        response=html_content,
-        status=200,
-        mimetype='text/html'
-    )
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
-
-def export_strategy_pdf(strategy):
-    """Export a tax strategy as PDF"""
-    # Generate the HTML representation of the strategy
-    html_content = render_template('export/strategy_pdf.html', strategy=strategy)
-    
-    # Create a temporary file
-    with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
-        temp_filename = temp_file.name
-    
-    # Convert HTML to PDF
-    HTML(string=html_content).write_pdf(
-        temp_filename,
-        stylesheets=[CSS(string='@page { size: letter; margin: 1cm }')]
-    )
-    
-    # Generate a meaningful filename
-    filename = f"Tax_Strategy_{strategy.strategy_name.replace(' ', '_')}_{datetime.date.today().strftime('%Y%m%d')}.pdf"
-    
-    # Send the file
-    return send_file(
-        temp_filename,
-        mimetype='application/pdf',
-        as_attachment=True,
-        download_name=filename
-    )
-
-def export_strategy_json(strategy):
-    """Export a tax strategy as JSON"""
-    # Prepare strategy data
+    Args:
+        strategy: The TaxStrategy object to export
+        
+    Returns:
+        Flask response with JSON attachment
+    """
+    # Create a dictionary with strategy data
     strategy_data = {
-        'id': strategy.id,
         'strategy_name': strategy.strategy_name,
         'description': strategy.description,
         'estimated_savings': strategy.estimated_savings,
-        'answers': strategy.answers,
-        'status': strategy.status,
-        'created_at': strategy.created_at.isoformat()
+        'implementation_steps': strategy.implementation_steps,
+        'qualifications': strategy.qualifications,
+        'tax_year': strategy.tax_year,
+        'tier': strategy.tier,
+        'created_at': strategy.created_at.isoformat(),
+        'disclaimer': 'This tax strategy is provided for informational purposes only and does not constitute professional tax advice. Always consult with a qualified tax professional before implementing any tax strategy.'
     }
     
-    # Generate a meaningful filename
-    filename = f"Tax_Strategy_{strategy.strategy_name.replace(' ', '_')}_{datetime.date.today().strftime('%Y%m%d')}.json"
+    # Add business context if available
+    if hasattr(strategy, 'data') and strategy.data:
+        # Only include non-sensitive business context data
+        if 'business_data' in strategy.data:
+            business_data = strategy.data['business_data'].copy()
+            # Remove any potentially sensitive information
+            if 'ein' in business_data:
+                del business_data['ein']
+            if 'ssn' in business_data:
+                del business_data['ssn']
+            strategy_data['business_context'] = business_data
+        
+        # Include relevant questionnaire answers if available
+        if 'questionnaire_answers' in strategy.data:
+            strategy_data['answers'] = strategy.data['questionnaire_answers']
     
-    # Return JSON response with attachment headers
+    # Create JSON response with attachment
     response = jsonify(strategy_data)
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+    response.headers['Content-Disposition'] = f'attachment; filename=tax_strategy_{strategy.strategy_name.replace(" ", "_").lower()}_{datetime.now().strftime("%Y%m%d")}.json'
+    
     return response
 
-def export_strategy_html(strategy):
-    """Export a tax strategy as HTML (email-ready)"""
-    # Generate the HTML representation of the strategy
-    html_content = render_template('export/strategy_html.html', strategy=strategy)
+def export_strategy_as_html(strategy):
+    """
+    Export a tax strategy as an HTML file
     
-    # Generate a meaningful filename
-    filename = f"Tax_Strategy_{strategy.strategy_name.replace(' ', '_')}_{datetime.date.today().strftime('%Y%m%d')}.html"
+    Args:
+        strategy: The TaxStrategy object to export
+        
+    Returns:
+        Flask response with HTML attachment
+    """
+    # Generate HTML content
+    html_content = render_template('export/strategy_html.html', 
+                                  strategy=strategy)
     
-    # Create a response with the HTML content
-    response = current_app.response_class(
-        response=html_content,
-        status=200,
-        mimetype='text/html'
-    )
-    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+    # Create response with HTML attachment
+    response = make_response(html_content)
+    response.headers['Content-Type'] = 'text/html'
+    response.headers['Content-Disposition'] = f'attachment; filename=tax_strategy_{strategy.strategy_name.replace(" ", "_").lower()}_{datetime.now().strftime("%Y%m%d")}.html'
+    
     return response
 
-def send_email_export(recipient_email, subject, html_content, text_content=None):
-    """Send an email with the exported content"""
-    # This would use SMTP to send emails in a production environment
-    # For demo purposes, we'll just show a placeholder implementation
+def export_form_as_pdf(form):
+    """
+    Export a tax form as a PDF document
     
-    # Create a MIMEMultipart message
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = subject
-    msg['From'] = "noreply@fylr.app"
-    msg['To'] = recipient_email
+    Args:
+        form: The TaxForm object to export
+        
+    Returns:
+        Flask response with PDF attachment
+    """
+    # Generate HTML content first
+    html_content = render_template('export/form_html.html', 
+                                  form=form)
     
-    # Add plain text version if provided
-    if text_content:
-        msg.attach(MIMEText(text_content, 'plain'))
+    # Create a temporary file for the PDF
+    with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_file:
+        temp_path = temp_file.name
     
-    # Add HTML version
-    msg.attach(MIMEText(html_content, 'html'))
+    # Convert HTML to PDF
+    HTML(string=html_content).write_pdf(temp_path)
     
-    # In a real implementation, you would send the email:
-    # with smtplib.SMTP_SSL('smtp.example.com', 465) as server:
-    #     server.login(username, password)
-    #     server.send_message(msg)
+    # Create response with PDF attachment
+    filename = f"tax_form_{form.form_type.name.lower()}_{datetime.now().strftime('%Y%m%d')}.pdf"
     
-    return True
+    response = make_response(send_file(temp_path, as_attachment=True, 
+                                      download_name=filename))
+    
+    # Clean up the temporary file (will be deleted when the request is complete)
+    os.unlink(temp_path)
+    
+    return response
+
+def export_form_as_json(form):
+    """
+    Export a tax form as a JSON file
+    
+    Args:
+        form: The TaxForm object to export
+        
+    Returns:
+        Flask response with JSON attachment
+    """
+    # Create a dictionary with form data
+    form_data = {
+        'form_type': form.form_type.name,
+        'tax_year': form.tax_year,
+        'data': form.data,
+        'status': form.status,
+        'created_at': form.created_at.isoformat(),
+        'updated_at': form.updated_at.isoformat() if form.updated_at else None,
+        'disclaimer': 'This tax form data is provided for informational purposes only and does not constitute a filed tax return. Always consult with a qualified tax professional before filing tax forms.'
+    }
+    
+    # Create JSON response with attachment
+    response = jsonify(form_data)
+    response.headers['Content-Disposition'] = f'attachment; filename=tax_form_{form.form_type.name.lower()}_{datetime.now().strftime("%Y%m%d")}.json'
+    
+    return response

@@ -1,0 +1,20 @@
+{% if show_prompt %}
+<div class="upgrade-prompt card mb-4 mt-3 border-warning">
+    <div class="card-body">
+        <div class="d-flex">
+            <div class="flex-shrink-0 me-3">
+                <span class="badge bg-warning p-3 rounded-circle">
+                    <i class="fas fa-crown fa-2x text-white"></i>
+                </span>
+            </div>
+            <div>
+                <h5 class="card-title">{{ prompt_title }}</h5>
+                <p class="card-text">{{ prompt_message }}</p>
+                <a href="{{ url_for('billing.pricing') }}" class="btn btn-warning">
+                    <i class="fas fa-arrow-circle-up me-1"></i> {{ prompt_cta }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
