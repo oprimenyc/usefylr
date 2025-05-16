@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Strategy - {{ strategy.strategy_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #FF6B00;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF6B00;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+        .warning-box {
+            background-color: #FFF3CD;
+            border: 1px solid #FFECB5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FF6B00;
+        }
+        .strategy-summary {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .data-row {
+            margin-bottom: 10px;
+        }
+        .data-label {
+            font-weight: bold;
+        }
+        .data-value {
+            margin-left: 10px;
+        }
+        .steps {
+            margin-left: 20px;
+            padding-left: 0;
+            list-style-type: none;
+        }
+        .step {
+            margin-bottom: 15px;
+        }
+        .step-title {
+            font-weight: bold;
+        }
+        .step-description {
+            margin-top: 5px;
+        }
+        .box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">.fylr</div>
+            <div class="title">Tax Strategy: {{ strategy.strategy_name }}</div>
+            <div class="subtitle">Generated on {{ strategy.created_at.strftime('%B %d, %Y') }}</div>
+        </div>
+        
+        <div class="warning-box">
+            <div class="warning-title">IMPORTANT DISCLAIMER</div>
+            <p>This tool does not provide legal or professional tax advice. It prepares informational documentation based on the information you enter. Review thoroughly and consult with a qualified tax professional before implementing any tax strategy. All information should be verified for accuracy and applicability to your specific situation.</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Strategy Summary</div>
+            <div class="strategy-summary">
+                <div class="data-row">
+                    <span class="data-label">Strategy Name:</span>
+                    <span class="data-value">{{ strategy.strategy_name }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Description:</span>
+                    <span class="data-value">{{ strategy.description }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Estimated Savings:</span>
+                    <span class="data-value">${{ strategy.estimated_savings if strategy.estimated_savings else "Varies" }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Created:</span>
+                    <span class="data-value">{{ strategy.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Implementation Steps</div>
+            <ol class="steps">
+                <li class="step">
+                    <div class="step-title">1. Research and Planning</div>
+                    <div class="step-description">Thoroughly research this tax strategy to ensure it applies to your specific situation. Gather all necessary information and documentation.</div>
+                </li>
+                <li class="step">
+                    <div class="step-title">2. Consult with a Tax Professional</div>
+                    <div class="step-description">Before implementing this strategy, consult with a qualified tax professional to confirm its appropriateness for your specific situation and to discuss any potential risks.</div>
+                </li>
+                <li class="step">
+                    <div class="step-title">3. Document Your Approach</div>
+                    <div class="step-description">Keep detailed records of how you implement this strategy, including all relevant documentation, calculations, and supporting evidence.</div>
+                </li>
+                <li class="step">
+                    <div class="step-title">4. Implementation</div>
+                    <div class="step-description">Follow all IRS guidelines and procedures when implementing this strategy. Ensure all forms are filled out correctly and submitted on time.</div>
+                </li>
+                <li class="step">
+                    <div class="step-title">5. Monitor and Adjust</div>
+                    <div class="step-description">Regularly review your tax strategy to ensure continued compliance with changing tax laws and your evolving business situation.</div>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Key Considerations</div>
+            <div class="box">
+                <h4>Eligibility Requirements</h4>
+                <ul>
+                    <li>Verify that you meet all eligibility requirements for this tax strategy</li>
+                    <li>Consider whether your business structure supports this strategy</li>
+                    <li>Check if there are income limitations or other restrictions</li>
+                </ul>
+            </div>
+            
+            <div class="box">
+                <h4>Documentation Needs</h4>
+                <ul>
+                    <li>Maintain thorough records to support implementation of this strategy</li>
+                    <li>Keep receipts, invoices, and other supporting documents</li>
+                    <li>Document business purpose for relevant transactions</li>
+                </ul>
+            </div>
+            
+            <div class="box">
+                <h4>Potential Risks</h4>
+                <ul>
+                    <li>Understand potential audit triggers associated with this strategy</li>
+                    <li>Consider the compliance burden and administrative costs</li>
+                    <li>Be aware of potential tax law changes that may affect this strategy</li>
+                </ul>
+            </div>
+        </div>
+        
+        {% if strategy.answers %}
+        <div class="section">
+            <div class="section-title">Strategy Context</div>
+            {% for question, answer in strategy.answers.items() %}
+                <div class="data-row">
+                    <div class="data-label">{{ question|replace('_', ' ')|title }}:</div>
+                    <div class="data-value">{{ answer }}</div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="footer">
+            <p>Generated by .fylr Tax Automation Tool | {{ strategy.created_at.strftime('%B %d, %Y %H:%M:%S') }}</p>
+            <p>This document is for informational purposes only and does not constitute professional tax advice.</p>
+            <p><a href="https://www.fylr.app">www.fylr.app</a></p>
+        </div>
+    </div>
+</body>
+</html>

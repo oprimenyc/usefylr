@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRS Letter - {{ letter.letter_type.value|replace('_', ' ')|title }}</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            line-height: 1.5;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #FF6B00;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF6B00;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+        .warning-box {
+            background-color: #FFF3CD;
+            border: 1px solid #FFECB5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        .letter-header {
+            margin-bottom: 20px;
+        }
+        .date {
+            margin-bottom: 20px;
+        }
+        .recipient {
+            margin-bottom: 20px;
+        }
+        .sender {
+            margin-top: 40px;
+        }
+        .letter-body {
+            margin-bottom: 40px;
+            white-space: pre-line;
+        }
+        .letter-footer {
+            margin-top: 40px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">.fylr</div>
+            <div class="title">IRS Letter - {{ letter.letter_type.value|replace('_', ' ')|title }}</div>
+            <div class="subtitle">Generated on {{ letter.updated_at.strftime('%B %d, %Y') }}</div>
+        </div>
+        
+        <div class="warning-box">
+            <div class="warning-title">IMPORTANT DISCLAIMER</div>
+            <p>This tool does not file your taxes or submit letters to the IRS. It prepares draft documentation based on the information you enter. Review thoroughly before submission. All information should be verified for accuracy and completeness before sending to tax authorities.</p>
+        </div>
+        
+        <div class="letter-header">
+            <div class="date">{{ letter.data.get('date', letter.updated_at.strftime('%B %d, %Y')) }}</div>
+            
+            <div class="recipient">
+                Internal Revenue Service<br>
+                {{ letter.data.get('irs_address', '[IRS Address - Include specific department and address from your notice]') }}
+            </div>
+            
+            <div>
+                Re: {{ letter.data.get('subject', letter.letter_type.value|replace('_', ' ')|title) }}<br>
+                {{ letter.data.get('taxpayer_name', '[Your Full Name / Business Name]') }}<br>
+                Tax ID: {{ letter.data.get('taxpayer_id', '[Your SSN / EIN]') }}<br>
+                {% if letter.data.get('notice_number') %}
+                Notice Number: {{ letter.data.get('notice_number') }}<br>
+                {% endif %}
+                {% if letter.data.get('tax_year') %}
+                Tax Year: {{ letter.data.get('tax_year') }}
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="letter-body">
+            <p>To Whom It May Concern:</p>
+            
+            {{ letter.data.get('content', letter.data.get('letter_content', 'Dear IRS Representative,\n\nI am writing regarding the above-referenced matter. [Your letter content will appear here with details specific to your situation].\n\nPlease contact me if you need any additional information.')) }}
+        </div>
+        
+        <div class="letter-footer">
+            <p>Sincerely,</p>
+            <br><br><br>
+            <p>
+                {{ letter.data.get('taxpayer_name', '[Your Full Name / Business Name]') }}<br>
+                {{ letter.data.get('taxpayer_id', '[Your SSN / EIN]') }}<br>
+                {{ letter.data.get('address', '[Your Address]') }}<br>
+                {% if letter.data.get('phone') %}
+                Phone: {{ letter.data.get('phone') }}<br>
+                {% endif %}
+                {% if letter.data.get('email') %}
+                Email: {{ letter.data.get('email') }}
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Generated by .fylr Tax Automation Tool | {{ letter.updated_at.strftime('%B %d, %Y %H:%M:%S') }}</p>
+            <p>This is not an official IRS submission. Use this document as a template for your official correspondence.</p>
+        </div>
+    </div>
+</body>
+</html>

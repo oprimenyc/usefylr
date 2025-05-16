@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ form.form_type.value }} - Tax Year {{ form.tax_year }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #FF6B00;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF6B00;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+        .warning-box {
+            background-color: #FFF3CD;
+            border: 1px solid #FFECB5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #FF6B00;
+        }
+        .form-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .form-label {
+            display: table-cell;
+            width: 40%;
+            font-weight: bold;
+            vertical-align: top;
+        }
+        .form-value {
+            display: table-cell;
+            width: 60%;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">.fylr</div>
+            <div class="title">{{ form.form_type.value }} - Tax Year {{ form.tax_year }}</div>
+            <div class="subtitle">Generated on {{ form.updated_at.strftime('%B %d, %Y') }}</div>
+        </div>
+        
+        <div class="warning-box">
+            <div class="warning-title">IMPORTANT DISCLAIMER</div>
+            <p>This tool does not file your taxes. It prepares draft documentation based on the information you enter. Review thoroughly before submission. All information should be verified for accuracy and completeness before filing with tax authorities.</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Form Information</div>
+            <div class="form-row">
+                <div class="form-label">Form Type:</div>
+                <div class="form-value">{{ form.form_type.value }}</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Tax Year:</div>
+                <div class="form-value">{{ form.tax_year }}</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Status:</div>
+                <div class="form-value">{{ form.status }}</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Last Updated:</div>
+                <div class="form-value">{{ form.updated_at.strftime('%B %d, %Y %H:%M:%S') }}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Form Data</div>
+            {% for section_name, section_data in form.data.items() %}
+                <h3>{{ section_name|replace('_', ' ')|title }}</h3>
+                
+                {% if section_data is mapping %}
+                    {% for field_name, field_value in section_data.items() %}
+                        <div class="form-row">
+                            <div class="form-label">{{ field_name|replace('_', ' ')|title }}:</div>
+                            <div class="form-value">{{ field_value }}</div>
+                        </div>
+                    {% endfor %}
+                {% elif section_data is iterable and section_data is not string %}
+                    <table>
+                        <thead>
+                            <tr>
+                                {% for header in section_data[0].keys() %}
+                                    <th>{{ header|replace('_', ' ')|title }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in section_data %}
+                                <tr>
+                                    {% for value in item.values() %}
+                                        <td>{{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="form-row">
+                        <div class="form-value">{{ section_data }}</div>
+                    </div>
+                {% endif %}
+                
+                {% if not loop.last %}
+                    <hr>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+        <div class="footer">
+            <p>Generated by .fylr Tax Automation Tool | {{ form.updated_at.strftime('%B %d, %Y %H:%M:%S') }}</p>
+            <p>This is not an official IRS form. Use this document as a reference for completing your official tax forms.</p>
+        </div>
+    </div>
+</body>
+</html>
