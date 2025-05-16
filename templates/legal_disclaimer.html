@@ -12,18 +12,18 @@
                 </div>
                 <div class="card-body p-4">
                     <div class="alert alert-warning">
-                        <strong>IMPORTANT:</strong> Please carefully read and acknowledge this disclaimer before using .fylr services.
+                        <strong>IMPORTANT:</strong> Please carefully read and acknowledge this disclaimer before using .fylr services. This is a 100% self-service platform with no human review of your submissions.
                     </div>
 
                     <form method="post" action="{{ url_for('main.process_disclaimer') }}">
                         <div class="mb-4">
                             <h4 class="border-bottom pb-2 text-dark">Disclaimer</h4>
-                            <p>The .fylr tax automation platform is an AI-driven self-service tool designed to assist in business tax preparation. By using this platform, you acknowledge and agree to the following terms:</p>
+                            <p>The .fylr tax automation platform is an AI-driven self-service tool designed to assist in business tax preparation. <strong>This platform is entirely automated with no human intervention or expert review of your submissions.</strong> By using this platform, you acknowledge and agree to the following terms:</p>
                             
-                            <div class="card mb-3 bg-light">
+                            <div class="card mb-3 bg-light border-warning">
                                 <div class="card-body">
-                                    <h5 class="fw-bold">1. Not Professional Tax Advice</h5>
-                                    <p class="mb-0">This platform is <strong>not</strong> operated by licensed CPAs, tax attorneys, or tax professionals. The content provided is for informational purposes only and does not constitute professional tax advice, legal advice, or financial planning services.</p>
+                                    <h5 class="fw-bold">1. 100% Self-Service, No Professional Review</h5>
+                                    <p class="mb-0">This platform is <strong>not</strong> operated by licensed CPAs, tax attorneys, or tax professionals. No human will review or check your tax forms for accuracy or completeness. The .fylr platform is a self-service AI-driven tool with no human intervention at any stage. The content provided is for informational purposes only and does not constitute professional tax advice, legal advice, or financial planning services.</p>
                                 </div>
                             </div>
                             
@@ -77,7 +77,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="professional_check" name="acknowledged_not_professional" required>
                                     <label class="form-check-label" for="professional_check">
-                                        I understand that this platform does not replace licensed tax professionals and does not provide professional tax advice.
+                                        I understand that this platform is 100% self-service, does not replace licensed tax professionals, does not provide professional tax advice, and no human will review my tax information for accuracy.
                                     </label>
                                 </div>
                                 <div class="mt-2">

@@ -12,18 +12,27 @@
         <div class="col-lg-6 text-lg-end">
             <div class="d-inline-block p-3 rounded bg-light">
                 <span class="me-2">Your Plan:</span>
-                {% if current_user.plan == 'BUSINESS_BUILDER' %}
-                    <span class="badge bg-primary p-2">
-                        <i class="fas fa-crown me-1"></i> Business Builder
+                {% if current_user.plan.name == 'PRO' %}
+                    <span class="badge bg-dark p-2">
+                        <i class="fas fa-crown me-1"></i> .fylr Pro
                     </span>
-                {% elif current_user.subscription_member %}
-                    <span class="badge bg-info p-2">
-                        <i class="fas fa-star me-1"></i> Subscription Member
+                    <a href="#features-modal" data-bs-toggle="modal" class="text-decoration-none ms-2">
+                        <small><i class="fas fa-info-circle"></i> Your Premium Features</small>
+                    </a>
+                {% elif current_user.plan.name == 'FYLR_PLUS' %}
+                    <span class="badge p-2" style="background-color: #FF6B00; color: white;">
+                        <i class="fas fa-star me-1"></i> .fylr+
                     </span>
+                    <a href="#features-modal" data-bs-toggle="modal" class="text-decoration-none ms-2">
+                        <small><i class="fas fa-info-circle"></i> Your Enhanced Features</small>
+                    </a>
                 {% else %}
                     <span class="badge bg-secondary p-2">
-                        <i class="fas fa-user me-1"></i> Standard User
+                        <i class="fas fa-user me-1"></i> .fylr Basic
                     </span>
+                    <a href="#features-modal" data-bs-toggle="modal" class="text-decoration-none ms-2">
+                        <small><i class="fas fa-info-circle"></i> Your Features</small>
+                    </a>
                 {% endif %}
             </div>
         </div>
