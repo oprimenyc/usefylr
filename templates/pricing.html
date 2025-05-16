@@ -41,17 +41,17 @@
     </div>
     
     {% if current_user.is_authenticated %}
-        {% if current_user.plan == 'PRO' %}
+        {% if current_user.plan.name == 'PRO' %}
             <div class="alert alert-success mb-5">
                 <i class="fas fa-crown me-2"></i>
                 You're a <strong>.fylr Pro</strong> member! You have full access to all premium features.
             </div>
-        {% elif current_user.plan == 'FYLR_PLUS' %}
+        {% elif current_user.plan.name == 'FYLR_PLUS' %}
             <div class="alert alert-info mb-5">
                 <i class="fas fa-certificate me-2"></i>
                 You're a <strong>.fylr+</strong> member with enhanced features and capabilities.
             </div>
-        {% elif current_user.plan == 'BASIC' %}
+        {% elif current_user.plan.name == 'BASIC' %}
             <div class="alert alert-light mb-5">
                 <i class="fas fa-info-circle me-2"></i>
                 You're currently on the <strong>.fylr Basic</strong> plan. Upgrade to unlock more features.
@@ -86,7 +86,7 @@
                     </ul>
                     <div class="mt-auto">
                         {% if current_user.is_authenticated %}
-                            {% if current_user.plan == 'BASIC' or current_user.plan == 'FYLR_PLUS' or current_user.plan == 'PRO' %}
+                            {% if current_user.plan.name == 'BASIC' or current_user.plan.name == 'FYLR_PLUS' or current_user.plan.name == 'PRO' %}
                                 <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
                                     <i class="fas fa-unlock me-2"></i> Access Now
                                 </a>
@@ -133,7 +133,7 @@
                     </ul>
                     <div class="mt-auto">
                         {% if current_user.is_authenticated %}
-                            {% if current_user.plan == 'FYLR_PLUS' or current_user.plan == 'PRO' %}
+                            {% if current_user.plan.name == 'FYLR_PLUS' or current_user.plan.name == 'PRO' %}
                                 <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
                                     <i class="fas fa-unlock me-2"></i> Access Now
                                 </a>

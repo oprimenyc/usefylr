@@ -55,31 +55,71 @@ class User(UserMixin, db.Model):
             return "basic"
     
     def has_paid(self, feature):
-        # Pro tier has access to all features
+        """
+        Check if a user has access to a specific feature based on their plan.
+        
+        Args:
+            feature: Can be a specific feature name or a plan tier ('pro', 'plus', 'basic')
+            
+        Returns:
+            Boolean indicating if user has access to the feature
+        """
+        # If checking access level directly
+        if feature in ['pro', 'fylr_pro', 'pro_tier']:
+            return self.plan == UserPlan.PRO
+            
+        if feature in ['plus', 'fylr_plus', 'plus_tier']:
+            return self.plan in [UserPlan.PRO, UserPlan.FYLR_PLUS]
+            
+        if feature in ['basic', 'basic_tier']:
+            # All users have access to basic features
+            return True
+        
+        # Pro tier users have access to all features
         if self.plan == UserPlan.PRO:
             return True
             
-        # For .fylr+ tier, check specific features
+        # For .fylr+ tier, check specific premium features
         if self.plan == UserPlan.FYLR_PLUS:
-            # .fylr+ features include all basic features plus:
+            # Define .fylr+ (Plus) tier features
             fylr_plus_features = [
                 'save_progress', 'resume_progress', 'smart_form_logic',
-                'enhanced_ai_support', 'dynamic_checklist', 'export_forms'
+                'enhanced_ai_support', 'dynamic_checklist', 'export_forms',
+                'priority_support'
             ]
-            if feature in fylr_plus_features:
+            
+            # Plus users have access to plus features and basic features
+            if feature in fylr_plus_features or feature in ['plus', 'fylr_plus', 'plus_tier']:
                 return True
                 
-        # Basic tier features
+        # Define Basic tier features (available to all users)
         basic_features = [
             'guided_input', 'auto_fill', 'generate_documents',
-            'pdf_export', 'educational_guidance'
+            'pdf_export', 'educational_guidance', 'form_generation'
         ]
+        
         if feature in basic_features:
             return True
             
-        # Check individual payments for specific features
-        payments = Payment.query.filter_by(user_id=self.id, feature=feature, status="completed").first()
-        if payments:
+        # Define Pro-only features
+        pro_features = [
+            'ai_deduction_detection', 'ai_sorted_uploads', 
+            'filing_export_support', 'audit_protection',
+            'enhanced_audit_protection', 'priority_support'
+        ]
+        
+        if feature in pro_features:
+            # Only Pro users have access to these features
+            return self.plan == UserPlan.PRO
+            
+        # Check for individual feature purchases (for a la carte purchases)
+        payment = Payment.query.filter_by(
+            user_id=self.id, 
+            feature=feature, 
+            status="completed"
+        ).first()
+        
+        if payment:
             return True
             
         return False
