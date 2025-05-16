@@ -50,9 +50,11 @@
                             Tax Tools
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('form.new_form') }}">Tax Forms</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('strategy.home') }}">Tax Strategies</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('letter.new_letter') }}">IRS Letters</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('questionnaire.index') }}"><i class="fas fa-clipboard-list me-2" style="color: #FF6B00;"></i>Tax Questionnaire</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('form.new_form') }}"><i class="fas fa-file-alt me-2"></i>Tax Forms</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('strategy.home') }}"><i class="fas fa-lightbulb me-2"></i>Tax Strategies</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('letter.new_letter') }}"><i class="fas fa-envelope me-2"></i>IRS Letters</a></li>
                         </ul>
                     </li>
                     {% endif %}
