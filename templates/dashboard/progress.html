@@ -1,0 +1,235 @@
+{% extends "layout.html" %}
+
+{% block title %}Tax Preparation Progress{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3">Your Tax Preparation Progress</h1>
+            <p class="lead">Track your tax preparation journey and view upcoming deadlines.</p>
+        </div>
+    </div>
+
+    <!-- Overall Progress Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <div class="position-relative">
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <circle cx="75" cy="75" r="65" fill="none" stroke="#e9ecef" stroke-width="15"/>
+                            <circle cx="75" cy="75" r="65" fill="none" stroke="#FF6B00" stroke-width="15" 
+                                stroke-dasharray="408.4" stroke-dashoffset="{{ 408.4 * (1 - progress.completion_percentage / 100) }}" 
+                                transform="rotate(-90 75 75)"/>
+                        </svg>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <div class="text-center">
+                                <span style="font-size: 2rem; font-weight: bold;">{{ progress.completion_percentage }}%</span>
+                                <br>
+                                <span class="small text-muted">Complete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <h4 class="mb-3">{{ tax_year }} Tax Filing</h4>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Information Collection</span>
+                            <span>{{ progress.information_percentage }}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ progress.information_percentage }}%; background-color: #FF6B00;" 
+                                aria-valuenow="{{ progress.information_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Forms Completion</span>
+                            <span>{{ progress.forms_percentage }}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ progress.forms_percentage }}%; background-color: #FF6B00;" 
+                                aria-valuenow="{{ progress.forms_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Review & Validation</span>
+                            <span>{{ progress.review_percentage }}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ progress.review_percentage }}%; background-color: #FF6B00;" 
+                                aria-valuenow="{{ progress.review_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tax Timeline -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">Tax Timeline & Deadlines</h4>
+        </div>
+        <div class="card-body p-0">
+            <div class="timeline">
+                {% for event in timeline %}
+                <div class="timeline-item px-4 py-3 {% if event.completed %}bg-light{% endif %} {% if not loop.last %}border-bottom{% endif %}">
+                    <div class="row">
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <div class="timeline-icon me-3 {% if event.completed %}bg-success{% else %}bg-primary{% endif %}" 
+                                     style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                                     {% if event.completed %}background-color: #2A9D8F !important;{% else %}background-color: #FF6B00 !important;{% endif %}">
+                                    <i class="fas fa-{{ event.icon }} text-white small"></i>
+                                </div>
+                                <span class="text-muted">{{ event.date }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <h5 class="mb-1 {% if event.completed %}text-muted{% endif %}">{{ event.title }}</h5>
+                            <p class="mb-0 {% if event.completed %}text-muted{% endif %}">{{ event.description }}</p>
+                        </div>
+                        <div class="col-md-2 text-md-end">
+                            {% if event.completed %}
+                                <span class="badge bg-success" style="background-color: #2A9D8F !important;">Completed</span>
+                            {% elif event.overdue %}
+                                <span class="badge bg-danger">Overdue</span>
+                            {% elif event.urgent %}
+                                <span class="badge bg-warning text-dark">Urgent</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark border">Upcoming</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Required Forms Progress -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">Required Forms Status</h4>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Form</th>
+                            <th>Description</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in forms %}
+                        <tr>
+                            <td>{{ form.name }}</td>
+                            <td>{{ form.description }}</td>
+                            <td>{{ form.deadline }}</td>
+                            <td>
+                                {% if form.status == 'completed' %}
+                                <span class="badge bg-success" style="background-color: #2A9D8F !important;">Completed</span>
+                                {% elif form.status == 'in_progress' %}
+                                <span class="badge bg-primary" style="background-color: #FF6B00 !important;">In Progress</span>
+                                {% elif form.status == 'not_started' %}
+                                <span class="badge bg-light text-dark border">Not Started</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ form.url }}" class="btn btn-sm btn-outline-primary" style="border-color: #FF6B00; color: #FF6B00;">
+                                    {% if form.status == 'completed' %}
+                                    View
+                                    {% elif form.status == 'in_progress' %}
+                                    Continue
+                                    {% else %}
+                                    Start
+                                    {% endif %}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Tax Saving Recommendations Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Tax Saving Opportunities</h4>
+            <span class="badge bg-primary" style="background-color: #FF6B00 !important;">AI-Powered</span>
+        </div>
+        <div class="card-body p-4">
+            <p>Based on your business profile and current tax preparation, our AI has identified these potential tax saving opportunities:</p>
+            
+            {% if current_user.plan == 'basic' %}
+            <!-- Limited recommendations for Basic plan -->
+            <div class="alert alert-light border mb-4">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-lightbulb fa-2x text-warning"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">Business Expense Deductions</h5>
+                        <p class="mb-0">Don't forget to track all eligible business expenses for potential deductions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upgrade prompt -->
+            <div class="alert alert-info border-0" style="background-color: rgba(255, 107, 0, 0.1);">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-unlock fa-2x" style="color: #FF6B00;"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading" style="color: #FF6B00;">Unlock Advanced Tax Saving Recommendations</h5>
+                        <p class="mb-0">Upgrade to .fylr+ or .fylr Pro to receive personalized, detailed tax saving strategies.</p>
+                        <a href="{{ url_for('pricing') }}" class="btn btn-primary mt-3" style="background-color: #FF6B00; border-color: #FF6B00;">Upgrade Now</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Detailed recommendations for upgraded plans -->
+            <div class="row">
+                {% for recommendation in recommendations %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-{{ recommendation.icon }} fa-lg" style="color: #FF6B00;"></i>
+                                </div>
+                                <h5 class="mb-0">{{ recommendation.title }}</h5>
+                            </div>
+                            <p>{{ recommendation.description }}</p>
+                            {% if recommendation.potential_savings %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Potential Savings:</span>
+                                <span class="badge bg-light text-dark border">{{ recommendation.potential_savings }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{{ recommendation.url }}" class="btn btn-sm btn-outline-primary w-100" style="border-color: #FF6B00; color: #FF6B00;">
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
