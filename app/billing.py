@@ -24,31 +24,69 @@ if stripe_available:
     if not stripe.api_key:
         logging.warning("STRIPE_SECRET_KEY environment variable is not set. Stripe features will be limited.")
 
-# Pricing data
+# Pricing data for the new tiered structure
 pricing_tiers = {
-    "basic_diy": {
-        "name": "Basic DIY Filing",
-        "price": 25,
-        "features": ["Zero-activity return generator", "PDF download", "Email support"],
-        "stripe_price_id": "price_basic_diy"  # This would be replaced with an actual Stripe price ID
+    # Basic tier (free or minimal cost)
+    "basic_plan": {
+        "name": ".fylr Basic",
+        "price": 0,
+        "plan_type": "basic",
+        "billing_type": "one_time",
+        "features": ["Guided AI-based data input", "Auto-fill IRS form fields", "Generate IRS-ready documents", 
+                    "PDF export of generated files", "Optional tooltips/educational guidance"],
+        "stripe_price_id": "price_basic_plan"
     },
-    "guided_filing": {
-        "name": "Guided Filing",
-        "price": 99,
-        "features": ["Step-by-step input", "Form 1120/1065/Schedule C generation", "State filing add-on"],
-        "stripe_price_id": "price_guided_filing"  # This would be replaced with an actual Stripe price ID
+    
+    # .fylr+ tier options
+    "fylr_plus_monthly": {
+        "name": ".fylr+ Monthly",
+        "price": 47,
+        "plan_type": "fylr_plus",
+        "billing_type": "recurring",
+        "billing_period": "monthly",
+        "features": ["All Basic features", "Save and resume tax data progress", "Smart form logic",
+                    "Enhanced AI support with explanations", "Dynamic checklist generation",
+                    "Export clean, ready-to-file forms"],
+        "stripe_price_id": "price_fylr_plus_monthly"
     },
-    "strategy_unlock": {
-        "name": "Strategy Unlock",
-        "price": 149,
-        "features": ["QBI deduction check", "Entity optimization guide", "Section 179 & R&D credits", "S Corp vs C Corp modeling"],
-        "stripe_price_id": "price_strategy_unlock"  # This would be replaced with an actual Stripe price ID
+    "fylr_plus_onetime": {
+        "name": ".fylr+ One-time",
+        "price": 47,
+        "plan_type": "fylr_plus",
+        "billing_type": "one_time",
+        "features": ["All Basic features", "Save and resume tax data progress", "Smart form logic",
+                    "Enhanced AI support with explanations", "Dynamic checklist generation",
+                    "Export clean, ready-to-file forms"],
+        "stripe_price_id": "price_fylr_plus_onetime"
     },
-    "irs_letter_pack": {
-        "name": "IRS Letter Generator",
-        "price": 39,
-        "features": ["Penalty abatement letters", "Reasonable cause templates", "Late filing relief letter"],
-        "stripe_price_id": "price_irs_letter_pack"  # This would be replaced with an actual Stripe price ID
+    
+    # Pro tier options
+    "pro_basic": {
+        "name": ".fylr Pro Basic",
+        "price": 97,
+        "plan_type": "pro",
+        "billing_type": "one_time",
+        "features": ["All .fylr+ features", "AI-enhanced deduction detection", "AI-sorted uploads",
+                    "Filing export support"],
+        "stripe_price_id": "price_pro_basic"
+    },
+    "pro_standard": {
+        "name": ".fylr Pro Standard",
+        "price": 147,
+        "plan_type": "pro",
+        "billing_type": "one_time",
+        "features": ["All .fylr+ features", "AI-enhanced deduction detection", "AI-sorted uploads",
+                    "Filing export support", "Basic audit protection"],
+        "stripe_price_id": "price_pro_standard"
+    },
+    "pro_premium": {
+        "name": ".fylr Pro Premium",
+        "price": 197,
+        "plan_type": "pro",
+        "billing_type": "one_time",
+        "features": ["All .fylr+ features", "AI-enhanced deduction detection", "AI-sorted uploads",
+                    "Filing export support", "Premium audit protection", "Priority support"],
+        "stripe_price_id": "price_pro_premium"
     }
 }
 

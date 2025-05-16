@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, session
 from flask_login import login_required, current_user
 from app.app import db
-from app.models import User, AuditLog
+from app.models import User, AuditLog, LegalAcknowledgment
+from datetime import datetime
 
 # Create blueprint
 main_bp = Blueprint('main', __name__)
@@ -15,6 +16,11 @@ def index():
 @login_required
 def dashboard():
     """Main dashboard after login"""
+    # Check if the user has acknowledged the legal disclaimer
+    if not current_user.has_acknowledged_disclaimer:
+        flash('You must acknowledge the legal disclaimer before accessing the tax tools.', 'warning')
+        return redirect(url_for('main.legal_disclaimer'))
+    
     # Get user's access level
     access_level = current_user.get_access_level()
     
@@ -105,12 +111,11 @@ def update_profile():
             current_user.set_password(password)
         
         # Log the profile update
-        log = AuditLog(
-            user_id=current_user.id,
-            action="profile_update",
-            details="User profile updated",
-            ip_address=request.remote_addr
-        )
+        log = AuditLog()
+        log.user_id = current_user.id
+        log.action = "profile_update"
+        log.details = "User profile updated"
+        log.ip_address = request.remote_addr
         db.session.add(log)
         
         # Commit changes
@@ -136,46 +141,69 @@ def privacy():
     """Privacy policy page"""
     return render_template('legal/privacy.html')
 
-@main_bp.route('/acknowledgment')
-def acknowledgment():
-    """Legal acknowledgment page"""
-    return render_template('legal/acknowledgment.html')
-
-@main_bp.route('/process-acknowledgment', methods=['POST'])
+@main_bp.route('/legal-disclaimer')
 @login_required
-def process_acknowledgment():
-    """Process legal acknowledgment form"""
-    if request.method == 'POST':
-        # Store acknowledgment in session
-        session['legal_acknowledged'] = True
-        
-        # Check if all required checkboxes are present
-        required_fields = ['ack1', 'ack2', 'ack3', 'ack4', 'ack5', 'ack6']
-        all_checked = all(field in request.form for field in required_fields)
-        
-        if all_checked:
-            # Log the acknowledgment
-            if current_user.is_authenticated:
-                log = AuditLog(
-                    user_id=current_user.id,
-                    action="legal_acknowledgment",
-                    details="User acknowledged legal terms",
-                    ip_address=request.remote_addr
-                )
-                db.session.add(log)
-                db.session.commit()
-            
-            flash('Thank you for acknowledging our legal terms.', 'success')
-            
-            # Redirect based on where they were going
-            next_page = session.get('next_after_acknowledgment', url_for('main.dashboard'))
-            session.pop('next_after_acknowledgment', None)
-            return redirect(next_page)
-        else:
-            flash('You must acknowledge all terms to proceed.', 'danger')
-            return redirect(url_for('main.acknowledgment'))
+def legal_disclaimer():
+    """Legal disclaimer page required before using services"""
+    # Check if user has already acknowledged
+    if current_user.has_acknowledged_disclaimer:
+        flash('You have already completed the legal disclaimer.', 'info')
+        return redirect(url_for('main.dashboard'))
     
-    return redirect(url_for('main.acknowledgment'))
+    return render_template('legal_disclaimer.html')
+
+@main_bp.route('/process-disclaimer', methods=['POST'])
+@login_required
+def process_disclaimer():
+    """Process legal disclaimer form submission"""
+    if request.method == 'POST':
+        # Check if all required fields are present
+        required_fields = [
+            'acknowledged_accuracy', 
+            'acknowledged_not_professional',
+            'acknowledged_no_liability',
+            'accuracy_initials',
+            'professional_initials',
+            'liability_initials',
+            'full_name'
+        ]
+        
+        # Verify all fields are present
+        missing_fields = [field for field in required_fields if field not in request.form]
+        if missing_fields:
+            flash('Please complete all required fields.', 'danger')
+            return redirect(url_for('main.legal_disclaimer'))
+        
+        # Create new acknowledgment record
+        legal_ack = LegalAcknowledgment()
+        legal_ack.user_id = current_user.id
+        legal_ack.acknowledged_accuracy = True
+        legal_ack.acknowledged_not_professional = True
+        legal_ack.acknowledged_no_liability = True
+        legal_ack.full_name = request.form.get('full_name')
+        legal_ack.ip_address = request.remote_addr
+        legal_ack.created_at = datetime.utcnow()
+        
+        # Update user record to mark acknowledgment as complete
+        current_user.has_acknowledged_disclaimer = True
+        
+        # Log the acknowledgment 
+        log = AuditLog()
+        log.user_id = current_user.id
+        log.action = "legal_disclaimer_accepted" 
+        log.details = f"User acknowledged legal disclaimer. Full name: {request.form.get('full_name')}"
+        log.ip_address = request.remote_addr
+        log.created_at = datetime.utcnow()
+        
+        # Save to database
+        db.session.add(legal_ack)
+        db.session.add(log)
+        db.session.commit()
+        
+        flash('Thank you for acknowledging our legal disclaimer. You may now use the services.', 'success')
+        return redirect(url_for('main.dashboard'))
+        
+    return redirect(url_for('main.legal_disclaimer'))
 
 @main_bp.errorhandler(404)
 def page_not_found(e):

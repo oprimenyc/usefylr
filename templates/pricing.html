@@ -1,37 +1,37 @@
 {% extends 'layout.html' %}
 
-{% block title %}Pricing Plans{% endblock %}
+{% block title %}Pricing Plans | .fylr{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="text-center mb-5">
-        <span class="badge bg-light px-3 py-2 mb-3 d-inline-block" style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); color: #FF6B00;">PREMIUM</span>
-        <h1 class="display-4 mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 800; color: #264653;">Unlock Enterprise-Grade Tax Solutions</h1>
+        <span class="badge bg-light px-3 py-2 mb-3 d-inline-block" style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); color: #FF6B00;">AI-POWERED</span>
+        <h1 class="display-4 mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 800; color: #264653;">Self-Service Tax Solutions</h1>
         <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
             <div style="height: 2px; width: 30px; background-color: #FF6B00; opacity: 0.6;"></div>
             <div style="height: 4px; width: 40px; background-color: #FF6B00;"></div>
             <div style="height: 2px; width: 30px; background-color: #FF6B00; opacity: 0.6;"></div>
         </div>
-        <p class="lead mb-5 mx-auto" style="font-family: 'Montserrat', sans-serif; color: #4b5563; max-width: 700px; font-size: 1.2rem;">Select the tools that match your business needs, or get everything with the Business Builder plan.</p>
+        <p class="lead mb-5 mx-auto" style="font-family: 'Montserrat', sans-serif; color: #4b5563; max-width: 700px; font-size: 1.2rem;">Choose the plan that fits your business needs. All with our signature "Tap. File. Done." experience.</p>
     </div>
     
     <div class="card shadow-sm mb-5 border-0 overflow-hidden">
         <div class="card-body p-0">
             <div class="row g-0">
                 <div class="col-md-2 d-flex align-items-stretch">
-                    <div style="background-color: #A8E063;" class="d-flex align-items-center justify-content-center text-white py-4 w-100">
-                        <i class="fas fa-award fa-3x"></i>
+                    <div style="background-color: #FF6B00;" class="d-flex align-items-center justify-content-center text-white py-4 w-100">
+                        <i class="fas fa-robot fa-3x"></i>
                     </div>
                 </div>
                 <div class="col-md-10">
                     <div class="p-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <h4 style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: #264653;">Exclusive Limited-Time Offer</h4>
-                                <p class="text-muted mb-0">Our professional-grade tax tools are now available at a fraction of their market value.</p>
+                                <h4 style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: #264653;">100% AI-Driven Tax Automation</h4>
+                                <p class="text-muted mb-0">No CPAs. No excuses. Our platform uses advanced AI to help you navigate business taxes.</p>
                             </div>
                             <div>
-                                <span class="badge bg-warning text-dark px-3 py-2 fs-6" style="font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">SAVE 70%</span>
+                                <span class="badge bg-warning text-dark px-3 py-2 fs-6" style="font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">SELF-SERVICE</span>
                             </div>
                         </div>
                     </div>
@@ -41,58 +41,63 @@
     </div>
     
     {% if current_user.is_authenticated %}
-        {% if current_user.plan == 'BUSINESS_BUILDER' %}
+        {% if current_user.plan == 'PRO' %}
             <div class="alert alert-success mb-5">
-                <i class="fas fa-star me-2"></i>
-                You're a <strong>Business Builder</strong> member! You have full access to all tools and features.
+                <i class="fas fa-crown me-2"></i>
+                You're a <strong>.fylr Pro</strong> member! You have full access to all premium features.
             </div>
-        {% elif current_user.subscription_member %}
+        {% elif current_user.plan == 'FYLR_PLUS' %}
             <div class="alert alert-info mb-5">
-                <i class="fas fa-tag me-2"></i>
-                As a subscription member, you enjoy <strong>50% off</strong> all tools!
+                <i class="fas fa-certificate me-2"></i>
+                You're a <strong>.fylr+</strong> member with enhanced features and capabilities.
+            </div>
+        {% elif current_user.plan == 'BASIC' %}
+            <div class="alert alert-light mb-5">
+                <i class="fas fa-info-circle me-2"></i>
+                You're currently on the <strong>.fylr Basic</strong> plan. Upgrade to unlock more features.
             </div>
         {% endif %}
     {% endif %}
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
-        <!-- Basic DIY Filing -->
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+        <!-- .fylr Basic -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm">
                 <div class="card-header text-center border-0 bg-transparent pt-4">
                     <div class="position-relative">
                         <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 75px; height: 75px;">
-                            <i class="fas fa-file-alt fa-2x text-primary"></i>
+                            <i class="fas fa-file-alt fa-2x" style="color: #FF6B00;"></i>
                         </div>
                     </div>
-                    <h2 class="h4 mt-3 fw-bold" style="color: #264653; font-family: 'Montserrat', sans-serif;">Basic DIY Filing</h2>
+                    <h2 class="h4 mt-3 fw-bold" style="color: #264653; font-family: 'Montserrat', sans-serif;">.fylr Basic</h2>
+                    <p class="text-muted small">Free or Low-Cost</p>
                 </div>
                 <div class="card-body text-center d-flex flex-column">
                     <div class="price mb-4 position-relative">
-                        <span class="display-5 fw-bold" style="color: #2a9d8f; font-family: 'Montserrat', sans-serif;">$25</span>
-                        {% if current_user.is_authenticated and current_user.subscription_member %}
-                            <div class="position-absolute badge bg-success text-white px-2 py-1" style="transform: rotate(0deg); right: 25%; top: -10px; font-size: 0.8rem;">50% OFF</div>
-                            <small class="text-success d-block fw-bold">$12.50 for you</small>
-                        {% endif %}
+                        <span class="display-5 fw-bold" style="color: #FF6B00; font-family: 'Montserrat', sans-serif;">Free</span>
+                        <small class="text-muted d-block">Optional add-ons available</small>
                     </div>
                     <ul class="list-unstyled text-start mb-4">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Zero-activity return generator</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> PDF download</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Email support</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Guided AI-based data input</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Auto-fill IRS form fields</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Generate IRS-ready documents</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> PDF export of generated files</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Optional tooltips/educational guidance</li>
                     </ul>
                     <div class="mt-auto">
                         {% if current_user.is_authenticated %}
-                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('basic_diy', False) %}
+                            {% if current_user.plan == 'BASIC' or current_user.plan == 'FYLR_PLUS' or current_user.plan == 'PRO' %}
                                 <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
                                     <i class="fas fa-unlock me-2"></i> Access Now
                                 </a>
                             {% else %}
-                                <a href="{{ url_for('billing.create_checkout_session', product_id='basic_diy') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-shopping-cart me-2"></i> Buy Now
+                                <a href="{{ url_for('billing.create_checkout_session', product_id='basic_plan') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                    <i class="fas fa-user-plus me-2"></i> Sign Up
                                 </a>
                             {% endif %}
                         {% else %}
-                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In to Purchase
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                <i class="fas fa-user-plus me-2"></i> Sign Up Free
                             </a>
                         {% endif %}
                     </div>
@@ -100,46 +105,49 @@
             </div>
         </div>
         
-        <!-- Guided Filing -->
+        <!-- .fylr+ -->
         <div class="col">
-            <div class="card h-100 border-0 shadow position-relative" style="border-top: 5px solid #2a9d8f !important;">
+            <div class="card h-100 border-0 shadow position-relative" style="border-top: 5px solid #FF6B00 !important;">
                 <span class="position-absolute badge bg-warning text-dark px-3 py-2" style="top: -12px; right: 20px; font-size: 0.8rem; font-weight: 600; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">MOST POPULAR</span>
                 <div class="card-header text-center border-0 bg-transparent pt-4">
                     <div class="position-relative">
-                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto" style="width: 75px; height: 75px;">
-                            <i class="fas fa-chart-line fa-2x text-primary"></i>
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 75px; height: 75px;">
+                            <i class="fas fa-chart-line fa-2x" style="color: #FF6B00;"></i>
                         </div>
                     </div>
-                    <h2 class="h4 mt-3 fw-bold" style="color: #264653; font-family: 'Montserrat', sans-serif;">Guided Filing</h2>
+                    <h2 class="h4 mt-3 fw-bold" style="color: #264653; font-family: 'Montserrat', sans-serif;">.fylr+</h2>
+                    <p class="text-muted small">Enhanced Features</p>
                 </div>
                 <div class="card-body text-center d-flex flex-column">
                     <div class="price mb-4 position-relative">
-                        <span class="display-5 fw-bold" style="color: #2a9d8f; font-family: 'Montserrat', sans-serif;">$99</span>
-                        {% if current_user.is_authenticated and current_user.subscription_member %}
-                            <div class="position-absolute badge bg-success text-white px-2 py-1" style="transform: rotate(0deg); right: 25%; top: -10px; font-size: 0.8rem;">50% OFF</div>
-                            <small class="text-success d-block fw-bold">$49.50 for you</small>
-                        {% endif %}
+                        <span class="display-5 fw-bold" style="color: #FF6B00; font-family: 'Montserrat', sans-serif;">$47</span>
+                        <small class="text-muted d-block">One-time or monthly</small>
                     </div>
                     <ul class="list-unstyled text-start mb-4">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Step-by-step input guidance</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Form 1120/1065/Schedule C generation</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> State filing add-on</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Premium email support</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> All Basic features</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Save and resume tax data progress</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Smart form logic (LLC, C Corp, etc.)</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Enhanced AI support with explanations</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Dynamic checklist generation</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Export clean, ready-to-file forms</li>
                     </ul>
                     <div class="mt-auto">
                         {% if current_user.is_authenticated %}
-                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('guided_filing', False) %}
+                            {% if current_user.plan == 'FYLR_PLUS' or current_user.plan == 'PRO' %}
                                 <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
                                     <i class="fas fa-unlock me-2"></i> Access Now
                                 </a>
                             {% else %}
-                                <a href="{{ url_for('billing.create_checkout_session', product_id='guided_filing') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-shopping-cart me-2"></i> Buy Now
+                                <a href="{{ url_for('billing.create_checkout_session', product_id='fylr_plus_monthly') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                    <i class="fas fa-shopping-cart me-2"></i> Subscribe Monthly
+                                </a>
+                                <a href="{{ url_for('billing.create_checkout_session', product_id='fylr_plus_onetime') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 mt-2">
+                                    <i class="fas fa-shopping-cart me-2"></i> One-time Purchase
                                 </a>
                             {% endif %}
                         {% else %}
-                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In to Purchase
+                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                <i class="fas fa-sign-in-alt me-2"></i> Sign In to Subscribe
                             </a>
                         {% endif %}
                     </div>
@@ -147,90 +155,56 @@
             </div>
         </div>
         
-        <!-- Strategy Unlock -->
+        <!-- .fylr Pro -->
         <div class="col">
-            <div class="card h-100 border-0 shadow-sm">
+            <div class="card h-100 border-0 shadow-sm" style="border-top: 5px solid #000 !important;">
                 <div class="card-header text-center border-0 bg-transparent pt-4">
                     <div class="position-relative">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 75px; height: 75px;">
-                            <i class="fas fa-lightbulb fa-2x text-primary"></i>
+                        <div class="rounded-circle bg-dark d-flex align-items-center justify-content-center mx-auto" style="width: 75px; height: 75px;">
+                            <i class="fas fa-crown fa-2x text-warning"></i>
                         </div>
                     </div>
-                    <h2 class="h4 mt-3 fw-bold" style="color: #264653; font-family: 'Montserrat', sans-serif;">Strategy Unlock</h2>
+                    <h2 class="h4 mt-3 fw-bold" style="color: #264653; font-family: 'Montserrat', sans-serif;">.fylr Pro</h2>
+                    <p class="text-muted small">Premium Experience</p>
                 </div>
                 <div class="card-body text-center d-flex flex-column">
                     <div class="price mb-4 position-relative">
-                        <span class="display-5 fw-bold" style="color: #2a9d8f; font-family: 'Montserrat', sans-serif;">$149</span>
-                        {% if current_user.is_authenticated and current_user.subscription_member %}
-                            <div class="position-absolute badge bg-success text-white px-2 py-1" style="transform: rotate(0deg); right: 25%; top: -10px; font-size: 0.8rem;">50% OFF</div>
-                            <small class="text-success d-block fw-bold">$74.50 for you</small>
-                        {% endif %}
-                    </div>
-                    <ul class="list-unstyled text-start mb-4">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> AI-powered QBI deduction check</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Custom entity optimization guide</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Section 179 & R&D credits analysis</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> S Corp vs C Corp modeling</li>
-                    </ul>
-                    <div class="mt-auto">
-                        {% if current_user.is_authenticated %}
-                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('strategy_unlock', False) %}
-                                <a href="{{ url_for('strategy.home') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-unlock me-2"></i> Access Now
-                                </a>
-                            {% else %}
-                                <a href="{{ url_for('billing.create_checkout_session', product_id='strategy_unlock') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-shopping-cart me-2"></i> Buy Now
-                                </a>
-                            {% endif %}
-                        {% else %}
-                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In to Purchase
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- IRS Letter Generator -->
-        <div class="col">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-header text-center border-0 bg-transparent pt-4">
-                    <div class="position-relative">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 75px; height: 75px;">
-                            <i class="fas fa-envelope-open-text fa-2x text-primary"></i>
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            <span class="display-5 fw-bold" style="color: #FF6B00; font-family: 'Montserrat', sans-serif;">$97</span>
+                            <span class="text-muted">-</span>
+                            <span class="display-5 fw-bold" style="color: #FF6B00; font-family: 'Montserrat', sans-serif;">$197</span>
                         </div>
-                    </div>
-                    <h2 class="h4 mt-3 fw-bold" style="color: #264653; font-family: 'Montserrat', sans-serif;">IRS Letter Generator</h2>
-                </div>
-                <div class="card-body text-center d-flex flex-column">
-                    <div class="price mb-4 position-relative">
-                        <span class="display-5 fw-bold" style="color: #2a9d8f; font-family: 'Montserrat', sans-serif;">$39</span>
-                        {% if current_user.is_authenticated and current_user.subscription_member %}
-                            <div class="position-absolute badge bg-success text-white px-2 py-1" style="transform: rotate(0deg); right: 25%; top: -10px; font-size: 0.8rem;">50% OFF</div>
-                            <small class="text-success d-block fw-bold">$19.50 for you</small>
-                        {% endif %}
+                        <small class="text-muted d-block">One-time or tiered</small>
                     </div>
                     <ul class="list-unstyled text-start mb-4">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Professional penalty abatement letters</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Custom reasonable cause templates</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Late filing relief letter generation</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> IRS response guidance</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> All .fylr+ features</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> AI-enhanced deduction detection</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> AI-sorted uploads with classification</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Filing export support</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Optional audit protection add-on</li>
+                        <li class="mb-2 text-muted small fst-italic">* Audit protection through 3rd party only</li>
                     </ul>
                     <div class="mt-auto">
                         {% if current_user.is_authenticated %}
-                            {% if current_user.plan == 'BUSINESS_BUILDER' or user_plans.get('irs_letter_pack', False) %}
-                                <a href="{{ url_for('letter.new_letter') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                            {% if current_user.plan == 'PRO' %}
+                                <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
                                     <i class="fas fa-unlock me-2"></i> Access Now
                                 </a>
                             {% else %}
-                                <a href="{{ url_for('billing.create_checkout_session', product_id='irs_letter_pack') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-shopping-cart me-2"></i> Buy Now
-                                </a>
+                                <div class="btn-group-vertical w-100">
+                                    <a href="{{ url_for('billing.create_checkout_session', product_id='pro_basic') }}" class="btn btn-primary rounded-pill px-4 py-2 mb-2" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                        <i class="fas fa-shopping-cart me-2"></i> Basic Pro - $97
+                                    </a>
+                                    <a href="{{ url_for('billing.create_checkout_session', product_id='pro_standard') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 mb-2">
+                                        <i class="fas fa-shopping-cart me-2"></i> Standard Pro - $147
+                                    </a>
+                                    <a href="{{ url_for('billing.create_checkout_session', product_id='pro_premium') }}" class="btn btn-outline-dark rounded-pill px-4 py-2">
+                                        <i class="fas fa-crown me-2"></i> Premium Pro - $197
+                                    </a>
+                                </div>
                             {% endif %}
                         {% else %}
-                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2">
+                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
                                 <i class="fas fa-sign-in-alt me-2"></i> Sign In to Purchase
                             </a>
                         {% endif %}

@@ -131,13 +131,16 @@
                         <li><a href="{{ url_for('main.pricing') }}" class="text-white">Pricing</a></li>
                         <li><a href="{{ url_for('main.terms') }}" class="text-white">Terms of Use</a></li>
                         <li><a href="{{ url_for('main.privacy') }}" class="text-white">Privacy Policy</a></li>
-                        <li><a href="{{ url_for('main.acknowledgment') }}" class="text-white">Legal Acknowledgment</a></li>
+                        <li><a href="{{ url_for('main.legal_disclaimer') }}" class="text-white">Legal Disclaimer</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
                     <h5>Legal Disclaimer</h5>
                     <p class="small text-muted">
-                        DISCLAIMER: This tool is provided for informational and educational purposes only and does not constitute tax, legal, or financial advice. Always consult with a qualified professional regarding your specific situation. Use of this platform does not establish a client-accountant relationship.
+                        <strong>DISCLAIMER:</strong> .fylr is an AI-driven self-service platform and is NOT operated by licensed CPAs or tax professionals. You are solely responsible for the accuracy of information provided. No tax advice is given, and no liability is accepted for any consequences of using this tool.
+                    </p>
+                    <p class="small text-muted">
+                        <a href="{{ url_for('main.legal_disclaimer') }}" class="text-white"><i class="fas fa-gavel me-1"></i> View Full Disclaimer</a>
                     </p>
                 </div>
             </div>
