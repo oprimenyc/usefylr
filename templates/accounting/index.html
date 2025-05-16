@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}.fylr - Accounting Integrations{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center">Accounting Software Integration</h1>
+            <p class="text-center text-muted">Connect your accounting software to import financial data for tax preparation</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <!-- Connected Accounts -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Connected Accounts</h5>
+                </div>
+                <div class="card-body">
+                    {% if connected_accounts %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Platform</th>
+                                        <th>Connected On</th>
+                                        <th>Last Sync</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for account in connected_accounts %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ url_for('static', filename='img/platforms/' + platforms[account.platform].icon) }}" alt="{{ platforms[account.platform].name }}" width="24" class="me-2">
+                                                {{ platforms[account.platform].name }}
+                                            </div>
+                                        </td>
+                                        <td>{{ account.connected_at.strftime('%b %d, %Y') }}</td>
+                                        <td>{{ account.last_sync.strftime('%b %d, %Y') }}</td>
+                                        <td>
+                                            {% if account.status == 'active' %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% elif account.status == 'error' %}
+                                                <span class="badge bg-danger">Error</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Unknown</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('accounting.import_page', platform=account.platform) }}" class="btn btn-sm btn-primary">Import Data</a>
+                                            <a href="{{ url_for('accounting.disconnect_platform', platform=account.platform) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to disconnect this account?')">Disconnect</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            You don't have any connected accounting platforms yet. Choose a platform from the list below to get started.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Imports -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Recent Imports</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_imports %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Platform</th>
+                                        <th>Data Type</th>
+                                        <th>Tax Year</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Records</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for import in recent_imports %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ url_for('static', filename='img/platforms/' + platforms[import.platform].icon) }}" alt="{{ platforms[import.platform].name }}" width="24" class="me-2">
+                                                {{ platforms[import.platform].name }}
+                                            </div>
+                                        </td>
+                                        <td>{{ import.data_type | replace('_', ' ') | title }}</td>
+                                        <td>{{ import.tax_year }}</td>
+                                        <td>
+                                            {% if import.status == 'success' %}
+                                                <span class="badge bg-success">Success</span>
+                                            {% elif import.status == 'error' %}
+                                                <span class="badge bg-danger">Error</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">{{ import.status | title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ import.imported_at.strftime('%b %d, %Y') }}</td>
+                                        <td>{{ import.records_count }}</td>
+                                        <td>
+                                            <a href="{{ url_for('accounting.view_imported_data', platform=import.platform, data_type=import.data_type) }}?tax_year={{ import.tax_year }}" class="btn btn-sm btn-info">View Data</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            You haven't imported any accounting data yet. Connect an accounting platform and import data to get started.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-4">
+            <!-- Available Platforms -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Available Platforms</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for platform_id, platform in platforms.items() %}
+                        <div class="col-12 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <img src="{{ url_for('static', filename='img/platforms/' + platform.icon) }}" alt="{{ platform.name }}" height="40" class="me-2">
+                                        <h5 class="mb-0">{{ platform.name }}</h5>
+                                    </div>
+                                    <p class="text-muted small">{{ platform.description }}</p>
+                                    
+                                    {% set is_connected = false %}
+                                    {% for account in connected_accounts %}
+                                        {% if account.platform == platform_id %}
+                                            {% set is_connected = true %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if is_connected %}
+                                        <a href="{{ url_for('accounting.import_page', platform=platform_id) }}" class="btn btn-primary btn-sm w-100">Import Data</a>
+                                    {% else %}
+                                        <a href="{{ url_for('accounting.connect_platform', platform=platform_id) }}" class="btn btn-outline-primary btn-sm w-100">Connect</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pro Tips -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Pro Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-primary">
+                        <h6>Save Time with Data Import</h6>
+                        <p class="small mb-0">Connect your accounting software to automatically import financial data for tax preparation, saving hours of manual data entry.</p>
+                    </div>
+                    <div class="alert alert-info">
+                        <h6>Map to Tax Forms</h6>
+                        <p class="small mb-0">After importing your data, use our mapping tool to automatically populate tax forms with your financial information.</p>
+                    </div>
+                    <div class="alert alert-warning">
+                        <h6>Review Before Filing</h6>
+                        <p class="small mb-0">Always review imported data before using it in your tax forms to ensure accuracy and completeness.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
