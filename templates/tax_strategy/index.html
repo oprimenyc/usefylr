@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}.fylr - Tax Strategies{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center">Tax Strategy Recommendations</h1>
+            <p class="text-center text-muted">AI-powered tax saving strategies customized for your business</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">Important Disclaimer</h5>
+                        <p class="mb-0">The tax strategies presented here are AI-generated suggestions only and do not constitute professional tax advice. Always consult with a qualified tax professional before implementing any tax strategy. .fylr is a self-service platform and does not provide licensed tax professional services.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <!-- Strategy Cards -->
+            <div class="mb-4">
+                <h3>Recommended Strategies</h3>
+                <p class="text-muted">Based on your business profile and questionnaire responses</p>
+                
+                {% for strategy in strategies %}
+                <div class="card mb-4 strategy-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ strategy.strategy_name }}</h5>
+                        {% if strategy.tier == 'basic' %}
+                            <span class="badge bg-secondary">Basic</span>
+                        {% elif strategy.tier == 'fylr_plus' %}
+                            <span class="badge bg-info">Plus</span>
+                        {% elif strategy.tier == 'pro' %}
+                            <span class="badge bg-primary">Pro</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p>{{ strategy.description }}</p>
+                        
+                        {% if strategy.estimated_savings %}
+                        <div class="alert alert-success">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <i class="fas fa-dollar-sign fa-2x me-3"></i>
+                                </div>
+                                <div>
+                                    <strong>Estimated Savings:</strong> {{ strategy.estimated_savings }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if strategy.implementation_steps and (user_plan == 'fylr_plus' or user_plan == 'pro') %}
+                        <h6 class="mt-4">Implementation Steps:</h6>
+                        <ol class="ps-3">
+                            {% for step in strategy.implementation_steps %}
+                            <li>{{ step }}</li>
+                            {% endfor %}
+                        </ol>
+                        {% endif %}
+                        
+                        {% if strategy.qualifications and user_plan == 'pro' %}
+                        <h6 class="mt-4">Important Qualifications:</h6>
+                        <ul class="ps-3">
+                            {% for qualification in strategy.qualifications %}
+                            <li>{{ qualification }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        
+                        <div class="mt-3 d-flex justify-content-between">
+                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#strategyModal{{ loop.index }}">
+                                <i class="fas fa-info-circle me-1"></i> More Details
+                            </button>
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="exportDropdown{{ loop.index }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-download me-1"></i> Export
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="exportDropdown{{ loop.index }}">
+                                    <li><a class="dropdown-item" href="{{ url_for('tax_strategy.export_strategy', strategy_id=strategy.id, format='pdf') }}"><i class="far fa-file-pdf me-2"></i> Export as PDF</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tax_strategy.export_strategy', strategy_id=strategy.id, format='json') }}"><i class="far fa-file-code me-2"></i> Export as JSON</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tax_strategy.export_strategy', strategy_id=strategy.id, format='html') }}"><i class="far fa-file-alt me-2"></i> Export as HTML</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Strategy Modal -->
+                <div class="modal fade" id="strategyModal{{ loop.index }}" tabindex="-1" aria-labelledby="strategyModalLabel{{ loop.index }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="strategyModalLabel{{ loop.index }}">{{ strategy.strategy_name }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>{{ strategy.description }}</p>
+                                
+                                {% if strategy.estimated_savings %}
+                                <div class="alert alert-success">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <i class="fas fa-dollar-sign fa-2x me-3"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Estimated Savings:</strong> {{ strategy.estimated_savings }}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if strategy.implementation_steps %}
+                                <h6 class="mt-4">Implementation Steps:</h6>
+                                <ol>
+                                    {% for step in strategy.implementation_steps %}
+                                    <li>{{ step }}</li>
+                                    {% endfor %}
+                                </ol>
+                                {% endif %}
+                                
+                                {% if strategy.qualifications %}
+                                <h6 class="mt-4">Important Qualifications:</h6>
+                                <ul>
+                                    {% for qualification in strategy.qualifications %}
+                                    <li>{{ qualification }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                
+                                <h6 class="mt-4">Tax Implications:</h6>
+                                <p>This strategy may affect your tax liability. The estimated savings are based on your current tax situation and may vary. Always consult with a tax professional before implementation.</p>
+                                
+                                <h6 class="mt-4">Compliance Considerations:</h6>
+                                <p>Ensure proper documentation is maintained to support this strategy in case of an audit. Follow all applicable IRS guidelines and regulations.</p>
+                                
+                                {% if strategy.context_factors %}
+                                <h6 class="mt-4">Business Context Factors:</h6>
+                                <ul>
+                                    {% for factor in strategy.context_factors %}
+                                    <li>{{ factor }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                
+                                <div class="alert alert-warning mt-4">
+                                    <h6 class="alert-heading">Disclaimer</h6>
+                                    <p class="mb-0">This tax strategy is provided for informational purposes only and does not constitute professional tax advice. Please consult with a qualified tax professional before implementing this strategy.</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <a href="{{ url_for('tax_strategy.export_strategy', strategy_id=strategy.id, format='pdf') }}" class="btn btn-primary">
+                                    <i class="fas fa-download me-1"></i> Export Strategy
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% if not strategies %}
+                <div class="alert alert-info">
+                    <p class="mb-0">No tax strategies have been generated yet. Complete your business profile and tax questionnaire to receive personalized strategy recommendations.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-4">
+            <!-- Request New Strategy -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Generate New Strategy</h5>
+                </div>
+                <div class="card-body">
+                    <p>Generate a new tax strategy based on your business data and questionnaire responses.</p>
+                    <a href="{{ url_for('tax_strategy.generate_new') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-sync-alt me-1"></i> Generate New Strategy
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Plan Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Your Plan</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_plan == 'basic' %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <span class="badge bg-secondary p-2"><i class="fas fa-user fa-lg"></i></span>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Basic Plan</h6>
+                            <p class="text-muted small mb-0">Free tier</p>
+                        </div>
+                    </div>
+                    <p>Your Basic plan includes general tax strategies without detailed implementation steps.</p>
+                    <div class="alert alert-info">
+                        <h6>Upgrade for More Features</h6>
+                        <p class="small mb-0">Upgrade to Plus or Pro for detailed implementation guidance and estimated savings calculations.</p>
+                    </div>
+                    <a href="{{ url_for('billing.pricing') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-arrow-circle-up me-1"></i> Upgrade Now
+                    </a>
+                    {% elif user_plan == 'fylr_plus' %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <span class="badge bg-info p-2"><i class="fas fa-star fa-lg"></i></span>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">.fylr+ Plan</h6>
+                            <p class="text-muted small mb-0">Enhanced features</p>
+                        </div>
+                    </div>
+                    <p>Your Plus plan includes specific strategies with implementation guidance.</p>
+                    <div class="alert alert-info">
+                        <h6>Pro Features Available</h6>
+                        <p class="small mb-0">Upgrade to Pro for comprehensive strategy analysis with estimated savings calculations.</p>
+                    </div>
+                    <a href="{{ url_for('billing.pricing') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-arrow-circle-up me-1"></i> Upgrade to Pro
+                    </a>
+                    {% elif user_plan == 'pro' %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <span class="badge bg-primary p-2"><i class="fas fa-crown fa-lg"></i></span>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Pro Plan</h6>
+                            <p class="text-muted small mb-0">Premium features</p>
+                        </div>
+                    </div>
+                    <p>Your Pro plan includes comprehensive strategies with detailed implementation steps, qualifications, and estimated savings.</p>
+                    <div class="alert alert-success">
+                        <h6>Full Access Enabled</h6>
+                        <p class="small mb-0">You have access to all tax strategy features. Generate unlimited strategies with detailed analysis.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Strategy Resources -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Tax Strategy Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-book me-2"></i> Tax Strategy Guide
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-calculator me-2"></i> Savings Calculator
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-chart-line me-2"></i> Tax Projection Tools
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-file-alt me-2"></i> IRS Publication Library
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Support Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p>Our AI-powered platform is designed to be self-service. For additional help:</p>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-question-circle me-2"></i> FAQ & Knowledge Base
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-video me-2"></i> Tutorial Videos
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-robot me-2"></i> AI Assistant
+                        </a>
+                    </div>
+                    <div class="alert alert-light border mt-3 mb-0">
+                        <p class="small mb-0">Remember that .fylr is a self-service platform. While we provide AI-generated strategies, we do not provide licensed tax professional services.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

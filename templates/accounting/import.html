@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}.fylr - Import Accounting Data{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('accounting.index') }}">Accounting Integrations</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Import {{ platform_info.name }} Data</li>
+                </ol>
+            </nav>
+            <h1>Import {{ platform_info.name }} Data</h1>
+            <p class="text-muted">Select the data types and tax year to import from your {{ platform_info.name }} account</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Import Options</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('accounting.execute_import', platform=platform) }}" method="post">
+                        <div class="mb-4">
+                            <label class="form-label">Select data types to import:</label>
+                            
+                            <div class="row">
+                                {% for data_type in data_types %}
+                                <div class="col-12 col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" name="data_types" id="{{ data_type }}" value="{{ data_type }}">
+                                        <label class="form-check-label" for="{{ data_type }}">
+                                            {{ data_type | replace('_', ' ') | title }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="tax_year" class="form-label">Tax Year:</label>
+                            <select class="form-select" id="tax_year" name="tax_year" required>
+                                {% for year in available_years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-info mb-4">
+                            <h6>Import Information</h6>
+                            <ul class="mb-0">
+                                <li>Importing data may take a few moments depending on the amount of data.</li>
+                                <li>Previously imported data for the same tax year will be overwritten.</li>
+                                <li>After importing, you can map your accounting data to tax forms.</li>
+                                <li>For best results, ensure your accounting data is up to date in {{ platform_info.name }}.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('accounting.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-cloud-download-alt me-1"></i> Import Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ url_for('static', filename='img/platforms/' + platform_info.icon) }}" alt="{{ platform_info.name }}" height="40" class="me-2">
+                        <h5 class="mb-0">{{ platform_info.name }}</h5>
+                    </div>
+                    <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Connected</span></p>
+                    <p class="mb-0"><strong>Auth Type:</strong> {{ platform_info.auth_type | upper }}</p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Data Types</h5>
+                </div>
+                <div class="card-body">
+                    <dl>
+                        <dt>Chart of Accounts</dt>
+                        <dd class="text-muted small">Account structure and categories</dd>
+                        
+                        <dt>Profit & Loss</dt>
+                        <dd class="text-muted small">Income and expense summary by category</dd>
+                        
+                        <dt>Balance Sheet</dt>
+                        <dd class="text-muted small">Assets, liabilities, and equity</dd>
+                        
+                        <dt>Tax Summary</dt>
+                        <dd class="text-muted small">Tax-relevant income and expense data</dd>
+                        
+                        <dt>Transactions</dt>
+                        <dd class="text-muted small">Detailed transaction records</dd>
+                        
+                        <dt>Expenses</dt>
+                        <dd class="text-muted small">Detailed expense data by category</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

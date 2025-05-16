@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}.fylr - Profit and Loss Data{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('accounting.index') }}">Accounting Integrations</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Profit and Loss Data</li>
+                </ol>
+            </nav>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Profit and Loss</h1>
+                <div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download me-1"></i> Export
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-pdf me-2"></i> Export as PDF</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-excel me-2"></i> Export as CSV</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-code me-2"></i> Export as JSON</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <p class="text-muted">{{ data.business_name }} | {{ data.period }}</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-success text-white h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">Total Revenue</h6>
+                            <h3 class="mb-0">${{ "{:,.2f}".format(data.total_revenue) }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-danger text-white h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">Total Expenses</h6>
+                            <h3 class="mb-0">${{ "{:,.2f}".format(data.total_expenses) }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-primary text-white h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">Net Income</h6>
+                            <h3 class="mb-0">${{ "{:,.2f}".format(data.net_income) }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Revenue Table -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Revenue</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th class="text-end">Amount</th>
+                                    <th class="text-end">% of Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category, amount in data.revenue.items() %}
+                                <tr>
+                                    <td>{{ category | replace('_', ' ') | title }}</td>
+                                    <td class="text-end">${{ "{:,.2f}".format(amount) }}</td>
+                                    <td class="text-end">{{ "{:.1f}%".format(amount / data.total_revenue * 100) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-dark">
+                                <tr>
+                                    <th>Total Revenue</th>
+                                    <th class="text-end">${{ "{:,.2f}".format(data.total_revenue) }}</th>
+                                    <th class="text-end">100.0%</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Expenses Table -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Expenses</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th class="text-end">Amount</th>
+                                    <th class="text-end">% of Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category, amount in data.expenses.items() %}
+                                <tr>
+                                    <td>{{ category | replace('_', ' ') | title }}</td>
+                                    <td class="text-end">${{ "{:,.2f}".format(amount) }}</td>
+                                    <td class="text-end">{{ "{:.1f}%".format(amount / data.total_revenue * 100) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-dark">
+                                <tr>
+                                    <th>Total Expenses</th>
+                                    <th class="text-end">${{ "{:,.2f}".format(data.total_expenses) }}</th>
+                                    <th class="text-end">{{ "{:.1f}%".format(data.total_expenses / data.total_revenue * 100) }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Net Income -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Net Income</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Total Revenue</th>
+                                    <td class="text-end">${{ "{:,.2f}".format(data.total_revenue) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Total Expenses</th>
+                                    <td class="text-end">- ${{ "{:,.2f}".format(data.total_expenses) }}</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <th>Net Income</th>
+                                    <td class="text-end fw-bold">${{ "{:,.2f}".format(data.net_income) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Profit Margin</th>
+                                    <td class="text-end">{{ "{:.1f}%".format(data.net_income / data.total_revenue * 100) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-4">
+            <!-- Quarterly Breakdown -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Quarterly Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Quarter</th>
+                                    <th class="text-end">Revenue</th>
+                                    <th class="text-end">Expenses</th>
+                                    <th class="text-end">Net Income</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for quarter, data in data.quarterly_breakdown.items() %}
+                                <tr>
+                                    <td>{{ quarter | upper }}</td>
+                                    <td class="text-end">${{ "{:,.2f}".format(data.revenue) }}</td>
+                                    <td class="text-end">${{ "{:,.2f}".format(data.expenses) }}</td>
+                                    <td class="text-end">${{ "{:,.2f}".format(data.net_income) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Quarterly Revenue Distribution</h6>
+                        <div class="progress mb-3" style="height: 25px;">
+                            {% for quarter, data in data.quarterly_breakdown.items() %}
+                            {% set percentage = data.revenue / data.total_revenue * 100 %}
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ percentage }}%;" aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">{{ quarter | upper }}: {{ "{:.1f}%".format(percentage) }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <h6>Quarterly Net Income Distribution</h6>
+                        <div class="progress" style="height: 25px;">
+                            {% for quarter, data in data.quarterly_breakdown.items() %}
+                            {% set percentage = data.net_income / data.net_income * 100 %}
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ percentage }}%;" aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">{{ quarter | upper }}: {{ "{:.1f}%".format(percentage) }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-file-alt me-1"></i> Map to Schedule C
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-calculator me-1"></i> Generate Tax Strategy
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-chart-bar me-1"></i> Compare with Previous Year
+                        </a>
+                        <a href="#" class="btn btn-outline-secondary">
+                            <i class="fas fa-sync me-1"></i> Refresh Data
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tax Insights -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Tax Insights</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6>Expense Deduction Opportunity</h6>
+                        <p class="small mb-0">Your business has significant expenses in categories that qualify for tax deductions. Consider mapping these to Schedule C to maximize deductions.</p>
+                    </div>
+                    <div class="alert alert-warning">
+                        <h6>Quarterly Income Variation</h6>
+                        <p class="small mb-0">Your income varies significantly by quarter. Consider adjusting estimated tax payments to align with your income pattern.</p>
+                    </div>
+                    <div class="alert alert-success">
+                        <h6>Profit Margin Above Average</h6>
+                        <p class="small mb-0">Your profit margin is above average for your industry, indicating efficient operations. Consider retirement plan contributions to reduce taxable income.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Data Source Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Source:</strong> {{ platform_info.name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Tax Year:</strong> {{ tax_year }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Imported:</strong> <span class="text-success">Current</span></p>
+                        </div>
+                    </div>
+                    <div class="alert alert-light border mb-0">
+                        <p class="mb-0 small"><i class="fas fa-info-circle me-1"></i> This data was imported from your {{ platform_info.name }} account and reflects your business's financial performance for the selected period. Use this information to help prepare your tax documents.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
