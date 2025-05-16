@@ -19,7 +19,7 @@ login_manager = LoginManager()
 def create_app():
     """Create and configure the Flask application"""
     # Create the app
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder="../templates")
     
     # Configure the app
     app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "development_key")
