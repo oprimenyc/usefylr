@@ -1,0 +1,492 @@
+{% extends "layout.html" %}
+
+{% block title %}Filing Instructions{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3">Your {{ tax_year }} Filing Instructions</h1>
+            <p class="lead">Smart, personalized guidance for filing your business taxes</p>
+        </div>
+    </div>
+
+    <!-- Step-by-Step Filing Instructions -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Step-by-Step Filing Guide</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for step in filing_instructions.step_by_step %}
+                <div class="list-group-item p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3 d-flex align-items-center justify-content-center rounded-circle bg-primary text-white" 
+                             style="width: 40px; height: 40px; background-color: #FF6B00 !important;">
+                            <span>{{ step.number }}</span>
+                        </div>
+                        <h4 class="mb-0">{{ step.title }}</h4>
+                    </div>
+                    <p class="mb-3">{{ step.description }}</p>
+                    {% if step.substeps %}
+                    <div class="card bg-light border-0">
+                        <div class="card-body py-3">
+                            <ul class="mb-0">
+                                {% for substep in step.substeps %}
+                                <li class="mb-2">{{ substep }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Important Due Dates -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Important Due Dates</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h4 class="border-bottom pb-2 mb-3">Federal Due Dates</h4>
+                    <div class="list-group">
+                        {% for key, date in filing_instructions.due_dates.federal.items() %}
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex align-items-start">
+                                <div class="calendar-icon me-3 p-2 border rounded text-center" style="min-width: 60px;">
+                                    <div class="small text-uppercase">{{ date.date.split('-')[1] }}</div>
+                                    <div class="fw-bold">{{ date.date.split('-')[2] }}</div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ date.description }}</h5>
+                                    {% if date.extension_date %}
+                                    <p class="text-muted mb-0">Extension available until {{ date.extension_date.split('-')[1] }}/{{ date.extension_date.split('-')[2] }}/{{ date.extension_date.split('-')[0] }} 
+                                        using {{ date.extension_form }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="border-bottom pb-2 mb-3">State Due Dates</h4>
+                    <div class="list-group">
+                        {% for key, date in filing_instructions.due_dates.state.items() %}
+                        <div class="list-group-item border-0 px-0 py-3">
+                            <div class="d-flex align-items-start">
+                                <div class="calendar-icon me-3 p-2 border rounded text-center" style="min-width: 60px;">
+                                    <div class="small text-uppercase">{{ date.date.split('-')[1] }}</div>
+                                    <div class="fw-bold">{{ date.date.split('-')[2] }}</div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ date.description }}</h5>
+                                    {% if date.extension_date %}
+                                    <p class="text-muted mb-0">Extension available until {{ date.extension_date.split('-')[1] }}/{{ date.extension_date.split('-')[2] }}/{{ date.extension_date.split('-')[0] }} 
+                                        using {{ date.extension_form }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filing Methods -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Filing Methods</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h4 class="border-bottom pb-2 mb-3">Federal Filing Options</h4>
+                    {% for method in filing_instructions.filing_methods.federal %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ method.method|title }} Filing</h5>
+                            <p class="card-text">{{ method.description }}</p>
+                            
+                            {% if method.url %}
+                            <a href="{{ method.url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2" style="border-color: #FF6B00; color: #FF6B00;">
+                                Access {{ method.method|title }} Portal
+                            </a>
+                            {% endif %}
+                            
+                            {% if method.address %}
+                            <div class="bg-light p-2 rounded mb-2">
+                                <p class="mb-0 small"><strong>Mailing Address:</strong><br>{{ method.address|replace('\n', '<br>')|safe }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if method.steps %}
+                            <div class="mt-2">
+                                <p class="mb-1 small"><strong>Steps:</strong></p>
+                                <ol class="ps-3 mb-0 small">
+                                    {% for step in method.steps %}
+                                    <li>{{ step }}</li>
+                                    {% endfor %}
+                                </ol>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <h4 class="border-bottom pb-2 mb-3">{{ filing_instructions.state }} State Filing Options</h4>
+                    {% for method in filing_instructions.filing_methods.state %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ method.method|title }} Filing</h5>
+                            <p class="card-text">{{ method.description }}</p>
+                            
+                            {% if method.url %}
+                            <a href="{{ method.url }}" target="_blank" class="btn btn-sm btn-outline-primary mb-2" style="border-color: #FF6B00; color: #FF6B00;">
+                                Access {{ method.method|title }} Portal
+                            </a>
+                            {% endif %}
+                            
+                            {% if method.address %}
+                            <div class="bg-light p-2 rounded mb-2">
+                                <p class="mb-0 small"><strong>Mailing Address:</strong><br>{{ method.address|replace('\n', '<br>')|safe }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if method.steps %}
+                            <div class="mt-2">
+                                <p class="mb-1 small"><strong>Steps:</strong></p>
+                                <ol class="ps-3 mb-0 small">
+                                    {% for step in method.steps %}
+                                    <li>{{ step }}</li>
+                                    {% endfor %}
+                                </ol>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EIN Verification -->
+    {% if filing_instructions.ein_info.required %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">EIN Verification</h3>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <p>{{ filing_instructions.ein_info.description }}</p>
+                    <ul class="mb-0">
+                        {% for step in filing_instructions.ein_info.steps %}
+                        <li>{{ step }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+                    <a href="{{ filing_instructions.ein_info.verification_url }}" target="_blank" class="btn btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">
+                        Verify Your EIN
+                    </a>
+                    <a href="{{ filing_instructions.ein_info.application_url }}" target="_blank" class="btn btn-outline-primary mt-2 mt-md-2" style="border-color: #FF6B00; color: #FF6B00;">
+                        Apply for an EIN
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- State Filing Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">{{ filing_instructions.state }} Filing Information</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h4 class="border-bottom pb-2 mb-3">Tax Authority Information</h4>
+                    <p><strong>{{ filing_instructions.state_filing_info.tax_authority }}</strong></p>
+                    <a href="{{ filing_instructions.state_filing_info.website }}" target="_blank" class="btn btn-sm btn-outline-primary mb-3" style="border-color: #FF6B00; color: #FF6B00;">
+                        Visit Official Website
+                    </a>
+                    
+                    {% if filing_instructions.state_filing_info.filing_portal %}
+                    <div class="mb-3">
+                        <p class="mb-2"><strong>Filing Portal:</strong></p>
+                        <a href="{{ filing_instructions.state_filing_info.filing_portal }}" target="_blank" class="btn btn-sm btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">
+                            Access Filing Portal
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if filing_instructions.state_filing_info.llc_fee %}
+                    <div class="alert alert-warning mb-0">
+                        <p class="mb-1"><strong>Special Fee Notice:</strong></p>
+                        <p class="mb-0">{{ filing_instructions.state_filing_info.llc_fee.description }}</p>
+                        <p class="mb-0"><strong>Amount:</strong> {{ filing_instructions.state_filing_info.llc_fee.amount }}</p>
+                        <p class="mb-0"><strong>Deadline:</strong> {{ filing_instructions.state_filing_info.llc_fee.deadline }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if filing_instructions.state_filing_info.franchise_tax %}
+                    <div class="alert alert-warning mb-0">
+                        <p class="mb-1"><strong>Franchise Tax Notice:</strong></p>
+                        <p class="mb-0">{{ filing_instructions.state_filing_info.franchise_tax.description }}</p>
+                        <p class="mb-0"><strong>Deadline:</strong> {{ filing_instructions.state_filing_info.franchise_tax.deadline }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if filing_instructions.state_filing_info.no_income_tax %}
+                    <div class="alert alert-info mb-0">
+                        <p class="mb-1"><strong>Tax Information:</strong></p>
+                        <p class="mb-0">{{ filing_instructions.state_filing_info.no_income_tax.description }}</p>
+                        {% if filing_instructions.state_filing_info.no_income_tax.business_tax %}
+                        <p class="mb-0">{{ filing_instructions.state_filing_info.no_income_tax.business_tax }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h4 class="border-bottom pb-2 mb-3">Required State Forms</h4>
+                    
+                    {% if filing_instructions.state_filing_info.forms %}
+                    <div class="list-group mb-3">
+                        {% for form in filing_instructions.state_filing_info.forms %}
+                        <div class="list-group-item border-0 px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">{{ form.name }}</h5>
+                                    <p class="text-muted mb-0 small">{{ form.description }}</p>
+                                </div>
+                                <span class="badge bg-light text-dark border">Required</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">Please check the {{ filing_instructions.state }} tax authority website for specific form requirements.</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if filing_instructions.state_filing_info.publication_20 %}
+                    <div class="alert alert-info mb-0">
+                        <p class="mb-1"><strong>Helpful Publication:</strong></p>
+                        <p class="mb-0">{{ filing_instructions.state_filing_info.publication_20.description }}</p>
+                        <a href="{{ filing_instructions.state_filing_info.publication_20.url }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2" style="border-color: #FF6B00; color: #FF6B00;">
+                            Download Publication
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Late Filing Penalties -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Late Filing Penalties</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">Avoid Costly Penalties!</h5>
+                        <p class="mb-0">File and pay your taxes on time to avoid the following penalties:</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                {% for penalty_key, penalty in filing_instructions.penalty_info.items() %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ penalty.description }}</h5>
+                            
+                            {% if penalty.rate %}
+                            <p><strong>Rate:</strong> {{ penalty.rate }}</p>
+                            {% endif %}
+                            
+                            {% if penalty.minimum %}
+                            <p><strong>Minimum:</strong> {{ penalty.minimum }}</p>
+                            {% endif %}
+                            
+                            {% if penalty.calculation %}
+                            <p><strong>Calculation:</strong> {{ penalty.calculation }}</p>
+                            {% endif %}
+                            
+                            {% if penalty.safe_harbor %}
+                            <p><strong>Safe Harbor:</strong> {{ penalty.safe_harbor }}</p>
+                            {% endif %}
+                            
+                            {% if penalty.maximum %}
+                            <p><strong>Maximum:</strong> {{ penalty.maximum }}</p>
+                            {% endif %}
+                            
+                            {% if penalty.notes %}
+                            <div class="alert alert-light mt-2 mb-0">
+                                <p class="mb-0"><strong>Note:</strong> {{ penalty.notes }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if user_tier == UserPlan.PRO and audit_shield_summary %}
+    <!-- Audit Shield Summary (PRO tier only) -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Audit Shield Summary</h3>
+            <span class="badge bg-primary" style="background-color: #FF6B00 !important;">PRO Feature</span>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h4 class="border-bottom pb-2">Your Audit Risk Assessment</h4>
+                    <p>Based on your business profile and tax forms, our AI has analyzed your potential audit risk.</p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="position-relative d-inline-block">
+                        <div class="risk-gauge" style="width: 180px; height: 90px; background-color: #f8f9fa; border-radius: 90px 90px 0 0; position: relative; overflow: hidden;">
+                            {% if audit_shield_summary.audit_risk_level == "Low" %}
+                                <div style="position: absolute; bottom: 0; left: 0; width: 25%; height: 100%; background-color: #2A9D8F; border-radius: 90px 0 0 0;"></div>
+                            {% elif audit_shield_summary.audit_risk_level == "Medium" %}
+                                <div style="position: absolute; bottom: 0; left: 0; width: 50%; height: 100%; background-color: #F4A261; border-radius: 90px 0 0 0;"></div>
+                            {% elif audit_shield_summary.audit_risk_level == "Medium-High" %}
+                                <div style="position: absolute; bottom: 0; left: 0; width: 75%; height: 100%; background-color: #E76F51; border-radius: 90px 0 0 0;"></div>
+                            {% elif audit_shield_summary.audit_risk_level == "High" %}
+                                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background-color: #E63946; border-radius: 90px 90px 0 0;"></div>
+                            {% endif %}
+                        </div>
+                        <div class="position-absolute start-50 top-100 translate-middle mt-n3">
+                            <span class="badge bg-dark px-3 py-2">{{ audit_shield_summary.audit_risk_level }} Risk</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <h4 class="border-bottom pb-2 mb-3">Potential Audit Triggers</h4>
+                    <div class="list-group">
+                        {% for trigger in audit_shield_summary.audit_triggers %}
+                        <div class="list-group-item border-0 shadow-sm mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h5 class="mb-0">{{ trigger.trigger }}</h5>
+                                <span class="badge 
+                                    {% if trigger.risk_level == 'Low' %}bg-success
+                                    {% elif trigger.risk_level == 'Medium' %}bg-warning text-dark
+                                    {% elif trigger.risk_level == 'Medium-High' %}bg-orange text-white
+                                    {% elif trigger.risk_level == 'High' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}"
+                                    {% if trigger.risk_level == 'Medium' %}style="background-color: #F4A261 !important;"
+                                    {% elif trigger.risk_level == 'Medium-High' %}style="background-color: #E76F51 !important;"
+                                    {% elif trigger.risk_level == 'Low' %}style="background-color: #2A9D8F !important;"
+                                    {% endif %}>
+                                    {{ trigger.risk_level }} Risk
+                                </span>
+                            </div>
+                            <p class="mb-2">{{ trigger.description }}</p>
+                            <div class="bg-light p-2 rounded">
+                                <p class="mb-0 small"><strong>Mitigation:</strong> {{ trigger.mitigation }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <h4 class="border-bottom pb-2 mb-3">Red Flags to Address</h4>
+                    <div class="list-group">
+                        {% for flag in audit_shield_summary.red_flags %}
+                        <div class="list-group-item border-0 shadow-sm mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h5 class="mb-0">{{ flag.flag }}</h5>
+                                <span class="badge 
+                                    {% if flag.risk_level == 'Low' %}bg-success
+                                    {% elif flag.risk_level == 'Medium' %}bg-warning text-dark
+                                    {% elif flag.risk_level == 'High' %}bg-danger
+                                    {% elif flag.risk_level == 'Critical' %}bg-dark
+                                    {% else %}bg-secondary{% endif %}"
+                                    {% if flag.risk_level == 'Medium' %}style="background-color: #F4A261 !important;"
+                                    {% elif flag.risk_level == 'Low' %}style="background-color: #2A9D8F !important;"
+                                    {% endif %}>
+                                    {{ flag.risk_level }} Risk
+                                </span>
+                            </div>
+                            <p class="mb-2">{{ flag.description }}</p>
+                            <div class="bg-light p-2 rounded">
+                                <p class="mb-0 small"><strong>Detection:</strong> {{ flag.detection }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-2">
+                <h4 class="border-bottom pb-2 mb-3">Audit Readiness Checklist</h4>
+                <div class="row">
+                    {% for checklist in audit_shield_summary.audit_readiness_checklist %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">{{ checklist.category }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0 ps-3">
+                                    {% for item in checklist.items %}
+                                    <li class="mb-2">{{ item }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif user_tier == UserPlan.BASIC or user_tier == UserPlan.FYLR_PLUS %}
+    <!-- Upsell for Basic/FYLR+ users -->
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center mb-3 mb-md-0">
+                    <i class="fas fa-shield-alt fa-4x" style="color: #FF6B00;"></i>
+                </div>
+                <div class="col-md-7 mb-3 mb-md-0">
+                    <h4>Upgrade to a Pro plan for comprehensive audit protection</h4>
+                    <p class="mb-0">Get automatic document storage, audit protection, and AI-backed tax strategy recommendations customized for your business structure.</p>
+                </div>
+                <div class="col-md-3 text-center text-md-end">
+                    <a href="{{ url_for('pricing') }}" class="btn btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">
+                        Upgrade to Pro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
