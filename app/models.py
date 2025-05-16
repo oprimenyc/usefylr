@@ -5,9 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.app import db
 
 class UserPlan(enum.Enum):
-    FREE = "free"
-    BUSINESS_BUILDER = "business_builder"
-    STANDARD = "standard"
+    BASIC = "basic"   # Free or low-cost tier
+    FYLR_PLUS = "fylr_plus"  # $47 tier
+    PRO = "pro"  # $97-$197 tier
     
 class TaxFormType(enum.Enum):
     FORM_1120 = "1120"
@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
     wordpress_id = db.Column(db.Integer, nullable=True)
-    plan = db.Column(db.Enum(UserPlan), default=UserPlan.FREE)
+    plan = db.Column(db.Enum(UserPlan), default=UserPlan.BASIC)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     subscription_member = db.Column(db.Boolean, default=False)
     
@@ -35,6 +35,10 @@ class User(UserMixin, db.Model):
     tax_forms = db.relationship('TaxForm', backref='user', lazy=True)
     irs_letters = db.relationship('IRSLetter', backref='user', lazy=True)
     tax_strategies = db.relationship('TaxStrategy', backref='user', lazy=True)
+    legal_acknowledgments = db.relationship('LegalAcknowledgment', backref='user', lazy=True)
+    
+    # Additional fields for feature access
+    has_acknowledged_disclaimer = db.Column(db.Boolean, default=False)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -43,47 +47,69 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
     def get_access_level(self):
-        if self.plan == UserPlan.BUSINESS_BUILDER:
-            return "full_access"
-        elif self.subscription_member:
-            return "discounted"
+        if self.plan == UserPlan.PRO:
+            return "pro"
+        elif self.plan == UserPlan.FYLR_PLUS:
+            return "plus"
         else:
-            return "standard"
+            return "basic"
     
-    def has_paid(self, feature, discounted=False):
-        # Check if user has paid for a specific feature
-        for payment in self.payments:
-            if payment.feature == feature and payment.status == "completed":
+    def has_paid(self, feature):
+        # Pro tier has access to all features
+        if self.plan == UserPlan.PRO:
+            return True
+            
+        # For .fylr+ tier, check specific features
+        if self.plan == UserPlan.FYLR_PLUS:
+            # .fylr+ features include all basic features plus:
+            fylr_plus_features = [
+                'save_progress', 'resume_progress', 'smart_form_logic',
+                'enhanced_ai_support', 'dynamic_checklist', 'export_forms'
+            ]
+            if feature in fylr_plus_features:
                 return True
                 
-        # Check for active subscriptions that include the feature
-        for subscription in self.subscriptions:
-            if subscription.status == "active":
-                # Business builder includes all features
-                if subscription.plan_name == "business_builder":
-                    return True
-                # Check if feature is included in the subscription
-                if feature in subscription.features.split(','):
-                    return True
-                    
+        # Basic tier features
+        basic_features = [
+            'guided_input', 'auto_fill', 'generate_documents',
+            'pdf_export', 'educational_guidance'
+        ]
+        if feature in basic_features:
+            return True
+            
+        # Check individual payments for specific features
+        payments = Payment.query.filter_by(user_id=self.id, feature=feature, status="completed").first()
+        if payments:
+            return True
+            
         return False
     
     def __repr__(self):
         return f'<User {self.username}>'
 
+class SubscriptionType(enum.Enum):
+    BASIC = "basic"  # Free or low-cost tier
+    FYLR_PLUS_MONTHLY = "fylr_plus_monthly"  # $47/month
+    FYLR_PLUS_ONETIME = "fylr_plus_onetime"  # $47 one-time
+    PRO_BASIC = "pro_basic"  # $97 one-time
+    PRO_STANDARD = "pro_standard"  # $147 one-time
+    PRO_PREMIUM = "pro_premium"  # $197 one-time
+
 class Subscription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     stripe_subscription_id = db.Column(db.String(120), unique=True, nullable=True)
-    plan_name = db.Column(db.String(64), nullable=False)
-    features = db.Column(db.String(256), nullable=True)  # Comma-separated list of included features
+    subscription_type = db.Column(db.Enum(SubscriptionType), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    is_recurring = db.Column(db.Boolean, default=False)
+    billing_period = db.Column(db.String(20), nullable=True)  # monthly, yearly, one-time
     starts_at = db.Column(db.DateTime, default=datetime.utcnow)
     ends_at = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(30), default="active")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def __repr__(self):
-        return f'<Subscription {self.plan_name}>'
+        return f'<Subscription {self.subscription_type.value}>'
 
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -136,6 +162,19 @@ class TaxStrategy(db.Model):
     
     def __repr__(self):
         return f'<TaxStrategy {self.strategy_name}>'
+
+class LegalAcknowledgment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    acknowledged_accuracy = db.Column(db.Boolean, default=False)
+    acknowledged_not_professional = db.Column(db.Boolean, default=False)
+    acknowledged_no_liability = db.Column(db.Boolean, default=False)
+    full_name = db.Column(db.String(100), nullable=True)
+    ip_address = db.Column(db.String(45), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<LegalAcknowledgment by {self.full_name}>'
 
 class AuditLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
