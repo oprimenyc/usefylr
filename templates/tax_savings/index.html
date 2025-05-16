@@ -1,0 +1,509 @@
+{% extends "layout.html" %}
+
+{% block title %}Tax Saving Recommendations{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3">Real-Time Tax Saving Opportunities</h1>
+            <p class="lead">Personalized strategies to legally minimize your tax burden</p>
+        </div>
+    </div>
+
+    <!-- Summary Banner -->
+    <div class="card bg-light mb-5">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center mb-3 mb-md-0">
+                    <div class="display-4 fw-bold" style="color: #FF6B00;">${{ total_potential_savings|default('0')|int|format(',d') }}</div>
+                    <div class="text-muted">Potential Savings</div>
+                </div>
+                <div class="col-md-9">
+                    <div class="progress mb-3" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ (total_potential_savings / 20000 * 100)|default(0)|min(100) }}%; background-color: #FF6B00;" 
+                            aria-valuenow="{{ (total_potential_savings / 20000 * 100)|default(0)|min(100)|round|int }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">$0</span>
+                        <span class="small text-muted">$10,000</span>
+                        <span class="small text-muted">$20,000+</span>
+                    </div>
+                    <p class="mt-2 mb-0">We've identified <span class="fw-bold">{{ recommendations|length }}</span> tax saving opportunities with up to <span class="fw-bold">${{ total_potential_savings|default('0')|int|format(',d') }}</span> in potential savings for your business.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations Controls -->
+    <div class="mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-5 mb-3 mb-md-0">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all" style="border-color: #FF6B00; color: #FF6B00;">All</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="deductions" style="border-color: #FF6B00; color: #FF6B00;">Deductions</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="planning" style="border-color: #FF6B00; color: #FF6B00;">Planning</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="entity" style="border-color: #FF6B00; color: #FF6B00;">Entity</button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <select class="form-select" id="sort-select">
+                    <option value="savings">Sort by Potential Savings</option>
+                    <option value="difficulty">Sort by Implementation Difficulty</option>
+                    <option value="time">Sort by Time Required</option>
+                </select>
+            </div>
+            <div class="col-md-3 text-md-end">
+                <select class="form-select" id="tax-year-select">
+                    <option value="{{ tax_year }}">Tax Year {{ tax_year }}</option>
+                    <option value="{{ tax_year - 1 }}">Tax Year {{ tax_year - 1 }}</option>
+                    <option value="{{ tax_year + 1 }}">Tax Year {{ tax_year + 1 }}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Sensitive Opportunities -->
+    {% if time_sensitive %}
+    <div class="card shadow-sm mb-4 border-warning">
+        <div class="card-header bg-white text-warning border-warning d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-clock me-2"></i>
+                <span class="fw-bold">Time-Sensitive Opportunities</span>
+            </div>
+            <span class="badge bg-warning text-dark">Act Now</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for opportunity in time_sensitive %}
+                <div class="list-group-item p-3 border-0">
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-{{ opportunity.icon }} fa-2x text-warning"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ opportunity.name }}</h5>
+                                    <p class="mb-1">{{ opportunity.description }}</p>
+                                    <div class="d-flex align-items-center mt-2 text-danger">
+                                        <i class="fas fa-exclamation-circle me-2 {% if opportunity.urgent %}text-danger{% else %}text-warning{% endif %}"></i>
+                                        <span class="small {% if opportunity.urgent %}text-danger{% else %}text-warning{% endif %}">
+                                            <strong>{{ opportunity.days_remaining }} days remaining</strong> - Deadline: {{ opportunity.deadline }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                            <div class="mb-2">
+                                <span class="badge bg-light text-dark border px-3 py-2">{{ opportunity.estimated_savings }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-warning" data-bs-toggle="collapse" data-bs-target="#time-actions-{{ opportunity.id }}">
+                                View Actions
+                            </button>
+                        </div>
+                    </div>
+                    {% if opportunity.actions %}
+                    <div class="collapse mt-3" id="time-actions-{{ opportunity.id }}">
+                        <div class="card card-body bg-light mb-0">
+                            <p class="fw-bold mb-2">Recommended Actions:</p>
+                            <ol class="mb-0 ps-3">
+                                {% for action in opportunity.actions %}
+                                <li>{{ action }}</li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tax Law Updates -->
+    {% if tax_updates %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="fas fa-gavel me-2"></i> Tax Law Updates for {{ tax_year }}</h3>
+            <span class="badge bg-primary" style="background-color: #FF6B00 !important;">{{ tax_updates|length }} Updates</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="accordion" id="tax-updates-accordion">
+                {% for update in tax_updates %}
+                <div class="accordion-item border-0 border-bottom">
+                    <h2 class="accordion-header" id="heading-{{ update.id }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ update.id }}" aria-expanded="false" aria-controls="collapse-{{ update.id }}">
+                            <div class="d-flex align-items-center w-100">
+                                <div class="me-3">
+                                    <i class="fas fa-{{ update.icon }} text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">{{ update.name }}</div>
+                                    <div class="small text-muted">Effective: {{ update.effective_date }}</div>
+                                </div>
+                                <div class="ms-auto me-3 d-none d-md-block">
+                                    <span class="badge {% if update.impact == 'Positive' %}bg-success{% elif update.impact == 'Negative' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                        {{ update.impact }} Impact
+                                    </span>
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse-{{ update.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ update.id }}" data-bs-parent="#tax-updates-accordion">
+                        <div class="accordion-body">
+                            <p>{{ update.description }}</p>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <p class="fw-bold mb-2">Recommended Actions:</p>
+                                    <ol class="mb-0">
+                                        {% for action in update.actions %}
+                                        <li>{{ action }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <div class="mb-2">
+                                        <span class="badge bg-light text-dark border px-3 py-2">Potential Savings: {{ update.estimated_savings }}</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary save-strategy-btn" data-strategy="{{ update.id }}" data-name="{{ update.name }}" data-description="{{ update.description }}" data-savings="{{ update.estimated_savings }}" data-savings-value="{{ update.estimated_savings_value }}" style="border-color: #FF6B00; color: #FF6B00;">
+                                        Save Strategy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Recommendations -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Personalized Tax Strategies</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="row g-0">
+                {% for recommendation in recommendations %}
+                <div class="col-md-6 recommendation-card" data-category="{{ recommendation.category }}" data-difficulty="{{ recommendation.implementation_difficulty }}" data-savings="{{ recommendation.estimated_savings_value }}" data-time="{{ recommendation.time_required }}">
+                    <div class="card h-100 border-0 {% if not loop.index % 4 or not (loop.index - 1) % 4 %}bg-light{% endif %}">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3 p-3 rounded-circle d-flex align-items-center justify-content-center" style="background-color: rgba(255, 107, 0, 0.1); width: 48px; height: 48px;">
+                                    <i class="fas fa-{{ recommendation.icon }} fa-lg" style="color: #FF6B00;"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0">{{ recommendation.name }}</h4>
+                                    <span class="badge bg-light text-dark border">{{ recommendation.category|title }}</span>
+                                    {% if recommendation.tier == "plus" %}
+                                    <span class="badge bg-primary ms-1" style="background-color: #FF6B00 !important;">FYLR+</span>
+                                    {% elif recommendation.tier == "pro" %}
+                                    <span class="badge bg-dark ms-1">PRO</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <p class="mb-4">{{ recommendation.description }}</p>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <div class="small text-muted mb-1">Potential Savings</div>
+                                    <div class="fw-bold">{{ recommendation.estimated_savings }}</div>
+                                </div>
+                                <div>
+                                    <div class="small text-muted mb-1">Difficulty</div>
+                                    <div class="fw-bold">{{ recommendation.implementation_difficulty }}</div>
+                                </div>
+                                <div>
+                                    <div class="small text-muted mb-1">Time Required</div>
+                                    <div class="fw-bold">{{ recommendation.time_required }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('tax_savings.view_strategy', strategy_id=recommendation.id) }}" class="btn btn-outline-primary" style="border-color: #FF6B00; color: #FF6B00;">
+                                    View Details
+                                </a>
+                                <button class="btn btn-primary save-strategy-btn" data-strategy="{{ recommendation.id }}" data-name="{{ recommendation.name }}" data-description="{{ recommendation.description }}" data-savings="{{ recommendation.estimated_savings }}" data-savings-value="{{ recommendation.estimated_savings_value }}" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                    Save Strategy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Industry-Specific Recommendations -->
+    {% if industry_recommendations %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Industry-Specific Strategies</h3>
+            <span class="badge bg-primary" style="background-color: #FF6B00 !important;">{{ industry_recommendations|length }} Strategies</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for recommendation in industry_recommendations %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-{{ recommendation.icon }} fa-lg" style="color: #FF6B00;"></i>
+                                </div>
+                                <h5 class="mb-0">{{ recommendation.name }}</h5>
+                            </div>
+                            <p class="mb-4">{{ recommendation.description }}</p>
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="small text-muted">Potential Savings</div>
+                                <div class="fw-bold">{{ recommendation.estimated_savings }}</div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <button class="btn btn-sm btn-outline-primary w-100 save-strategy-btn" data-strategy="{{ recommendation.id }}" data-name="{{ recommendation.name }}" data-description="{{ recommendation.description }}" data-savings="{{ recommendation.estimated_savings }}" data-savings-value="{{ recommendation.estimated_savings_value }}" style="border-color: #FF6B00; color: #FF6B00;">
+                                Save Strategy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Saved Strategies -->
+    {% if saved_strategies %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Your Saved Strategies</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for strategy in saved_strategies %}
+                <div class="list-group-item border-0 p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">{{ strategy.strategy_name }}</h5>
+                            <p class="text-muted mb-0">{{ strategy.description|truncate(100) }}</p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="small text-muted mb-1">Potential Savings</div>
+                            <div class="fw-bold">${{ strategy.estimated_savings|default('0')|int|format(',d') }}</div>
+                        </div>
+                        <div class="col-md-2 text-md-end">
+                            <a href="{{ url_for('tax_savings.view_strategy', strategy_id=strategy.id) }}" class="btn btn-sm btn-outline-primary" style="border-color: #FF6B00; color: #FF6B00;">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Save Strategy Modal -->
+<div class="modal fade" id="saveStrategyModal" tabindex="-1" aria-labelledby="saveStrategyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveStrategyModalLabel">Save Tax Strategy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Save this tax strategy to your account for future reference and implementation tracking.</p>
+                <div class="mb-3">
+                    <label for="strategy-name" class="form-label">Strategy Name</label>
+                    <input type="text" class="form-control" id="strategy-name" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="strategy-description" class="form-label">Description</label>
+                    <textarea class="form-control" id="strategy-description" rows="3" readonly></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="strategy-savings" class="form-label">Estimated Savings</label>
+                    <input type="text" class="form-control" id="strategy-savings" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-strategy-confirm" style="background-color: #FF6B00; border-color: #FF6B00;">Save Strategy</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category filtering
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const recommendationCards = document.querySelectorAll('.recommendation-card');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                
+                // Show/hide recommendations based on filter
+                recommendationCards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Sorting
+        const sortSelect = document.getElementById('sort-select');
+        const recommendationsContainer = document.querySelector('.recommendation-card').parentNode;
+        
+        sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            const cardsArray = Array.from(recommendationCards);
+            
+            if (sortValue === 'savings') {
+                cardsArray.sort((a, b) => {
+                    return parseInt(b.getAttribute('data-savings')) - parseInt(a.getAttribute('data-savings'));
+                });
+            } else if (sortValue === 'difficulty') {
+                const difficultyMap = {
+                    'Easy': 1,
+                    'Medium': 2,
+                    'Complex': 3
+                };
+                
+                cardsArray.sort((a, b) => {
+                    return difficultyMap[a.getAttribute('data-difficulty')] - difficultyMap[b.getAttribute('data-difficulty')];
+                });
+            } else if (sortValue === 'time') {
+                const timeEstimateToMinutes = (timeStr) => {
+                    if (timeStr.includes('hour')) {
+                        const hours = parseInt(timeStr);
+                        return hours * 60;
+                    } else {
+                        return parseInt(timeStr);
+                    }
+                };
+                
+                cardsArray.sort((a, b) => {
+                    return timeEstimateToMinutes(a.getAttribute('data-time')) - timeEstimateToMinutes(b.getAttribute('data-time'));
+                });
+            }
+            
+            // Re-append sorted cards
+            cardsArray.forEach(card => {
+                recommendationsContainer.appendChild(card);
+            });
+        });
+        
+        // Tax year selector
+        const taxYearSelect = document.getElementById('tax-year-select');
+        
+        taxYearSelect.addEventListener('change', function() {
+            const taxYear = this.value;
+            window.location.href = `{{ url_for('tax_savings.index') }}?tax_year=${taxYear}`;
+        });
+        
+        // Save strategy modal
+        const saveStrategyButtons = document.querySelectorAll('.save-strategy-btn');
+        const saveStrategyModal = new bootstrap.Modal(document.getElementById('saveStrategyModal'));
+        
+        saveStrategyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const strategyId = this.getAttribute('data-strategy');
+                const strategyName = this.getAttribute('data-name');
+                const strategyDescription = this.getAttribute('data-description');
+                const strategySavings = this.getAttribute('data-savings');
+                const strategySavingsValue = this.getAttribute('data-savings-value');
+                
+                document.getElementById('strategy-name').value = strategyName;
+                document.getElementById('strategy-description').value = strategyDescription;
+                document.getElementById('strategy-savings').value = strategySavings;
+                
+                document.getElementById('save-strategy-confirm').setAttribute('data-strategy', strategyId);
+                document.getElementById('save-strategy-confirm').setAttribute('data-name', strategyName);
+                document.getElementById('save-strategy-confirm').setAttribute('data-description', strategyDescription);
+                document.getElementById('save-strategy-confirm').setAttribute('data-savings', strategySavings);
+                document.getElementById('save-strategy-confirm').setAttribute('data-savings-value', strategySavingsValue);
+                
+                saveStrategyModal.show();
+            });
+        });
+        
+        // Save strategy AJAX
+        const saveStrategyConfirm = document.getElementById('save-strategy-confirm');
+        
+        saveStrategyConfirm.addEventListener('click', function() {
+            const strategyData = {
+                id: this.getAttribute('data-strategy'),
+                name: this.getAttribute('data-name'),
+                description: this.getAttribute('data-description'),
+                estimated_savings: this.getAttribute('data-savings'),
+                estimated_savings_value: this.getAttribute('data-savings-value')
+            };
+            
+            fetch('{{ url_for("tax_savings.save_strategy") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(strategyData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    saveStrategyModal.hide();
+                    
+                    // Show success message
+                    const successAlert = document.createElement('div');
+                    successAlert.className = 'alert alert-success alert-dismissible fade show';
+                    successAlert.innerHTML = `
+                        <strong>Success!</strong> Strategy has been saved to your account.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    
+                    document.querySelector('.container').prepend(successAlert);
+                    
+                    // Auto-dismiss after 3 seconds
+                    setTimeout(() => {
+                        const bsAlert = new bootstrap.Alert(successAlert);
+                        bsAlert.close();
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                // Show error message
+                const errorAlert = document.createElement('div');
+                errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+                errorAlert.innerHTML = `
+                    <strong>Error!</strong> Failed to save strategy. Please try again.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                document.querySelector('.container').prepend(errorAlert);
+            });
+        });
+    });
+</script>
+{% endblock %}

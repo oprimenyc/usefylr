@@ -1,0 +1,472 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ strategy.strategy_name }} - Tax Strategy{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('tax_savings.index') }}">Tax Saving Recommendations</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Strategy Details</li>
+                </ol>
+            </nav>
+            <h1 class="mb-3">{{ strategy.strategy_name }}</h1>
+            <p class="lead">{{ strategy.description }}</p>
+        </div>
+    </div>
+
+    <!-- Strategy Summary -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="text-center p-4 rounded" style="background-color: rgba(255, 107, 0, 0.1);">
+                        <div class="display-4 fw-bold" style="color: #FF6B00;">${{ strategy.estimated_savings|int|format(',d') }}</div>
+                        <div class="text-muted">Estimated Tax Savings</div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <h4 class="border-bottom pb-2 mb-3">Strategy Overview</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3 d-flex align-items-center justify-content-center rounded bg-light" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-calendar-alt text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Added on</div>
+                                    <div class="fw-bold">{{ strategy.created_at.strftime('%B %d, %Y') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3 d-flex align-items-center justify-content-center rounded bg-light" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-chart-line text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Status</div>
+                                    <div class="fw-bold">{{ strategy.status|title }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3 d-flex align-items-center justify-content-center rounded bg-light" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-check-circle text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Completion Status</div>
+                                    <div class="fw-bold">Not Started</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3 d-flex align-items-center justify-content-center rounded bg-light" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-tasks text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Implementation Complexity</div>
+                                    <div class="fw-bold">{% if implementation_steps|length > 4 %}Complex{% elif implementation_steps|length > 2 %}Medium{% else %}Easy{% endif %}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Implementation Timeline -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Implementation Steps</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="timeline">
+                {% for step in implementation_steps %}
+                <div class="timeline-item px-4 py-4 {% if not loop.last %}border-bottom{% endif %}">
+                    <div class="row">
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <div class="timeline-icon me-3 bg-primary d-flex align-items-center justify-content-center text-white" 
+                                     style="width: 40px; height: 40px; border-radius: 50%; background-color: #FF6B00 !important;">
+                                    <span>{{ step.step }}</span>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ step.title }}</h5>
+                                    <span class="text-muted small">Est. time: {{ step.time_estimate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7 mb-3 mb-md-0">
+                            <p class="mb-3">{{ step.description }}</p>
+                            {% if step.resources_needed %}
+                            <div class="bg-light p-3 rounded">
+                                <div class="mb-2 small fw-bold">Resources Needed:</div>
+                                <ul class="mb-0 small">
+                                    {% for resource in step.resources_needed %}
+                                    <li>{{ resource }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 text-md-end">
+                            <div class="form-check form-switch d-flex justify-content-end mb-2">
+                                <input class="form-check-input me-2" type="checkbox" id="step-{{ step.step }}-complete">
+                                <label class="form-check-label" for="step-{{ step.step }}-complete">Complete</label>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#stepNotesModal" data-step="{{ step.step }}" style="border-color: #FF6B00; color: #FF6B00;">
+                                Add Notes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tax Code References and Legal Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Tax Code References</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h4 class="border-bottom pb-2 mb-3">Applicable Tax Code Sections</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-0">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-paragraph text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">IRC Section 162</h5>
+                                    <p class="mb-0">Business expenses - Ordinary and necessary business expenses are deductible</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item px-0">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-paragraph text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">IRC Section 179</h5>
+                                    <p class="mb-0">Election to expense certain business assets</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item px-0">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-paragraph text-primary" style="color: #FF6B00 !important;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">IRS Publication 535</h5>
+                                    <p class="mb-0">Business Expenses - Comprehensive guide to business expense deductions</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="border-bottom pb-2 mb-3">Important Considerations</h4>
+                    <div class="alert alert-warning">
+                        <h5 class="alert-heading">Documentation Requirements</h5>
+                        <p class="mb-0">Keep detailed records of all expenses related to this strategy. The IRS requires substantiation for all business deductions, including receipts, invoices, and a clear business purpose for each expense.</p>
+                    </div>
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">Audit Considerations</h5>
+                        <p class="mb-0">This strategy has a low to moderate audit risk when properly documented. Ensure all expenses are ordinary and necessary for your business.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="https://www.irs.gov/publications/p535" target="_blank" class="btn btn-outline-primary" style="border-color: #FF6B00; color: #FF6B00;">
+                    <i class="fas fa-external-link-alt me-2"></i> View IRS Guidelines
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Strategies -->
+    {% if related_strategies %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">Related Strategies</h3>
+        </div>
+        <div class="card-body pb-0">
+            <div class="row">
+                {% for related in related_strategies %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-{{ related.icon }} fa-lg" style="color: #FF6B00;"></i>
+                                </div>
+                                <h5 class="mb-0">{{ related.name }}</h5>
+                            </div>
+                            <p>{{ related.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-light text-dark border">{{ related.category|title }}</span>
+                                <span class="badge bg-light text-dark border">{{ related.estimated_savings }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <button class="btn btn-sm btn-outline-primary w-100 save-strategy-btn" data-strategy="{{ related.id }}" data-name="{{ related.name }}" data-description="{{ related.description }}" data-savings="{{ related.estimated_savings }}" data-savings-value="{{ related.estimated_savings_value }}" style="border-color: #FF6B00; color: #FF6B00;">
+                                Save Strategy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Step Notes Modal -->
+<div class="modal fade" id="stepNotesModal" tabindex="-1" aria-labelledby="stepNotesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stepNotesModalLabel">Step Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="step-notes" class="form-label">Add notes for this implementation step</label>
+                    <textarea class="form-control" id="step-notes" rows="5" placeholder="Enter your notes, questions, or progress updates for this step..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-notes" style="background-color: #FF6B00; border-color: #FF6B00;">Save Notes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Strategy Modal -->
+<div class="modal fade" id="saveStrategyModal" tabindex="-1" aria-labelledby="saveStrategyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveStrategyModalLabel">Save Tax Strategy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Save this tax strategy to your account for future reference and implementation tracking.</p>
+                <div class="mb-3">
+                    <label for="strategy-name" class="form-label">Strategy Name</label>
+                    <input type="text" class="form-control" id="strategy-name" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="strategy-description" class="form-label">Description</label>
+                    <textarea class="form-control" id="strategy-description" rows="3" readonly></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="strategy-savings" class="form-label">Estimated Savings</label>
+                    <input type="text" class="form-control" id="strategy-savings" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-strategy-confirm" style="background-color: #FF6B00; border-color: #FF6B00;">Save Strategy</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Step Notes Modal
+        const stepNotesModal = document.getElementById('stepNotesModal');
+        const saveNotesBtn = document.getElementById('save-notes');
+        let currentStep = null;
+        
+        stepNotesModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            currentStep = button.getAttribute('data-step');
+            document.getElementById('stepNotesModalLabel').textContent = `Notes for Step ${currentStep}`;
+            
+            // Load existing notes if any
+            const existingNotes = localStorage.getItem(`strategy_${{{ strategy.id }}}_step_${currentStep}_notes`);
+            if (existingNotes) {
+                document.getElementById('step-notes').value = existingNotes;
+            } else {
+                document.getElementById('step-notes').value = '';
+            }
+        });
+        
+        saveNotesBtn.addEventListener('click', function() {
+            const notes = document.getElementById('step-notes').value;
+            
+            // Save notes to localStorage (in a real app, this would save to the database)
+            localStorage.setItem(`strategy_${{{ strategy.id }}}_step_${currentStep}_notes`, notes);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(stepNotesModal);
+            modal.hide();
+            
+            // Show success message
+            const successAlert = document.createElement('div');
+            successAlert.className = 'alert alert-success alert-dismissible fade show';
+            successAlert.innerHTML = `
+                <strong>Success!</strong> Notes for Step ${currentStep} have been saved.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.querySelector('.container').prepend(successAlert);
+            
+            // Auto-dismiss after 3 seconds
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(successAlert);
+                bsAlert.close();
+            }, 3000);
+        });
+        
+        // Step completion checkboxes
+        const stepCheckboxes = document.querySelectorAll('.form-check-input[id^="step-"]');
+        
+        stepCheckboxes.forEach(checkbox => {
+            // Load saved state
+            const stepNumber = checkbox.id.match(/step-(\d+)-complete/)[1];
+            const savedState = localStorage.getItem(`strategy_${{{ strategy.id }}}_step_${stepNumber}_complete`);
+            
+            if (savedState === 'true') {
+                checkbox.checked = true;
+                
+                // Apply completed styling
+                const timelineItem = checkbox.closest('.timeline-item');
+                timelineItem.classList.add('bg-light');
+                timelineItem.style.opacity = '0.7';
+            }
+            
+            // Save state on change
+            checkbox.addEventListener('change', function() {
+                const stepNumber = this.id.match(/step-(\d+)-complete/)[1];
+                localStorage.setItem(`strategy_${{{ strategy.id }}}_step_${stepNumber}_complete`, this.checked);
+                
+                // Apply/remove completed styling
+                const timelineItem = this.closest('.timeline-item');
+                if (this.checked) {
+                    timelineItem.classList.add('bg-light');
+                    timelineItem.style.opacity = '0.7';
+                } else {
+                    timelineItem.classList.remove('bg-light');
+                    timelineItem.style.opacity = '1';
+                }
+                
+                // Check if all steps are complete
+                const allComplete = Array.from(stepCheckboxes).every(cb => cb.checked);
+                
+                if (allComplete) {
+                    // Show completion message
+                    const completionAlert = document.createElement('div');
+                    completionAlert.className = 'alert alert-success alert-dismissible fade show';
+                    completionAlert.innerHTML = `
+                        <strong>Congratulations!</strong> You've completed all the implementation steps for this strategy.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    
+                    document.querySelector('.container').prepend(completionAlert);
+                }
+            });
+        });
+        
+        // Save related strategy modal
+        const saveStrategyButtons = document.querySelectorAll('.save-strategy-btn');
+        const saveStrategyModal = new bootstrap.Modal(document.getElementById('saveStrategyModal'));
+        
+        saveStrategyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const strategyId = this.getAttribute('data-strategy');
+                const strategyName = this.getAttribute('data-name');
+                const strategyDescription = this.getAttribute('data-description');
+                const strategySavings = this.getAttribute('data-savings');
+                const strategySavingsValue = this.getAttribute('data-savings-value');
+                
+                document.getElementById('strategy-name').value = strategyName;
+                document.getElementById('strategy-description').value = strategyDescription;
+                document.getElementById('strategy-savings').value = strategySavings;
+                
+                document.getElementById('save-strategy-confirm').setAttribute('data-strategy', strategyId);
+                document.getElementById('save-strategy-confirm').setAttribute('data-name', strategyName);
+                document.getElementById('save-strategy-confirm').setAttribute('data-description', strategyDescription);
+                document.getElementById('save-strategy-confirm').setAttribute('data-savings', strategySavings);
+                document.getElementById('save-strategy-confirm').setAttribute('data-savings-value', strategySavingsValue);
+                
+                saveStrategyModal.show();
+            });
+        });
+        
+        // Save strategy AJAX
+        const saveStrategyConfirm = document.getElementById('save-strategy-confirm');
+        
+        saveStrategyConfirm.addEventListener('click', function() {
+            const strategyData = {
+                id: this.getAttribute('data-strategy'),
+                name: this.getAttribute('data-name'),
+                description: this.getAttribute('data-description'),
+                estimated_savings: this.getAttribute('data-savings'),
+                estimated_savings_value: this.getAttribute('data-savings-value')
+            };
+            
+            fetch('{{ url_for("tax_savings.save_strategy") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(strategyData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    saveStrategyModal.hide();
+                    
+                    // Show success message
+                    const successAlert = document.createElement('div');
+                    successAlert.className = 'alert alert-success alert-dismissible fade show';
+                    successAlert.innerHTML = `
+                        <strong>Success!</strong> Strategy has been saved to your account.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    
+                    document.querySelector('.container').prepend(successAlert);
+                    
+                    // Auto-dismiss after 3 seconds
+                    setTimeout(() => {
+                        const bsAlert = new bootstrap.Alert(successAlert);
+                        bsAlert.close();
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                // Show error message
+                const errorAlert = document.createElement('div');
+                errorAlert.className = 'alert alert-danger alert-dismissible fade show';
+                errorAlert.innerHTML = `
+                    <strong>Error!</strong> Failed to save strategy. Please try again.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                document.querySelector('.container').prepend(errorAlert);
+            });
+        });
+    });
+</script>
+{% endblock %}
