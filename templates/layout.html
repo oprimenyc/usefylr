@@ -39,7 +39,7 @@
                         <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.plans') }}">Pricing</a>
+                        <a class="nav-link" href="{{ url_for('main.pricing') }}">Pricing</a>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
@@ -83,10 +83,10 @@
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">Login</a>
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">Register</a>
+                        <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -130,10 +130,10 @@
                 <div class="col-md-4 mb-4 mb-md-0">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('main.plans') }}" class="text-white">Pricing</a></li>
-                        <li><a href="#" class="text-white">Terms of Use</a></li>
-                        <li><a href="#" class="text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="text-white">Legal Disclaimer</a></li>
+                        <li><a href="{{ url_for('main.pricing') }}" class="text-white">Pricing</a></li>
+                        <li><a href="{{ url_for('main.terms') }}" class="text-white">Terms of Use</a></li>
+                        <li><a href="{{ url_for('main.privacy') }}" class="text-white">Privacy Policy</a></li>
+                        <li><a href="{{ url_for('main.legal_disclaimer') }}" class="text-white">Legal Disclaimer</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
@@ -142,7 +142,7 @@
                         <strong>DISCLAIMER:</strong> .fylr is an AI-driven self-service platform and is NOT operated by licensed CPAs or tax professionals. You are solely responsible for the accuracy of information provided. No tax advice is given, and no liability is accepted for any consequences of using this tool.
                     </p>
                     <p class="small text-muted">
-                        <a href="#" class="text-white"><i class="fas fa-gavel me-1"></i> View Full Disclaimer</a>
+                        <a href="{{ url_for('main.legal_disclaimer') }}" class="text-white"><i class="fas fa-gavel me-1"></i> View Full Disclaimer</a>
                     </p>
                 </div>
             </div>
