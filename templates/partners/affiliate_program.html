@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.fylr Partner Program - Exclusive Opportunity</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        :root {
+            --fylr-orange: #FF6B00;
+            --fylr-dark: #212529;
+        }
+        .btn-fylr {
+            background-color: var(--fylr-orange);
+            border-color: var(--fylr-orange);
+            color: white;
+        }
+        .btn-fylr:hover {
+            background-color: #e65c00;
+            border-color: #e65c00;
+            color: white;
+        }
+        .text-fylr {
+            color: var(--fylr-orange);
+        }
+        .bg-fylr {
+            background-color: var(--fylr-orange);
+        }
+        .hero {
+            background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .feature-icon {
+            background-color: rgba(255, 107, 0, 0.1);
+            border-radius: 50%;
+            height: 80px;
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .feature-icon i {
+            font-size: 32px;
+            color: var(--fylr-orange);
+        }
+        .commission-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .commission-card:hover {
+            transform: translateY(-5px);
+        }
+        .section-divider {
+            height: 5px;
+            background: linear-gradient(90deg, var(--fylr-orange) 0%, #FFC107 100%);
+            margin: 80px 0;
+        }
+        #passwordModal .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Protection Modal -->
+    <div class="modal fade" id="passwordModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Partner Access</h5>
+                </div>
+                <div class="modal-body">
+                    <p>This page contains exclusive partnership information. Please enter the access code provided to you.</p>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="accessCode" placeholder="Access Code">
+                        <label for="accessCode">Access Code</label>
+                    </div>
+                    <div class="alert alert-danger d-none" id="accessError">
+                        Incorrect access code. Please try again or contact partners@fylr.app for assistance.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-fylr" id="submitAccess">Access Partner Portal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden until password entered) -->
+    <div id="mainContent" style="display: none;">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#"><span class="text-fylr fw-bold">.fylr</span> Partners</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#overview">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#commissions">Commissions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#resources">Resources</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#success">Success Stories</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <a href="#apply" class="btn btn-fylr">Apply Now</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container text-center">
+                <span class="badge bg-fylr mb-3">EXCLUSIVE OPPORTUNITY</span>
+                <h1 class="display-4 fw-bold mb-4">Partner With The Future of Tax Automation</h1>
+                <p class="lead mb-5">Join the .fylr affiliate program and earn substantial commissions helping your audience simplify their business taxes with our AI-powered platform.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="#commissions" class="btn btn-fylr btn-lg px-4 gap-3">View Commission Structure</a>
+                    <a href="#apply" class="btn btn-outline-light btn-lg px-4">Apply Now</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overview Section -->
+        <section class="py-5" id="overview">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <span class="badge bg-dark mb-2">ABOUT US</span>
+                        <h2 class="mb-4">Why Partner With .fylr?</h2>
+                        <p class="lead mb-4">We're revolutionizing business tax preparation with advanced AI technology that makes taxes simpler, faster, and more affordable for entrepreneurs.</p>
+                        
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="me-3 mt-1">
+                                <i class="fas fa-check-circle text-fylr fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5>High-Value Service</h5>
+                                <p>Our tiered pricing model ($97-$497) means substantial commissions for every referral.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="me-3 mt-1">
+                                <i class="fas fa-check-circle text-fylr fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5>Proven Conversion</h5>
+                                <p>Our landing pages convert at 4.8% on average, with transparent tracking.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="me-3 mt-1">
+                                <i class="fas fa-check-circle text-fylr fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5>Dedicated Support</h5>
+                                <p>Personal partner manager, custom marketing materials, and optimization help.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-start">
+                            <div class="me-3 mt-1">
+                                <i class="fas fa-check-circle text-fylr fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5>Recurring Revenue</h5>
+                                <p>Earn not just on initial sign-ups, but on annual renewals as well.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-lg">
+                            <div class="card-body p-5">
+                                <h3 class="card-title mb-4">Target Audience</h3>
+                                <p class="card-text mb-4">Our product is perfect for your audience if they include:</p>
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="fas fa-user-tie text-fylr me-3"></i>
+                                            <h6 class="mb-0">Freelancers</h6>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="fas fa-store text-fylr me-3"></i>
+                                            <h6 class="mb-0">Small Businesses</h6>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-briefcase text-fylr me-3"></i>
+                                            <h6 class="mb-0">Side Hustlers</h6>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="fas fa-rocket text-fylr me-3"></i>
+                                            <h6 class="mb-0">New Entrepreneurs</h6>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="fas fa-chart-line text-fylr me-3"></i>
+                                            <h6 class="mb-0">Growing Companies</h6>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-map-marked-alt text-fylr me-3"></i>
+                                            <h6 class="mb-0">Multi-State Businesses</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+        
+        <!-- Commission Structure -->
+        <section class="py-5" id="commissions">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <span class="badge bg-dark mb-2">EARNINGS</span>
+                    <h2>Lucrative Commission Structure</h2>
+                    <p class="lead">Earn substantial commissions on every referral and build recurring revenue.</p>
+                </div>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="commission-card h-100">
+                            <div class="card-header py-4 bg-dark text-white text-center">
+                                <h4 class="mb-0">Initial Commission</h4>
+                            </div>
+                            <div class="card-body text-center p-5">
+                                <div class="display-3 fw-bold text-fylr mb-3">30%</div>
+                                <p class="mb-4">Of first-year subscription value</p>
+                                <ul class="list-unstyled text-start">
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Self-Service Plan: <strong>$29.10</strong> per referral</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Guided Plan: <strong>$59.10</strong> per referral</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Concierge Plan: <strong>$149.10</strong> per referral</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="commission-card h-100">
+                            <div class="card-header py-4 bg-fylr text-white text-center">
+                                <h4 class="mb-0">Recurring Commission</h4>
+                            </div>
+                            <div class="card-body text-center p-5">
+                                <div class="display-3 fw-bold text-fylr mb-3">15%</div>
+                                <p class="mb-4">On annual renewals</p>
+                                <ul class="list-unstyled text-start">
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Self-Service Plan: <strong>$14.55</strong> per year</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Guided Plan: <strong>$29.55</strong> per year</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Concierge Plan: <strong>$74.55</strong> per year</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="commission-card h-100">
+                            <div class="card-header py-4 bg-dark text-white text-center">
+                                <h4 class="mb-0">Upgrade Bonus</h4>
+                            </div>
+                            <div class="card-body text-center p-5">
+                                <div class="display-3 fw-bold text-fylr mb-3">10%</div>
+                                <p class="mb-4">When users upgrade tiers</p>
+                                <ul class="list-unstyled text-start">
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Self-Service to Guided: <strong>$10</strong> bonus</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Guided to Concierge: <strong>$30</strong> bonus</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Self-Service to Concierge: <strong>$40</strong> bonus</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-lg mt-5">
+                    <div class="card-header bg-dark text-white py-3">
+                        <h4 class="mb-0">Volume Bonus Tiers</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="py-3">Monthly Referrals</th>
+                                        <th class="py-3">Bonus Payment</th>
+                                        <th class="py-3">Example Earnings</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="py-3">5-10 customers</td>
+                                        <td class="py-3">$100</td>
+                                        <td class="py-3">$395 - $690 + $100 bonus</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">11-25 customers</td>
+                                        <td class="py-3">$300</td>
+                                        <td class="py-3">$759 - $1,725 + $300 bonus</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">26-50 customers</td>
+                                        <td class="py-3">$750</td>
+                                        <td class="py-3">$1,794 - $3,450 + $750 bonus</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">51+ customers</td>
+                                        <td class="py-3">$1,500</td>
+                                        <td class="py-3">$3,519+ + $1,500 bonus</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light py-3">
+                        <p class="mb-0 text-center"><strong>Limited Time Offer:</strong> Double commission (60%) on all first-time referrals for the next 30 days!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- Marketing Resources -->
+        <section class="py-5" id="resources">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <span class="badge bg-dark mb-2">TOOLS</span>
+                    <h2>Comprehensive Marketing Resources</h2>
+                    <p class="lead">Everything you need to successfully promote .fylr to your audience</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="feature-icon mx-auto">
+                                    <i class="fas fa-laptop-code"></i>
+                                </div>
+                                <h4 class="text-center mb-3">Custom Landing Pages</h4>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Co-branded with your logo</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Personalized welcome message</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Exclusive offers for your audience</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> URL masking available</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Mobile-optimized design</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="feature-icon mx-auto">
+                                    <i class="fas fa-paint-brush"></i>
+                                </div>
+                                <h4 class="text-center mb-3">Creative Assets</h4>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> High-resolution product images</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Custom demo video with your link</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Promotional banners (all sizes)</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Email header graphics</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Social media cards</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="feature-icon mx-auto">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <h4 class="text-center mb-3">Copy Templates</h4>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Email sequences (5 templates)</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Social media posts (20+ templates)</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Blog post outlines (3 options)</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Promotional video scripts</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Newsletter announcements</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-5">
+                    <a href="#apply" class="btn btn-lg btn-fylr">Get Access to All Resources</a>
+                </div>
+            </div>
+        </section>
+        
+        <div class="section-divider"></div>
+
+        <!-- Success Stories -->
+        <section class="py-5" id="success">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <span class="badge bg-dark mb-2">CASE STUDIES</span>
+                    <h2>Partner Success Stories</h2>
+                    <p class="lead">See how other partners have succeeded with .fylr</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card h-100 border-0 shadow">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-4">
+                                    <img src="https://via.placeholder.com/80" class="rounded-circle me-3" alt="Partner avatar">
+                                    <div>
+                                        <h5 class="mb-1">Jessica Thompson</h5>
+                                        <p class="small text-muted mb-0">Financial Blogger</p>
+                                    </div>
+                                </div>
+                                <p class="mb-4">"I've promoted many financial products, but .fylr has been exceptional. The conversion is consistently high because the product genuinely solves a pain point for my audience. My readers thank me for the recommendation, and I've earned over $12,000 in commissions in just 4 months."</p>
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1">Monthly Referrals</h6>
+                                        <p class="text-fylr fw-bold">28</p>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Conversion Rate</h6>
+                                        <p class="text-fylr fw-bold">5.7%</p>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Monthly Income</h6>
+                                        <p class="text-fylr fw-bold">$2,250</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="card h-100 border-0 shadow">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-4">
+                                    <img src="https://via.placeholder.com/80" class="rounded-circle me-3" alt="Partner avatar">
+                                    <div>
+                                        <h5 class="mb-1">Michael Roberts</h5>
+                                        <p class="small text-muted mb-0">Small Business YouTuber</p>
+                                    </div>
+                                </div>
+                                <p class="mb-4">"My YouTube channel focuses on helping entrepreneurs, and .fylr has become my top affiliate program. I created a dedicated review video that continues to generate commissions month after month. The recurring revenue model has built a steady income stream."</p>
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1">Monthly Referrals</h6>
+                                        <p class="text-fylr fw-bold">42</p>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Conversion Rate</h6>
+                                        <p class="text-fylr fw-bold">6.3%</p>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Monthly Income</h6>
+                                        <p class="text-fylr fw-bold">$3,400</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="card h-100 border-0 shadow">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-4">
+                                    <img src="https://via.placeholder.com/80" class="rounded-circle me-3" alt="Partner avatar">
+                                    <div>
+                                        <h5 class="mb-1">Sarah Chen</h5>
+                                        <p class="small text-muted mb-0">Freelancer Community Owner</p>
+                                    </div>
+                                </div>
+                                <p class="mb-4">"My community of freelancers was constantly asking about tax help. .fylr has been the perfect solution. I promote it seasonally with great results, but the biggest surprise has been the upgrade commissions as my members grow their businesses."</p>
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1">Monthly Referrals</h6>
+                                        <p class="text-fylr fw-bold">35</p>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Conversion Rate</h6>
+                                        <p class="text-fylr fw-bold">7.2%</p>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Monthly Income</h6>
+                                        <p class="text-fylr fw-bold">$2,850</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="section-divider"></div>
+
+        <!-- Application Section -->
+        <section class="py-5" id="apply">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-5 mb-lg-0">
+                        <span class="badge bg-dark mb-2">JOIN US</span>
+                        <h2 class="mb-4">Apply to Become a .fylr Partner</h2>
+                        <p class="lead mb-4">We're looking for influencers, content creators, and community leaders who can help us reach entrepreneurs, small business owners, and self-employed professionals.</p>
+                        
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="me-3 mt-1">
+                                <i class="fas fa-check-circle text-fylr fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5>Simple Application Process</h5>
+                                <p>Complete the form, and we'll get back to you within 48 hours.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="me-3 mt-1">
+                                <i class="fas fa-check-circle text-fylr fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5>Fast Approval</h5>
+                                <p>Get your unique tracking link and marketing materials quickly.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-start">
+                            <div class="me-3 mt-1">
+                                <i class="fas fa-check-circle text-fylr fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5>Dedicated Support</h5>
+                                <p>Work with a partner manager who helps maximize your success.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-lg">
+                            <div class="card-header bg-dark text-white py-4">
+                                <h4 class="mb-0 text-center">Partner Application</h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <form id="partnerForm">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="name" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="website" class="form-label">Website/Channel/Platform</label>
+                                        <input type="url" class="form-control" id="website" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="audience" class="form-label">Audience Size</label>
+                                        <select class="form-select" id="audience" required>
+                                            <option value="" selected disabled>Select audience size</option>
+                                            <option value="1000-5000">1,000 - 5,000</option>
+                                            <option value="5001-10000">5,001 - 10,000</option>
+                                            <option value="10001-50000">10,001 - 50,000</option>
+                                            <option value="50001-100000">50,001 - 100,000</option>
+                                            <option value="100001+">100,001+</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="niche" class="form-label">Primary Niche</label>
+                                        <select class="form-select" id="niche" required>
+                                            <option value="" selected disabled>Select your niche</option>
+                                            <option value="small-business">Small Business</option>
+                                            <option value="freelancers">Freelancers & Contractors</option>
+                                            <option value="entrepreneurs">Entrepreneurs</option>
+                                            <option value="ecommerce">E-commerce</option>
+                                            <option value="personal-finance">Personal Finance</option>
+                                            <option value="marketing">Marketing</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="promotion" class="form-label">How do you plan to promote .fylr?</label>
+                                        <textarea class="form-control" id="promotion" rows="3" required></textarea>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="experience" class="form-label">Previous Affiliate Experience</label>
+                                        <textarea class="form-control" id="experience" rows="3"></textarea>
+                                    </div>
+                                    
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                        <label class="form-check-label" for="termsCheck">
+                                            I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Partner Terms & Conditions</a>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-fylr btn-lg">Submit Application</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-4 bg-dark text-white">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <h5 class="text-fylr">.fylr Partner Program</h5>
+                        <p>Join the future of tax automation and earn substantial commissions while helping your audience simplify their business taxes.</p>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4 mb-md-0">
+                        <h5>Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#overview" class="text-white">Overview</a></li>
+                            <li><a href="#commissions" class="text-white">Commissions</a></li>
+                            <li><a href="#resources" class="text-white">Resources</a></li>
+                            <li><a href="#success" class="text-white">Success Stories</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <h5>Contact</h5>
+                        <p class="mb-1"><i class="fas fa-envelope me-2"></i> partners@fylr.app</p>
+                        <p><i class="fas fa-phone me-2"></i> (555) 123-4567</p>
+                        <div class="mt-3">
+                            <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-white me-2"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-white me-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="mt-4 mb-3 bg-secondary">
+                
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="small mb-0">&copy; 2025 .fylr. All rights reserved.</p>
+                    </div>
+                    <div>
+                        <a href="#" class="text-white small me-3">Privacy Policy</a>
+                        <a href="#" class="text-white small">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Terms Modal -->
+        <div class="modal fade" id="termsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title">Partner Terms & Conditions</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>1. Partner Relationship</h6>
+                        <p>The .fylr Partner Program agreement is between you (the "Partner") and .fylr (the "Company"). This agreement does not create an agency, partnership, or joint venture.</p>
+                        
+                        <h6>2. Commission Structure</h6>
+                        <p>Partner will receive 30% commission on the first year subscription value of each referral, 15% commission on annual renewals, and 10% commission on tier upgrades. Commissions are paid monthly via direct deposit or PayPal.</p>
+                        
+                        <h6>3. Promotion Guidelines</h6>
+                        <p>Partner must clearly disclose the affiliate relationship in all promotions. Partner must not make false claims about the Company or its services. Partner must not engage in spamming or other deceptive marketing practices.</p>
+                        
+                        <h6>4. Tracking and Reporting</h6>
+                        <p>The Company will track all referrals through a unique affiliate link or code. Partner will have access to a dashboard showing clicks, conversions, and commissions earned.</p>
+                        
+                        <h6>5. Term and Termination</h6>
+                        <p>This agreement continues until terminated by either party with 30 days written notice. The Company may terminate immediately if Partner violates any terms of this agreement.</p>
+                        
+                        <h6>6. Confidentiality</h6>
+                        <p>Partner agrees to keep all proprietary information, including commission rates, marketing strategies, and customer data, strictly confidential.</p>
+                        
+                        <h6>7. Limitation of Liability</h6>
+                        <p>The Company is not liable for any damages arising from the Partner Program, including lost profits or indirect, incidental, or consequential damages.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="modal fade" id="successModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">Application Submitted!</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle text-success fa-5x"></i>
+                        </div>
+                        <h4>Thank You for Applying!</h4>
+                        <p>We've received your application and will review it promptly. Expect to hear from our partner team within 48 hours.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show password modal on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+            passwordModal.show();
+        });
+        
+        // Password validation
+        document.getElementById('submitAccess').addEventListener('click', function() {
+            const accessCode = document.getElementById('accessCode').value;
+            const errorElement = document.getElementById('accessError');
+            
+            // Simple validation - in production, this would be more secure
+            if (accessCode === 'fylrpartner2025') {
+                document.getElementById('mainContent').style.display = 'block';
+                bootstrap.Modal.getInstance(document.getElementById('passwordModal')).hide();
+            } else {
+                errorElement.classList.remove('d-none');
+            }
+        });
+        
+        // Form submission
+        document.getElementById('partnerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // In a real implementation, this would send the form data to a server
+            // For demo purposes, we'll just show the success modal
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+            
+            // Reset form
+            this.reset();
+        });
+    </script>
+</body>
+</html>
