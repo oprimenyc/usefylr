@@ -1,0 +1,357 @@
+{% extends "layout.html" %}
+
+{% block title %}.fylr - Entity Recommendations{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center">Business Entity Recommendations</h1>
+            <p class="text-center text-muted">AI-powered analysis of the optimal entity structure for your business</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">Important Disclaimer</h5>
+                        <p class="mb-0">These recommendations are generated based on the information you've provided and general business principles. Entity selection has significant legal, tax, and financial implications. We strongly recommend consulting with qualified legal and tax professionals before making a final decision. This tool is provided for informational purposes only and is not a substitute for professional advice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <!-- Primary Recommendation -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recommended Entity Structure</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="display-5 me-3">{{ recommendations.primary.entity_info.name }}</div>
+                        <span class="badge bg-primary px-3 py-2">Best Match</span>
+                    </div>
+                    
+                    <p class="lead">{{ recommendations.primary.entity_info.description }}</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Formation Complexity</h6>
+                                    <p class="card-text fs-5">{{ recommendations.primary.entity_info.formation_complexity }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Liability Protection</h6>
+                                    <p class="card-text fs-5">{{ recommendations.primary.entity_info.liability_protection }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Tax Treatment</h6>
+                                    <p class="card-text fs-5">{{ recommendations.primary.entity_info.tax_treatment }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Key Advantages</h5>
+                    <ul class="list-group mb-4">
+                        {% for advantage in recommendations.primary.entity_info.advantages %}
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            {{ advantage }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <h5 class="mb-3">Potential Disadvantages</h5>
+                    <ul class="list-group mb-4">
+                        {% for disadvantage in recommendations.primary.entity_info.disadvantages %}
+                        <li class="list-group-item">
+                            <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                            {{ disadvantage }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <h5 class="mb-3">Personalized Insights</h5>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            {% for insight in recommendations.primary.insights %}
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    {% if insight.type == "advantage" %}
+                                        <i class="fas fa-check-circle text-success fa-2x"></i>
+                                    {% elif insight.type == "caution" %}
+                                        <i class="fas fa-exclamation-circle text-warning fa-2x"></i>
+                                    {% elif insight.type == "warning" %}
+                                        <i class="fas fa-exclamation-triangle text-danger fa-2x"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle text-info fa-2x"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">{{ insight.title }}</h6>
+                                    <p class="mb-0">{{ insight.description }}</p>
+                                </div>
+                            </div>
+                            {% if not loop.last %}<hr>{% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('entity.entity_details', entity_type=recommendations.primary.entity_type) }}" class="btn btn-primary">
+                            <i class="fas fa-info-circle me-1"></i> Detailed Information
+                        </a>
+                        
+                        <form action="{{ url_for('entity.update_entity') }}" method="post" class="ms-auto">
+                            <input type="hidden" name="entity_type" value="{{ recommendations.primary.entity_type }}">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check me-1"></i> Select This Entity Type
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Alternative Recommendations -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Alternative Entity Structures</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="accordion" id="alternativesAccordion">
+                        {% for alternative in recommendations.alternatives %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                                    <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                        <span>{{ alternative.entity_info.name }}</span>
+                                        <span class="badge bg-secondary ms-2">{{ alternative.score }} pts</span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#alternativesAccordion">
+                                <div class="accordion-body">
+                                    <p>{{ alternative.entity_info.description }}</p>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <div class="card bg-light">
+                                                <div class="card-body text-center py-2">
+                                                    <h6 class="card-title mb-0">Formation</h6>
+                                                    <p class="card-text">{{ alternative.entity_info.formation_complexity }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card bg-light">
+                                                <div class="card-body text-center py-2">
+                                                    <h6 class="card-title mb-0">Liability</h6>
+                                                    <p class="card-text">{{ alternative.entity_info.liability_protection }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card bg-light">
+                                                <div class="card-body text-center py-2">
+                                                    <h6 class="card-title mb-0">Taxation</h6>
+                                                    <p class="card-text">{{ alternative.entity_info.tax_treatment }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ url_for('entity.entity_details', entity_type=alternative.entity_type) }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-info-circle me-1"></i> Details
+                                        </a>
+                                        
+                                        <a href="{{ url_for('entity.compare_entities', entity_type_1=recommendations.primary.entity_type, entity_type_2=alternative.entity_type) }}" class="btn btn-outline-secondary btn-sm ms-auto">
+                                            <i class="fas fa-balance-scale me-1"></i> Compare
+                                        </a>
+                                        
+                                        <form action="{{ url_for('entity.update_entity') }}" method="post">
+                                            <input type="hidden" name="entity_type" value="{{ alternative.entity_type }}">
+                                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-check me-1"></i> Select
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enhanced AI Analysis (Pro Features) -->
+            {% if recommendations.has_ai_recommendations and recommendations.enhanced_insights %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Enhanced AI Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-robot fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="alert-heading">AI Tax Strategy Insights</h6>
+                                <p class="mb-0">These advanced insights are powered by our AI tax strategy system and are provided as part of your premium plan.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Recommendation</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ recommendations.enhanced_insights.recommendation }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Strategic Insights</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ recommendations.enhanced_insights.strategic_insights }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Tax Considerations</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ recommendations.enhanced_insights.tax_considerations }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Potential Pitfalls</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ recommendations.enhanced_insights.pitfalls }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-12 col-lg-4">
+            <!-- Questionnaire Summary -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Your Responses</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for question in [
+                            {"id": "business_purpose", "label": "Business Purpose"},
+                            {"id": "liability_concerns", "label": "Liability Concerns"},
+                            {"id": "ownership", "label": "Ownership Structure"},
+                            {"id": "growth_plans", "label": "Growth Plans"},
+                            {"id": "reinvestment", "label": "Profit Reinvestment"},
+                            {"id": "tax_priorities", "label": "Tax Priorities"},
+                            {"id": "expected_annual_profit", "label": "Expected Profit"},
+                            {"id": "business_risk", "label": "Business Risk"},
+                            {"id": "external_funding", "label": "External Funding"},
+                            {"id": "complexity_tolerance", "label": "Complexity Tolerance"}
+                        ] %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ question.label }}</h6>
+                            </div>
+                            <p class="mb-1">{{ recommendations.questionnaire_responses.get(question.id, "Not specified") | replace("_", " ") | title }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('entity.questionnaire') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-redo me-1"></i> Retake Questionnaire
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Entity Selection Tips -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Entity Selection Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Consider Future Growth</h6>
+                            <p class="small mb-0">Think about where your business will be in 3-5 years, not just today. Changing entities later can be complex and costly.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Evaluate Liability Risk</h6>
+                            <p class="small mb-0">Higher-risk businesses typically benefit from stronger liability protection offered by LLCs and corporations.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Factor in Administrative Overhead</h6>
+                            <p class="small mb-0">More complex entities require more ongoing paperwork and compliance activities. Be realistic about what you can manage.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Consider State-Specific Rules</h6>
+                            <p class="small mb-0">Entity requirements, fees, and taxation vary by state. Research the specific rules for your locations.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Consult Professionals</h6>
+                            <p class="small mb-0">Always consult with legal and tax professionals before making your final entity decision.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Further Resources -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Further Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-external-link-alt me-2"></i> IRS Small Business Guide
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-external-link-alt me-2"></i> State-by-State Entity Formation
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-external-link-alt me-2"></i> Business Entity Comparison Chart
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-external-link-alt me-2"></i> Tax Implications of Business Entities
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
