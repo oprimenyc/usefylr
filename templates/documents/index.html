@@ -1,0 +1,307 @@
+{% extends "layout.html" %}
+
+{% block title %}.fylr - Document Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center">Document Management</h1>
+            <p class="text-center text-muted">Upload and organize your tax documents with AI-powered processing</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">Important Disclaimer</h5>
+                        <p class="mb-0">The document processing system uses AI to automatically extract information from your documents. While our system is designed to be accurate, you should always verify that the extracted information is correct before using it in your tax filings. You are solely responsible for the accuracy of all information submitted in your tax returns. All documents are stored securely and are only accessible to you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <!-- Document Upload -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Upload Documents</h5>
+                    <a href="{{ url_for('documents.upload') }}" class="btn btn-sm btn-light">
+                        <i class="fas fa-upload me-1"></i> Upload Page
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('documents.upload') }}" method="post" enctype="multipart/form-data" class="dropzone dz-clickable" id="documentDropzone">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Document Category</label>
+                                <select name="category" id="category" class="form-select">
+                                    {% for category_key, category in document_categories.items() %}
+                                        <option value="{{ category_key }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="dz-message">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                <h4>Drag & Drop files here</h4>
+                                <p>or click to browse files</p>
+                                <div class="small text-muted mt-2">
+                                    Supported formats: PDF, PNG, JPG, JPEG, TIFF, BMP
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="mt-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-robot me-2"></i>
+                            Our AI will automatically extract information from your documents, including amounts, dates, and document type.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Uploads -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recently Uploaded Documents</h5>
+                    <a href="{{ url_for('documents.index') }}" class="btn btn-sm btn-outline-light">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_uploads %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Category</th>
+                                        <th>AI Detection</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for doc in recent_uploads %}
+                                    <tr>
+                                        <td>{{ doc.original_filename }}</td>
+                                        <td>
+                                            {% if doc.file_extension == 'pdf' %}
+                                                <span class="badge bg-danger">PDF</span>
+                                            {% elif doc.file_extension in ['jpg', 'jpeg', 'png', 'bmp', 'tiff'] %}
+                                                <span class="badge bg-primary">Image</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ doc.file_extension.upper() }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ doc.upload_date.split('T')[0] }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ document_categories[doc.category].name }}</span>
+                                        </td>
+                                        <td>
+                                            {% if doc.extracted_data.detected_type != 'unknown' %}
+                                                <span class="badge bg-success">{{ doc.extracted_data.detected_type|replace('_', ' ')|title }}</span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark">Unknown</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('documents.view_document', doc_id=doc.id) }}" class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger delete-document" data-document-id="{{ doc.id }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">You haven't uploaded any documents yet. Use the upload form above to get started.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-4">
+            <!-- Document Categories -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Document Categories</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for category_key, category in document_categories.items() %}
+                        <a href="{{ url_for('documents.category_documents', category=category_key) }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="{{ category.icon }} me-3 text-primary"></i>
+                            <div>
+                                <h6 class="mb-0">{{ category.name }}</h6>
+                                <small class="text-muted">{{ category.description }}</small>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Features -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">AI Document Features</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Automatic document type detection
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            OCR text extraction from images
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Data extraction for common tax forms
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Smart organization by document type
+                        </li>
+                    </ul>
+                    
+                    <div class="alert alert-primary">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-crown fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="alert-heading">Pro Feature: Advanced Analysis</h6>
+                                <p class="small mb-0">Your Pro plan includes enhanced AI document analysis to extract detailed information and provide tax insights from your documents.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Document Tips -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Document Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Scan Documents Clearly</h6>
+                            <p class="small mb-0">For best OCR results, ensure documents are clearly scanned at 300 DPI or higher.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Use Proper Categorization</h6>
+                            <p class="small mb-0">Organize documents by category to make them easier to find during tax preparation.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Verify AI Extraction</h6>
+                            <p class="small mb-0">Always review AI-extracted information for accuracy before using it in tax forms.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Keep Original Documents</h6>
+                            <p class="small mb-0">Store physical copies of important tax documents in addition to digital uploads.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteDocumentModal" tabindex="-1" aria-labelledby="deleteDocumentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteDocumentModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this document? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteDocumentForm" action="{{ url_for('documents.delete_document', doc_id='DOCUMENT_ID') }}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete Document</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+<script>
+    Dropzone.autoDiscover = false;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize dropzone
+        const myDropzone = new Dropzone("#documentDropzone", {
+            url: "{{ url_for('documents.upload') }}",
+            paramName: "file",
+            maxFilesize: 10, // MB
+            acceptedFiles: ".pdf,.jpg,.jpeg,.png,.tiff,.bmp",
+            maxFiles: 10,
+            dictDefaultMessage: "Drag & Drop files here or click to browse",
+            addRemoveLinks: true,
+            init: function() {
+                const dropzone = this;
+                
+                // Get the category dropdown
+                const categorySelect = document.getElementById('category');
+                
+                // When a file is added, set the category
+                this.on("sending", function(file, xhr, formData) {
+                    formData.append("category", categorySelect.value);
+                });
+                
+                this.on("success", function(file, response) {
+                    console.log("File uploaded successfully");
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1500);
+                });
+                
+                this.on("error", function(file, errorMessage) {
+                    console.error("Error uploading file:", errorMessage);
+                });
+            }
+        });
+        
+        // Handle document deletion
+        const deleteButtons = document.querySelectorAll('.delete-document');
+        const deleteForm = document.getElementById('deleteDocumentForm');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const documentId = this.getAttribute('data-document-id');
+                const deleteUrl = "{{ url_for('documents.delete_document', doc_id='DOCUMENT_ID') }}".replace('DOCUMENT_ID', documentId);
+                deleteForm.action = deleteUrl;
+                
+                // Show confirmation modal
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteDocumentModal'));
+                deleteModal.show();
+            });
+        });
+    });
+</script>
+{% endblock %}

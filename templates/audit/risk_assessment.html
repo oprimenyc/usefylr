@@ -1,0 +1,212 @@
+{% extends "layout.html" %}
+
+{% block title %}.fylr - Audit Risk Assessment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center">Audit Risk Assessment</h1>
+            <p class="text-center text-muted">AI-powered analysis of your audit risk factors</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">Important Disclaimer</h5>
+                        <p class="mb-0">This risk assessment is based on the information you've provided and industry patterns. It is not a guarantee against an audit. The IRS may select any tax return for audit, including those with no risk factors. This tool is provided for informational purposes only and is not a substitute for professional advice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <!-- Risk Assessment Results -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Your Audit Risk Assessment</h5>
+                    <span class="badge bg-{{ risk_level.color }} px-3 py-2">{{ risk_level.description }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="mb-3">Risk Score</h6>
+                        <div class="progress" style="height: 25px;">
+                            {% if risk_level.level == "low" %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ total_score }}%;" aria-valuenow="{{ total_score }}" aria-valuemin="0" aria-valuemax="100">{{ total_score }}%</div>
+                            {% elif risk_level.level == "moderate" %}
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ total_score }}%;" aria-valuenow="{{ total_score }}" aria-valuemin="0" aria-valuemax="100">{{ total_score }}%</div>
+                            {% else %}
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ total_score }}%;" aria-valuenow="{{ total_score }}" aria-valuemin="0" aria-valuemax="100">{{ total_score }}%</div>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">Low Risk</small>
+                            <small class="text-muted">Moderate Risk</small>
+                            <small class="text-muted">High Risk</small>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-{{ risk_level.color }} mb-4">
+                        <h6 class="alert-heading">Assessment Summary</h6>
+                        <p class="mb-0">{{ risk_level.message }}</p>
+                    </div>
+                    
+                    {% if risk_factors %}
+                        <h6 class="mb-3">Risk Factors Identified</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Risk Factor</th>
+                                        <th>Details</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, factor in risk_factors.items() %}
+                                    <tr>
+                                        <td>{{ factor.description }}</td>
+                                        <td>{{ factor.value }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% for i in range(1, 6) %}
+                                                    {% if i <= factor.weight // 3 %}
+                                                        <i class="fas fa-circle me-1 text-danger"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-circle me-1 text-muted" style="opacity: 0.2;"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success">
+                            <p class="mb-0">No significant risk factors were identified based on your current information.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recommendations -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    {% if recommendations %}
+                        <div class="list-group">
+                            {% for recommendation in recommendations %}
+                                <div class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ recommendation.title }}</h6>
+                                        {% if recommendation.priority == "high" %}
+                                            <span class="badge bg-danger">High Priority</span>
+                                        {% elif recommendation.priority == "medium" %}
+                                            <span class="badge bg-warning text-dark">Medium Priority</span>
+                                        {% else %}
+                                            <span class="badge bg-info text-dark">Low Priority</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="mb-1">{{ recommendation.description }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">No specific recommendations are available at this time. Continue maintaining good recordkeeping practices.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-4">
+            <!-- Audit Protection Status -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Audit Protection Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-success p-2 me-2"><i class="fas fa-shield-alt fa-lg"></i></span>
+                        <h6 class="mb-0">Pro Tier Protection Active</h6>
+                    </div>
+                    <p>Your Pro tier includes enhanced audit protection features:</p>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Risk assessment
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Document organization system
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Compliance checks
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Audit response guidance
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('audit.document_organizer') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-folder-open me-1"></i> Document Organizer
+                    </a>
+                    <a href="{{ url_for('audit.compliance_check') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-clipboard-check me-1"></i> Run Compliance Check
+                    </a>
+                </div>
+            </div>
+            
+            <!-- IRS Audit Triggers -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Common IRS Audit Triggers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Unreported Income</h6>
+                            <small class="d-block text-muted mb-2">High Impact</small>
+                            <p class="small mb-0">The IRS receives copies of your 1099s and W-2s. Discrepancies between these and your reported income are automated audit triggers.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">High Income</h6>
+                            <small class="d-block text-muted mb-2">Medium Impact</small>
+                            <p class="small mb-0">Returns with higher incomes are statistically more likely to be audited, especially those over $200,000.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Large Deductions</h6>
+                            <small class="d-block text-muted mb-2">Medium Impact</small>
+                            <p class="small mb-0">Deductions that are unusually large compared to your income can trigger closer scrutiny.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Home Office Deduction</h6>
+                            <small class="d-block text-muted mb-2">Medium Impact</small>
+                            <p class="small mb-0">This deduction is frequently misused and therefore closely examined by the IRS.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Schedule C Losses</h6>
+                            <small class="d-block text-muted mb-2">High Impact</small>
+                            <p class="small mb-0">Multiple years of business losses on Schedule C may suggest a hobby rather than a business.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
