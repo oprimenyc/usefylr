@@ -1,330 +1,184 @@
-{% extends 'layout.html' %}
+{% extends "layout.html" %}
 
-{% block title %}Dashboard - DIY Business Tax Tool{% endblock %}
+{% block title %}.fylr | Dashboard{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row align-items-center mb-4">
-        <div class="col-lg-6">
-            <h1 class="display-5 mb-0">Welcome, {{ current_user.username }}</h1>
-            <p class="lead text-muted">Manage your business tax tools and documents</p>
-        </div>
-        <div class="col-lg-6 text-lg-end">
-            <div class="d-inline-block p-3 rounded bg-light">
-                <span class="me-2">Your Plan:</span>
-                {% if current_user.plan.name == 'PRO' %}
-                    <span class="badge bg-dark p-2">
-                        <i class="fas fa-crown me-1"></i> .fylr Pro
-                    </span>
-                    <a href="#features-modal" data-bs-toggle="modal" class="text-decoration-none ms-2">
-                        <small><i class="fas fa-info-circle"></i> Your Premium Features</small>
-                    </a>
-                {% elif current_user.plan.name == 'FYLR_PLUS' %}
-                    <span class="badge p-2" style="background-color: #FF6B00; color: white;">
-                        <i class="fas fa-star me-1"></i> .fylr+
-                    </span>
-                    <a href="#features-modal" data-bs-toggle="modal" class="text-decoration-none ms-2">
-                        <small><i class="fas fa-info-circle"></i> Your Enhanced Features</small>
-                    </a>
-                {% else %}
-                    <span class="badge bg-secondary p-2">
-                        <i class="fas fa-user me-1"></i> .fylr Basic
-                    </span>
-                    <a href="#features-modal" data-bs-toggle="modal" class="text-decoration-none ms-2">
-                        <small><i class="fas fa-info-circle"></i> Your Features</small>
-                    </a>
-                {% endif %}
-            </div>
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3 text-center">Welcome to Your Tax Dashboard</h1>
+            <p class="text-center text-muted">Tap. File. Done. Your AI-powered tax assistant is ready to help.</p>
         </div>
     </div>
-    
-    <!-- Quick Access Tools -->
-    <div class="row mb-5">
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-sm dashboard-card border-primary" style="border-color: #FF6B00 !important;">
-                <div class="card-body text-center">
-                    <div class="dashboard-icon" style="color: #FF6B00;">
-                        <i class="fas fa-clipboard-list"></i>
+
+    <!-- Progress Tracker -->
+    <div class="row mb-4 progress-tracker">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title">Your Progress</h4>
+                    <div class="progress mb-3" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <h5>Tax Questionnaire</h5>
-                    <p class="text-muted mb-4">Find required forms for your business</p>
-                    <a href="{{ url_for('questionnaire.index') }}" class="btn btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">
-                        <i class="fas fa-play-circle me-2"></i> Start Now
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-sm dashboard-card">
-                <div class="card-body text-center">
-                    <div class="dashboard-icon text-primary">
-                        <i class="fas fa-file-alt"></i>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Getting Started</span>
+                        <span>Business Profile</span>
+                        <span>Document Upload</span>
+                        <span>Form Preparation</span>
+                        <span>Review & File</span>
                     </div>
-                    <h5>Tax Forms</h5>
-                    <p class="text-muted mb-4">Create & manage your business tax forms</p>
-                    <a href="{{ url_for('form.new_form') }}" class="btn btn-primary">
-                        <i class="fas fa-plus me-2"></i> New Form
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-sm dashboard-card">
-                <div class="card-body text-center">
-                    <div class="dashboard-icon text-success">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h5>Tax Strategies</h5>
-                    <p class="text-muted mb-4">Discover tax-saving opportunities</p>
-                    <a href="{{ url_for('strategy.home') }}" class="btn btn-success">
-                        <i class="fas fa-search-dollar me-2"></i> Find Strategies
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-sm dashboard-card">
-                <div class="card-body text-center">
-                    <div class="dashboard-icon text-warning">
-                        <i class="fas fa-envelope-open-text"></i>
-                    </div>
-                    <h5>IRS Letters</h5>
-                    <p class="text-muted mb-4">Generate response letters for the IRS</p>
-                    <a href="{{ url_for('letter.new_letter') }}" class="btn btn-warning text-dark">
-                        <i class="fas fa-pen me-2"></i> Create Letter
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card shadow-sm dashboard-card">
-                <div class="card-body text-center">
-                    <div class="dashboard-icon text-info">
-                        <i class="fas fa-tag"></i>
-                    </div>
-                    <h5>Pricing Plans</h5>
-                    <p class="text-muted mb-4">Upgrade your plan for more features</p>
-                    <a href="{{ url_for('main.pricing') }}" class="btn btn-info text-white">
-                        <i class="fas fa-arrow-circle-up me-2"></i> View Plans
-                    </a>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Recent Activity Section -->
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Recent Tax Forms -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Your Tax Forms</h5>
-                    <a href="{{ url_for('form.new_form') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i> New Form
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if forms %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Form Type</th>
-                                        <th>Tax Year</th>
-                                        <th>Status</th>
-                                        <th>Last Updated</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for form in forms %}
-                                    <tr>
-                                        <td>{{ form.form_type.value }}</td>
-                                        <td>{{ form.tax_year }}</td>
-                                        <td>
-                                            {% if form.status == 'completed' %}
-                                                <span class="badge bg-success">Completed</span>
-                                            {% elif form.status == 'draft' %}
-                                                <span class="badge bg-warning text-dark">Draft</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">{{ form.status }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ form.updated_at.strftime('%m/%d/%Y') }}</td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="{{ url_for('form.view_form', form_id=form.id) }}" class="btn btn-outline-primary">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ url_for('form.edit_form', form_type=form.form_type.value) }}?form_id={{ form.id }}" class="btn btn-outline-secondary">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                {% if form.status == 'completed' %}
-                                                <a href="{{ url_for('form.download_form', form_id=form.id) }}" class="btn btn-outline-success">
-                                                    <i class="fas fa-download"></i>
-                                                </a>
-                                                {% endif %}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <img src="{{ url_for('static', filename='img/tax-forms.svg') }}" alt="Tax Forms" style="width: 120px; opacity: 0.3;" class="mb-3">
-                            <h5>No Tax Forms Yet</h5>
-                            <p class="text-muted">Get started by creating your first tax form.</p>
-                            <a href="{{ url_for('form.new_form') }}" class="btn btn-primary">
-                                <i class="fas fa-plus-circle me-2"></i> Create Your First Form
-                            </a>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <!-- Recent IRS Letters -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Your IRS Letters</h5>
-                    <a href="{{ url_for('letter.new_letter') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i> New Letter
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if letters %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Letter Type</th>
-                                        <th>Status</th>
-                                        <th>Created</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for letter in letters %}
-                                    <tr>
-                                        <td>{{ letter.letter_type.value }}</td>
-                                        <td>
-                                            {% if letter.status == 'completed' %}
-                                                <span class="badge bg-success">Completed</span>
-                                            {% elif letter.status == 'draft' %}
-                                                <span class="badge bg-warning text-dark">Draft</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">{{ letter.status }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ letter.created_at.strftime('%m/%d/%Y') }}</td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="{{ url_for('letter.view_letter', letter_id=letter.id) }}" class="btn btn-outline-primary">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ url_for('letter.edit_letter', letter_type=letter.letter_type.value) }}?letter_id={{ letter.id }}" class="btn btn-outline-secondary">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                {% if letter.status == 'completed' %}
-                                                <a href="{{ url_for('letter.download_letter', letter_id=letter.id) }}" class="btn btn-outline-success">
-                                                    <i class="fas fa-download"></i>
-                                                </a>
-                                                {% endif %}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <img src="{{ url_for('static', filename='img/letters.svg') }}" alt="IRS Letters" style="width: 120px; opacity: 0.3;" class="mb-3">
-                            <h5>No IRS Letters Yet</h5>
-                            <p class="text-muted">Create letters for penalty abatement, reasonable cause, and more.</p>
-                            <a href="{{ url_for('letter.new_letter') }}" class="btn btn-primary">
-                                <i class="fas fa-plus-circle me-2"></i> Create Your First Letter
-                            </a>
-                        </div>
-                    {% endif %}
+
+    <!-- Action Cards -->
+    <div class="row mb-4 action-cards">
+        <div class="col-12 mb-3">
+            <h4>Recommended Actions</h4>
+        </div>
+        
+        <!-- Action Card 1 -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="icon-circle bg-primary text-white me-3">
+                            <i class="fas fa-building"></i>
+                        </span>
+                        <h5 class="card-title mb-0">Complete Business Profile</h5>
+                    </div>
+                    <p class="card-text">Fill in your business information to get personalized tax recommendations.</p>
+                    <div class="progress mb-3" style="height: 5px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="text-end">
+                        <a href="#" class="btn btn-sm btn-primary">Continue</a>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="col-lg-4">
-            <!-- Tax Strategies -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Your Tax Strategies</h5>
-                    <a href="{{ url_for('strategy.home') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i> New Analysis
-                    </a>
+        <!-- Action Card 2 -->
+        <div class="col-md-4 mb-4 document-upload">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="icon-circle bg-success text-white me-3">
+                            <i class="fas fa-file-upload"></i>
+                        </span>
+                        <h5 class="card-title mb-0">Upload Documents</h5>
+                    </div>
+                    <p class="card-text">Upload your tax documents and let our AI extract the relevant information.</p>
+                    <div class="progress mb-3" style="height: 5px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 10%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="text-end">
+                        <a href="#" class="btn btn-sm btn-success">Upload</a>
+                    </div>
                 </div>
-                <div class="card-body">
-                    {% if strategies %}
-                        <ul class="list-group list-group-flush">
-                            {% for strategy in strategies %}
-                            <li class="list-group-item strategy-card p-3">
-                                <h6>{{ strategy.strategy_name }}</h6>
-                                <p class="text-muted small mb-2">{{ strategy.description|truncate(100) }}</p>
-                                {% if strategy.estimated_savings %}
-                                <p class="strategy-savings mb-2">Estimated Savings: ${{ "%.2f"|format(strategy.estimated_savings) }}</p>
-                                {% endif %}
-                                <a href="{{ url_for('strategy.view_strategy', strategy_id=strategy.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <img src="{{ url_for('static', filename='img/strategies.svg') }}" alt="Tax Strategies" style="width: 120px; opacity: 0.3;" class="mb-3">
-                            <h5>No Strategies Yet</h5>
-                            <p class="text-muted">Take our questionnaire to discover tax-saving opportunities.</p>
-                            <a href="{{ url_for('strategy.home') }}" class="btn btn-primary">
-                                <i class="fas fa-lightbulb me-2"></i> Discover Strategies
-                            </a>
+            </div>
+        </div>
+        
+        <!-- Action Card 3 -->
+        <div class="col-md-4 mb-4 entity-selection">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="icon-circle bg-info text-white me-3">
+                            <i class="fas fa-sitemap"></i>
+                        </span>
+                        <h5 class="card-title mb-0">Entity Structure</h5>
+                    </div>
+                    <p class="card-text">Get AI-powered recommendations for the optimal business entity structure.</p>
+                    <div class="progress mb-3" style="height: 5px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="text-end">
+                        <a href="#" class="btn btn-sm btn-info">Start</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Features Row -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 tax-strategies">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="icon-circle bg-warning text-white me-3">
+                            <i class="fas fa-lightbulb"></i>
+                        </span>
+                        <h5 class="card-title mb-0">Tax Strategies</h5>
+                    </div>
+                    <p class="card-text">Get personalized tax saving strategies based on your business profile.</p>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item px-0 border-0"><i class="fas fa-check-circle text-success me-2"></i> Personalized recommendations</li>
+                        <li class="list-group-item px-0 border-0"><i class="fas fa-check-circle text-success me-2"></i> Implementation guidance</li>
+                        <li class="list-group-item px-0 border-0"><i class="fas fa-check-circle text-success me-2"></i> Potential savings estimates</li>
+                    </ul>
+                    <div class="text-end">
+                        <a href="#" class="btn btn-sm btn-outline-warning">Explore Strategies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4 upgrade-tier">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-gradient-primary text-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-crown me-2"></i> Upgrade to Pro</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="card-text">Unlock premium features and advanced tax optimization tools.</p>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item px-0 border-0"><i class="fas fa-star text-warning me-2"></i> AI-powered deduction detection</li>
+                        <li class="list-group-item px-0 border-0"><i class="fas fa-star text-warning me-2"></i> Enhanced audit protection</li>
+                        <li class="list-group-item px-0 border-0"><i class="fas fa-star text-warning me-2"></i> Advanced entity optimization</li>
+                    </ul>
+                    <div class="text-center">
+                        <a href="{{ url_for('main.pricing') }}" class="btn btn-primary">View Plans</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h4>Recent Activity</h4>
+        </div>
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex align-items-center p-3">
+                            <div class="activity-icon bg-light rounded-circle p-2 me-3">
+                                <i class="fas fa-user-edit text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Profile Created</h6>
+                                <p class="text-muted small mb-0">You created your account</p>
+                            </div>
+                            <div class="ms-auto text-end">
+                                <span class="badge bg-light text-dark">2 minutes ago</span>
+                            </div>
                         </div>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <!-- Resources & Tips -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Resources & Tips</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3 pb-3 border-bottom">
-                        <h6><i class="fas fa-calendar-alt text-primary me-2"></i> Tax Deadline Reminder</h6>
-                        <p class="small text-muted mb-0">The next tax deadline is April 15, 2026 for the 2025 tax year.</p>
-                    </div>
-                    <div class="mb-3 pb-3 border-bottom">
-                        <h6><i class="fas fa-book text-success me-2"></i> Tax Tip</h6>
-                        <p class="small text-muted mb-0">Don't forget to track your business mileage and home office expenses for potential deductions.</p>
-                    </div>
-                    <div>
-                        <h6><i class="fas fa-money-bill-wave text-warning me-2"></i> Did You Know?</h6>
-                        <p class="small text-muted mb-0">If your business had no income this year, filing a zero-activity return maintains your good standing with the IRS.</p>
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="https://federalfundingclub.com/resources" target="_blank" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-external-link-alt me-1"></i> More Resources
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Help & Support -->
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0">Need Help?</h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted small mb-3">Our support team is here to assist you with any questions about your tax forms or strategies.</p>
-                    <div class="d-grid">
-                        <a href="mailto:support@federalfundingclub.com" class="btn btn-outline-primary">
-                            <i class="fas fa-envelope me-2"></i> Contact Support
-                        </a>
+                        <div class="list-group-item d-flex align-items-center p-3">
+                            <div class="activity-icon bg-light rounded-circle p-2 me-3">
+                                <i class="fas fa-building text-success"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Business Profile Started</h6>
+                                <p class="text-muted small mb-0">You began filling out your business information</p>
+                            </div>
+                            <div class="ms-auto text-end">
+                                <span class="badge bg-light text-dark">1 minute ago</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -332,200 +186,26 @@
     </div>
 </div>
 
-<!-- Features Modal -->
-<div class="modal fade" id="features-modal" tabindex="-1" aria-labelledby="featuresModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="featuresModalLabel">
-                    {% if current_user.plan.name == 'PRO' %}
-                        <i class="fas fa-crown text-warning me-2"></i> Your .fylr Pro Features
-                    {% elif current_user.plan.name == 'FYLR_PLUS' %}
-                        <i class="fas fa-star me-2" style="color: #FF6B00;"></i> Your .fylr+ Features
-                    {% else %}
-                        <i class="fas fa-check-circle text-success me-2"></i> Your .fylr Basic Features
-                    {% endif %}
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="fw-bold mb-3">Available Features</h6>
-                        <ul class="list-group list-group-flush">
-                            <!-- Always available features (Basic tier) -->
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <div>
-                                    <strong>Guided AI-based data input</strong>
-                                    <p class="mb-0 small text-muted">AI-assisted form field guidance</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <div>
-                                    <strong>Auto-fill IRS form fields</strong>
-                                    <p class="mb-0 small text-muted">Automatic population of tax forms</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <div>
-                                    <strong>Generate IRS-ready documents</strong>
-                                    <p class="mb-0 small text-muted">Create properly formatted tax forms</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <div>
-                                    <strong>PDF export</strong>
-                                    <p class="mb-0 small text-muted">Export forms as PDF files</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                <div>
-                                    <strong>Educational guidance</strong>
-                                    <p class="mb-0 small text-muted">Tooltips and basic explanations</p>
-                                </div>
-                            </li>
-                            
-                            <!-- Plus tier features -->
-                            {% if current_user.plan.name == 'FYLR_PLUS' or current_user.plan.name == 'PRO' %}
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle me-2" style="color: #FF6B00;"></i>
-                                <div>
-                                    <strong>Save & resume progress</strong>
-                                    <p class="mb-0 small text-muted">Continue work across sessions</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle me-2" style="color: #FF6B00;"></i>
-                                <div>
-                                    <strong>Smart form logic</strong>
-                                    <p class="mb-0 small text-muted">Intelligent form field relationships</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle me-2" style="color: #FF6B00;"></i>
-                                <div>
-                                    <strong>Enhanced AI support</strong>
-                                    <p class="mb-0 small text-muted">Advanced explanations and guidance</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle me-2" style="color: #FF6B00;"></i>
-                                <div>
-                                    <strong>Dynamic checklist generation</strong>
-                                    <p class="mb-0 small text-muted">Custom task lists for your business</p>
-                                </div>
-                            </li>
-                            {% endif %}
-                            
-                            <!-- Pro tier features -->
-                            {% if current_user.plan.name == 'PRO' %}
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-crown text-warning me-2"></i>
-                                <div>
-                                    <strong>AI-enhanced deduction detection</strong>
-                                    <p class="mb-0 small text-muted">Automated finding of deduction opportunities</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-crown text-warning me-2"></i>
-                                <div>
-                                    <strong>AI-sorted uploads</strong>
-                                    <p class="mb-0 small text-muted">Automatic organization of documents</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-crown text-warning me-2"></i>
-                                <div>
-                                    <strong>Filing export support</strong>
-                                    <p class="mb-0 small text-muted">Enhanced export capabilities</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-crown text-warning me-2"></i>
-                                <div>
-                                    <strong>Audit protection</strong>
-                                    <p class="mb-0 small text-muted">Added risk reduction features</p>
-                                </div>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                    
-                    {% if current_user.plan.name == 'BASIC' or current_user.plan.name == 'FYLR_PLUS' %}
-                    <div class="col-md-6">
-                        <h6 class="fw-bold mb-3">Upgrade to Unlock</h6>
-                        <ul class="list-group list-group-flush">
-                            {% if current_user.plan.name == 'BASIC' %}
-                            <!-- Basic user seeing Plus features -->
-                            <li class="list-group-item d-flex align-items-center text-muted">
-                                <i class="fas fa-lock me-2"></i>
-                                <div>
-                                    <strong>Save & resume progress</strong>
-                                    <p class="mb-0 small">Continue work across sessions</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center text-muted">
-                                <i class="fas fa-lock me-2"></i>
-                                <div>
-                                    <strong>Smart form logic</strong>
-                                    <p class="mb-0 small">Intelligent form field relationships</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center text-muted">
-                                <i class="fas fa-lock me-2"></i>
-                                <div>
-                                    <strong>Enhanced AI support</strong>
-                                    <p class="mb-0 small">Advanced explanations and guidance</p>
-                                </div>
-                            </li>
-                            {% endif %}
-                            
-                            <!-- Pro features shown to Basic and Plus users -->
-                            <li class="list-group-item d-flex align-items-center text-muted">
-                                <i class="fas fa-lock me-2"></i>
-                                <div>
-                                    <strong>AI-enhanced deduction detection</strong>
-                                    <p class="mb-0 small">Automated finding of deduction opportunities</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center text-muted">
-                                <i class="fas fa-lock me-2"></i>
-                                <div>
-                                    <strong>AI-sorted uploads</strong>
-                                    <p class="mb-0 small">Automatic organization of documents</p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center text-muted">
-                                <i class="fas fa-lock me-2"></i>
-                                <div>
-                                    <strong>Audit protection</strong>
-                                    <p class="mb-0 small">Added risk reduction features</p>
-                                </div>
-                            </li>
-                        </ul>
-                        
-                        <div class="mt-4 text-center">
-                            <a href="{{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
-                                <i class="fas fa-arrow-circle-up me-2"></i> Upgrade Your Plan
-                            </a>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                
-                {% if current_user.plan.name != 'PRO' %}
-                <a href="{{ url_for('main.pricing') }}" class="btn btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">View Pricing Plans</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #FF6B00, #ff8c00);
+    }
+</style>
 {% endblock %}
