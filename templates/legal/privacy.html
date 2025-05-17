@@ -1,75 +1,137 @@
-{% extends 'layout.html' %}
+{% extends "layout.html" %}
 
-{% block title %}Privacy Policy{% endblock %}
+{% block title %}.fylr | Privacy Policy{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h1 class="h3 mb-0">Privacy Policy</h1>
-                </div>
-                <div class="card-body">
-                    <p>We value your privacy. This policy explains how we collect, use, and protect your information:</p>
-                    
-                    <h2 class="h4 mt-4">Information We Collect</h2>
-                    <ul>
-                        <li><strong>Personal Information:</strong> Name, email address, business information, and contact details.</li>
-                        <li><strong>Business Data:</strong> Information about your business, including tax details, income, expenses, and other tax-related inputs.</li>
-                        <li><strong>Financial Information:</strong> Payment details when you make purchases through our platform.</li>
-                        <li><strong>Usage Data:</strong> Information about how you use the DIY Business Tax Tool, including features accessed and time spent.</li>
-                    </ul>
-                    
-                    <h2 class="h4 mt-4">How We Use Your Information</h2>
-                    <ul>
-                        <li>To provide and improve the DIY Business Tax Tool functionality.</li>
-                        <li>To process payments and manage your account.</li>
-                        <li>To generate tax documents and forms based on your inputs.</li>
-                        <li>To communicate with you about your account, updates, or support requests.</li>
-                        <li>To comply with legal obligations and enforce our terms of use.</li>
-                    </ul>
-                    
-                    <h2 class="h4 mt-4">How We Protect Your Information</h2>
-                    <p>We implement industry-standard security measures to protect your personal information:</p>
-                    <ul>
-                        <li>All sensitive data is encrypted in transit and at rest.</li>
-                        <li>Access to user data is strictly limited to authorized personnel.</li>
-                        <li>Regular security audits and updates to ensure data protection.</li>
-                    </ul>
-                    
-                    <h2 class="h4 mt-4">Data Sharing</h2>
-                    <p>We never sell your data to third parties. We may share your information with:</p>
-                    <ul>
-                        <li>Service providers who help us deliver our services (e.g., payment processors).</li>
-                        <li>When required by law or to protect our legal rights.</li>
-                    </ul>
-                    
-                    <h2 class="h4 mt-4">Your Rights</h2>
-                    <p>You have the right to:</p>
-                    <ul>
-                        <li>Access the personal data we hold about you.</li>
-                        <li>Request correction of inaccurate information.</li>
-                        <li>Request deletion of your data (subject to legal retention requirements).</li>
-                        <li>Opt-out of marketing communications.</li>
-                    </ul>
-                    
-                    <h2 class="h4 mt-4">Cookies and Tracking</h2>
-                    <p>We may use cookies and similar technologies to enhance your experience and collect usage data. You can control cookie settings through your browser preferences.</p>
-                    
-                    <h2 class="h4 mt-4">Changes to This Policy</h2>
-                    <p>We may update this privacy policy periodically to reflect changes in our practices or for legal, operational, or regulatory reasons. We will notify you of any material changes.</p>
-                    
-                    <div class="alert alert-info mt-4">
-                        <p class="mb-0">By using the DIY Business Tax Tool, you consent to the collection, use, and storage of your information as described in this Privacy Policy.</p>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <p class="mb-0 text-muted">Last updated: May 13, 2025</p>
-                </div>
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 mb-3">Privacy Policy</h1>
+            <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+                <div style="height: 2px; width: 30px; background-color: #FF6B00; opacity: 0.6;"></div>
+                <div style="height: 4px; width: 40px; background-color: #FF6B00;"></div>
+                <div style="height: 2px; width: 30px; background-color: #FF6B00; opacity: 0.6;"></div>
             </div>
-            <div class="text-center mt-4">
-                <a href="{{ url_for('main.index') }}" class="btn btn-primary">Return to Homepage</a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 mb-5">
+                <div class="card-body p-4 p-md-5">
+                    <div class="alert alert-info mb-4">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-info-circle fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="alert-heading">Effective Date: May 17, 2025</h5>
+                                <p class="mb-0">This Privacy Policy describes how .fylr collects, uses, and shares information about you when you use our services.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mb-3">1. Information We Collect</h4>
+                    <p class="mb-4">
+                        We collect information you provide directly to us when you:
+                    </p>
+                    <ul class="mb-4">
+                        <li>Create an account and use our services</li>
+                        <li>Upload tax documents and business information</li>
+                        <li>Complete questionnaires and forms</li>
+                        <li>Contact our support team</li>
+                        <li>Subscribe to our services or newsletters</li>
+                    </ul>
+                    <p class="mb-4">
+                        This information may include:
+                    </p>
+                    <ul class="mb-4">
+                        <li>Personal information (name, email address, phone number, etc.)</li>
+                        <li>Business information (business name, EIN, address, etc.)</li>
+                        <li>Financial information (income, expenses, deductions, etc.)</li>
+                        <li>Tax documents and related data</li>
+                        <li>Payment information when you subscribe to premium services</li>
+                    </ul>
+
+                    <h4 class="mb-3">2. How We Use Your Information</h4>
+                    <p class="mb-4">
+                        We use the information we collect to:
+                    </p>
+                    <ul class="mb-4">
+                        <li>Provide, maintain, and improve our services</li>
+                        <li>Process tax forms and generate recommendations</li>
+                        <li>Analyze your business data to provide tax strategies</li>
+                        <li>Process payments and manage your account</li>
+                        <li>Communicate with you about our services</li>
+                        <li>Respond to your comments and questions</li>
+                        <li>Protect, investigate, and deter fraudulent or unauthorized activity</li>
+                    </ul>
+
+                    <h4 class="mb-3">3. Information Sharing and Disclosure</h4>
+                    <p class="mb-4">
+                        We do not sell your personal information. We may share your information in the following circumstances:
+                    </p>
+                    <ul class="mb-4">
+                        <li>With service providers who perform services on our behalf</li>
+                        <li>To comply with legal obligations</li>
+                        <li>To protect and defend our rights and property</li>
+                        <li>With your consent or at your direction</li>
+                    </ul>
+
+                    <h4 class="mb-3">4. Data Security</h4>
+                    <p class="mb-4">
+                        We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These measures include encryption, secure server architecture, and regular security assessments. However, no method of transmission over the Internet or electronic storage is 100% secure, so we cannot guarantee absolute security.
+                    </p>
+
+                    <h4 class="mb-3">5. Data Retention</h4>
+                    <p class="mb-4">
+                        We retain your information for as long as your account is active or as needed to provide you services. We may retain certain information even after you deactivate your account if necessary to comply with our legal obligations, resolve disputes, or enforce our agreements.
+                    </p>
+
+                    <h4 class="mb-3">6. Your Rights and Choices</h4>
+                    <p class="mb-4">
+                        Depending on your location, you may have certain rights regarding your personal information, including:
+                    </p>
+                    <ul class="mb-4">
+                        <li>Accessing and updating your information</li>
+                        <li>Requesting deletion of your data</li>
+                        <li>Opting out of marketing communications</li>
+                        <li>Objecting to certain uses of your information</li>
+                    </ul>
+                    <p class="mb-4">
+                        To exercise these rights, please contact us at privacy@federalfundingclub.com.
+                    </p>
+
+                    <h4 class="mb-3">7. Use of Cookies and Tracking Technologies</h4>
+                    <p class="mb-4">
+                        We use cookies and similar technologies to collect information about how you interact with our services and to improve your user experience. You can set your browser to refuse all or some browser cookies, but this may limit your ability to use some features of our services.
+                    </p>
+
+                    <h4 class="mb-3">8. AI Processing</h4>
+                    <p class="mb-4">
+                        Our platform uses artificial intelligence systems to analyze your data and generate tax strategies and recommendations. This processing is performed automatically based on the information you provide. The AI systems are trained on general tax principles and do not access your specific data for purposes other than providing the service to you.
+                    </p>
+
+                    <h4 class="mb-3">9. Children's Privacy</h4>
+                    <p class="mb-4">
+                        Our services are not intended for and may not be used by children under the age of 18. We do not knowingly collect information from children under 18. If we discover that a child under 18 has provided us with personal information, we will delete such information from our systems.
+                    </p>
+
+                    <h4 class="mb-3">10. International Data Transfers</h4>
+                    <p class="mb-4">
+                        Your information may be transferred to, and maintained on, computers located outside of your state, province, country, or other governmental jurisdiction where the data protection laws may differ. If you are located outside the United States and choose to provide information to us, please note that we transfer the data to the United States and process it there.
+                    </p>
+
+                    <h4 class="mb-3">11. Changes to This Policy</h4>
+                    <p class="mb-4">
+                        We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the effective date. You are advised to review this Privacy Policy periodically for any changes.
+                    </p>
+
+                    <h4 class="mb-3">12. Contact Us</h4>
+                    <p class="mb-4">
+                        If you have any questions about this Privacy Policy, please contact us at privacy@federalfundingclub.com.
+                    </p>
+                </div>
             </div>
         </div>
     </div>

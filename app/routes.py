@@ -35,3 +35,23 @@ def plans():
         business_types=BUSINESS_TYPES,
         audit_protection=AUDIT_PROTECTION
     )
+
+@main_bp.route("/pricing")
+def pricing():
+    """Redirect to plans page"""
+    return redirect(url_for("main.plans"))
+
+@main_bp.route("/terms")
+def terms():
+    """Terms of use page"""
+    return render_template("legal/terms.html")
+
+@main_bp.route("/privacy")
+def privacy():
+    """Privacy policy page"""
+    return render_template("legal/privacy.html")
+
+@main_bp.route("/legal-disclaimer")
+def legal_disclaimer():
+    """Legal disclaimer page"""
+    return render_template("legal/legal_disclaimer.html")
