@@ -1,0 +1,156 @@
+/* Custom styles for .fylr guided tour */
+
+/* Override introjs defaults with .fylr brand colors */
+.fylr-tooltip {
+  border-radius: 8px !important;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15) !important;
+  border: none !important;
+}
+
+.fylr-tooltip .introjs-tooltip-header {
+  background-color: #FF6B00 !important;
+  color: white !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  padding: 15px 20px !important;
+}
+
+.fylr-tooltip .introjs-tooltip-header h1 {
+  color: white !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+}
+
+.fylr-tooltip .introjs-skipbutton {
+  color: white !important;
+  opacity: 0.8 !important;
+}
+
+.fylr-tooltip .introjs-skipbutton:hover {
+  opacity: 1 !important;
+}
+
+.fylr-tooltip .introjs-tooltiptext {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+  color: #333 !important;
+  padding: 20px !important;
+}
+
+.fylr-tooltip .introjs-tooltipbuttons {
+  padding: 15px 20px !important;
+  border-top: 1px solid #eee !important;
+}
+
+.fylr-tooltip .introjs-button {
+  border-radius: 50px !important;
+  padding: 8px 20px !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  text-shadow: none !important;
+}
+
+.fylr-tooltip .introjs-prevbutton {
+  background-color: #f8f9fa !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+}
+
+.fylr-tooltip .introjs-prevbutton:hover {
+  background-color: #e9ecef !important;
+}
+
+.fylr-tooltip .introjs-nextbutton {
+  background-color: #FF6B00 !important;
+  color: white !important;
+  border: 1px solid #FF6B00 !important;
+}
+
+.fylr-tooltip .introjs-nextbutton:hover {
+  background-color: #e05f00 !important;
+  border-color: #e05f00 !important;
+}
+
+.fylr-tooltip .introjs-disabled {
+  color: #9e9e9e !important;
+  border-color: #e0e0e0 !important;
+  background-color: #f5f5f5 !important;
+}
+
+/* Custom progress bar */
+.fylr-tooltip .introjs-progress {
+  height: 6px !important;
+  background-color: #f1f1f1 !important;
+  margin: 0 20px 15px 20px !important;
+}
+
+.fylr-tooltip .introjs-progressbar {
+  background-color: #FF6B00 !important;
+}
+
+/* Custom bullets */
+.fylr-tooltip .introjs-bullets ul li a {
+  background-color: #ddd !important;
+}
+
+.fylr-tooltip .introjs-bullets ul li a:hover,
+.fylr-tooltip .introjs-bullets ul li a.active {
+  background-color: #FF6B00 !important;
+}
+
+/* Custom highlight for elements */
+.fylr-highlight {
+  box-shadow: 0 0 0 5px rgba(255, 107, 0, 0.3) !important;
+}
+
+/* Custom overlay color */
+.introjs-overlay {
+  background-color: #000 !important;
+}
+
+/* Custom arrow styles */
+.fylr-tooltip .introjs-arrow {
+  border-color: #FF6B00 !important;
+}
+
+.fylr-tooltip .introjs-arrow.top,
+.fylr-tooltip .introjs-arrow.top-middle,
+.fylr-tooltip .introjs-arrow.top-right {
+  border-bottom-color: #FF6B00 !important;
+}
+
+.fylr-tooltip .introjs-arrow.right,
+.fylr-tooltip .introjs-arrow.right-bottom {
+  border-left-color: #FF6B00 !important;
+}
+
+.fylr-tooltip .introjs-arrow.bottom,
+.fylr-tooltip .introjs-arrow.bottom-middle,
+.fylr-tooltip .introjs-arrow.bottom-right {
+  border-top-color: #fff !important;
+}
+
+.fylr-tooltip .introjs-arrow.left,
+.fylr-tooltip .introjs-arrow.left-bottom {
+  border-right-color: #FF6B00 !important;
+}
+
+/* Animation for tooltips */
+.introjs-showElement {
+  animation: highlight-pulse 2s infinite;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(255, 107, 0, 0.2);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 107, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0px rgba(255, 107, 0, 0);
+  }
+}

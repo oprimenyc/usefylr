@@ -20,6 +20,7 @@
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/intro.min.css') }}" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -69,6 +70,11 @@
                             </label>
                             <span class="ms-2 text-white fw-bold">DARK</span>
                         </div>
+                    </li>
+                    <li class="nav-item">
+                        <button id="take-tour-button" class="btn btn-sm btn-outline-light mt-1" onclick="showGuidedTour()">
+                            <i class="fas fa-map-marked-alt me-1"></i> Take Tour
+                        </button>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item dropdown">
@@ -168,6 +174,10 @@
     
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    
+    <!-- IntroJS and Guided Tour -->
+    <script src="{{ url_for('static', filename='js/intro.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/guided-tour.js') }}"></script>
     
     <!-- Theme Toggle Script -->
     <script>
