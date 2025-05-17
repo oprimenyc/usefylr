@@ -1,183 +1,151 @@
-// Guided Tour for .fylr Tax Platform
-document.addEventListener('DOMContentLoaded', function() {
-  // Check if this is the user's first visit or if they explicitly requested the tour
-  const shouldShowTour = localStorage.getItem('fylr_tour_completed') !== 'true' || 
-                         window.location.search.includes('tour=true');
-  
-  if (shouldShowTour) {
-    startGuidedTour();
-  }
-  
-  // Add an event listener to the "Take Tour" button if it exists
-  const tourButton = document.getElementById('take-tour-button');
-  if (tourButton) {
-    tourButton.addEventListener('click', startGuidedTour);
-  }
-});
-
-function startGuidedTour() {
-  // Initialize introJs
-  const tour = introJs();
-  
-  // Configure the tour
-  tour.setOption('dontShowAgain', true);
-  tour.setOption('overlayOpacity', 0.7);
-  tour.setOption('showProgress', true);
-  tour.setOption('showBullets', true);
-  tour.setOption('scrollToElement', true);
-  tour.setOption('tooltipClass', 'fylr-tooltip');
-  tour.setOption('highlightClass', 'fylr-highlight');
-  tour.setOption('exitOnOverlayClick', false);
-  
-  // Define the tour steps
-  // These steps will be customized based on which page the user is on
-  
-  const currentPath = window.location.pathname;
-  
-  // Define different tour steps for different pages
-  if (currentPath === '/dashboard') {
-    // Dashboard tour
-    tour.setSteps([
-      {
-        element: '.dashboard-overview',
-        intro: 'Welcome to your .fylr dashboard! This is your command center for tax preparation.',
-        position: 'right'
-      },
-      {
-        element: '.progress-tracker',
-        intro: 'Track your tax preparation progress here. The platform will guide you through each step.',
-        position: 'bottom'
-      },
-      {
-        element: '.action-cards',
-        intro: 'These cards show recommended actions to complete your tax preparation.',
-        position: 'left'
-      },
-      {
-        element: '.entity-selection',
-        intro: 'Our AI will recommend the optimal entity structure for your business. Click here to explore options.',
-        position: 'top'
-      },
-      {
-        element: '.document-upload',
-        intro: 'Upload your documents here. Our AI will automatically extract relevant tax information.',
-        position: 'bottom'
-      },
-      {
-        element: '.tax-strategies',
-        intro: 'Access personalized tax strategies based on your business profile and questionnaire responses.',
-        position: 'left'
-      },
-      {
-        element: '.upgrade-tier',
-        intro: 'Unlock more features by upgrading to Plus or Pro tiers, including enhanced AI analysis and audit protection.',
-        position: 'left'
-      }
-    ]);
-  } else if (currentPath === '/documents') {
-    // Documents tour
-    tour.setSteps([
-      {
-        element: '.document-upload-area',
-        intro: 'Upload your tax documents here. We support various formats including PDFs and images.',
-        position: 'right'
-      },
-      {
-        element: '.document-categories',
-        intro: 'Documents are organized into these categories for easy access.',
-        position: 'left'
-      },
-      {
-        element: '.ai-extraction',
-        intro: 'Our AI automatically extracts key information from your documents, saving you time on data entry.',
-        position: 'bottom'
-      },
-      {
-        element: '.document-table',
-        intro: 'View all your uploaded documents here. Click on any document to see the extracted information.',
-        position: 'top'
-      }
-    ]);
-  } else if (currentPath === '/entity') {
-    // Entity recommendation tour
-    tour.setSteps([
-      {
-        element: '.entity-questionnaire',
-        intro: 'Answer these questions to help our AI recommend the optimal entity structure for your business.',
-        position: 'right'
-      },
-      {
-        element: '.entity-recommendation',
-        intro: 'Based on your answers, we\'ll provide a detailed recommendation with pros and cons of each entity type.',
-        position: 'left'
-      },
-      {
-        element: '.entity-comparison',
-        intro: 'Compare different entity types side-by-side to make the best decision for your business.',
-        position: 'bottom'
-      }
-    ]);
-  } else if (currentPath === '/audit') {
-    // Audit protection tour
-    tour.setSteps([
-      {
-        element: '.risk-assessment',
-        intro: 'Our AI analyzes your business profile to identify potential audit triggers.',
-        position: 'right'
-      },
-      {
-        element: '.document-organizer',
-        intro: 'Keep your tax documents organized and audit-ready with our document management system.',
-        position: 'left'
-      },
-      {
-        element: '.compliance-check',
-        intro: 'Run automated compliance checks to ensure your tax forms are accurate and complete.',
-        position: 'bottom'
-      }
-    ]);
-  } else {
-    // Default homepage tour
-    tour.setSteps([
-      {
-        element: '.welcome-section',
-        intro: 'Welcome to .fylr! We use AI to simplify your business tax preparation.',
-        position: 'bottom'
-      },
-      {
-        element: '.main-features',
-        intro: 'Our platform offers document scanning, entity recommendations, tax strategies, and more.',
-        position: 'right'
-      },
-      {
-        element: '.pricing-section',
-        intro: 'Choose from three tiers: Basic, Plus, and Pro, each with different features to meet your needs.',
-        position: 'left'
-      },
-      {
-        element: '.signup-section',
-        intro: 'Get started by creating an account or logging in if you already have one.',
-        position: 'bottom'
-      }
-    ]);
-  }
-  
-  // Start the tour
-  tour.start();
-  
-  // Track when the tour is completed
-  tour.oncomplete(function() {
-    localStorage.setItem('fylr_tour_completed', 'true');
-  });
-  
-  // Track when the tour is exited
-  tour.onexit(function() {
-    // We still mark it as completed even if they exit early
-    localStorage.setItem('fylr_tour_completed', 'true');
-  });
-}
-
-// Function to manually trigger the tour from anywhere
+// Guided Tour Configuration
 function showGuidedTour() {
-  startGuidedTour();
+    const intro = introJs();
+    
+    // Configure the steps of the tour based on current page
+    const currentPath = window.location.pathname;
+    
+    if (currentPath === '/' || currentPath === '/index.html') {
+        // Homepage tour
+        intro.setOptions({
+            steps: [
+                {
+                    title: 'Welcome to .fylr',
+                    intro: 'Let\'s take a quick tour of our AI-powered tax platform. Click "Next" to continue.'
+                },
+                {
+                    element: '.navbar-brand',
+                    title: 'Navigation',
+                    intro: 'Use the navigation menu to move around the platform. You can always return home by clicking our logo.'
+                },
+                {
+                    element: '#take-tour-button',
+                    title: 'Guided Tour',
+                    intro: 'You can restart this tour anytime by clicking this button.'
+                },
+                {
+                    element: '#userDropdown',
+                    title: 'User Menu',
+                    intro: 'Access your profile settings and log out from this menu.'
+                },
+                {
+                    element: '.landing-hero',
+                    title: 'Get Started',
+                    intro: 'Click the "Get Started" button to begin your tax filing journey.'
+                }
+            ],
+            showProgress: true,
+            showBullets: false,
+            hideNext: false,
+            hidePrev: false,
+            nextLabel: 'Next →',
+            prevLabel: '← Back',
+            doneLabel: 'Finish Tour'
+        });
+    } 
+    else if (currentPath === '/dashboard') {
+        // Dashboard tour
+        intro.setOptions({
+            steps: [
+                {
+                    title: 'Your Dashboard',
+                    intro: 'This is your tax dashboard where you can track your progress and access all features.'
+                },
+                {
+                    element: '.progress-tracker',
+                    title: 'Progress Tracker',
+                    intro: 'Track your tax filing progress here. Complete all steps for a successful filing.'
+                },
+                {
+                    element: '.action-cards',
+                    title: 'Recommended Actions',
+                    intro: 'These cards show the most important actions you should take next.'
+                },
+                {
+                    element: '.document-upload',
+                    title: 'Document Upload',
+                    intro: 'Upload your tax documents here. Our AI will extract relevant information automatically.'
+                },
+                {
+                    element: '.entity-selection',
+                    title: 'Entity Structure',
+                    intro: 'Get AI recommendations for the optimal business entity structure based on your situation.'
+                },
+                {
+                    element: '.tax-strategies',
+                    title: 'Tax Strategies',
+                    intro: 'Discover personalized tax-saving strategies tailored to your business.'
+                },
+                {
+                    element: '.upgrade-tier',
+                    title: 'Premium Features',
+                    intro: 'Unlock advanced features by upgrading to our Pro tier.'
+                }
+            ],
+            showProgress: true,
+            showBullets: false,
+            hideNext: false,
+            hidePrev: false,
+            nextLabel: 'Next →',
+            prevLabel: '← Back',
+            doneLabel: 'Finish Tour'
+        });
+    }
+    else if (currentPath === '/plans' || currentPath === '/pricing') {
+        // Pricing page tour
+        intro.setOptions({
+            steps: [
+                {
+                    title: 'Pricing Plans',
+                    intro: 'Explore our different pricing tiers to find the one that fits your needs.'
+                },
+                {
+                    element: '.self-service-tier',
+                    title: 'Self-Service Tier',
+                    intro: 'Our basic tier includes AI-guided tax form completion and PDF export capabilities.'
+                },
+                {
+                    element: '.guided-tier',
+                    title: 'Guided Tier',
+                    intro: 'Get enhanced AI support, smart form logic, and better tax optimization strategies.'
+                },
+                {
+                    element: '.concierge-tier',
+                    title: 'Concierge Tier',
+                    intro: 'Our premium tier includes advanced audit protection and AI-powered deduction detection.'
+                }
+            ],
+            showProgress: true,
+            showBullets: false,
+            hideNext: false,
+            hidePrev: false,
+            nextLabel: 'Next →',
+            prevLabel: '← Back',
+            doneLabel: 'Finish Tour'
+        });
+    }
+    
+    // Start the tour
+    intro.start();
+    
+    // Track tour completion
+    intro.oncomplete(function() {
+        console.log('Tour completed');
+        // You can add analytics tracking or other actions here
+    });
+    
+    // Track tour exit
+    intro.onexit(function() {
+        console.log('Tour exited');
+        // You can add analytics tracking or other actions here
+    });
 }
+
+// Initialize tooltips when the document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Enable all tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});

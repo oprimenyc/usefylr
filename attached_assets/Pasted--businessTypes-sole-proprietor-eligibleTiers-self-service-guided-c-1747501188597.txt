@@ -1,0 +1,77 @@
+{
+  "businessTypes": {
+    "sole_proprietor": {
+      "eligibleTiers": ["self_service", "guided", "concierge"],
+      "requiredDocs": ["ID", "SSN", "Business Income Proof", "Expense Records"]
+    },
+    "llc": {
+      "eligibleTiers": ["self_service", "guided", "concierge"],
+      "requiredDocs": ["EIN", "Articles of Organization", "Operating Agreement", "Income & Expense Records"]
+    },
+    "s_corp": {
+      "eligibleTiers": ["guided", "concierge"],
+      "requiredDocs": ["EIN", "Form 2553", "Bylaws", "Income Statement", "Payroll Summary"]
+    },
+    "c_corp": {
+      "eligibleTiers": ["guided", "concierge"],
+      "requiredDocs": ["EIN", "Articles of Incorporation", "Income Statement", "Balance Sheet", "Payroll Summary"]
+    }
+  },
+
+  "tiers": {
+    "self_service": {
+      "price": 97,
+      "features": [
+        "Auto-fill IRS and State tax forms",
+        "Smart document upload (OCR enabled)",
+        "AI assistance and suggestions",
+        "Download-ready tax PDF package",
+        "Basic error check"
+      ],
+      "upsellTriggers": [
+        "High risk of audit",
+        "Inconsistent documentation",
+        "Complex entity structure"
+      ]
+    },
+    "guided": {
+      "price": 197,
+      "features": [
+        "Everything in Self-Service",
+        "AI-powered tax strategy recommendations",
+        "Smart alerts for deductions and credits",
+        "Review checklist with compliance warnings",
+        "Optional year-end closing walkthrough"
+      ],
+      "upsellTriggers": [
+        "Desire for optimization",
+        "Business with employees or contractors",
+        "Capital gains or losses"
+      ]
+    },
+    "concierge": {
+      "price": 497,
+      "features": [
+        "Everything in Guided",
+        "Automated document collection and compilation",
+        "AI-reviewed tax package filing",
+        "Lifetime digital backup",
+        "Priority support",
+        "Audit protection plan"
+      ]
+    }
+  },
+
+  "auditProtection": {
+    "includedTiers": ["concierge"],
+    "optionalAddOnPrice": 99,
+    "coverageDetails": "Includes up to 2 IRS responses per year and 1 state filing support. AI-based document match verification included."
+  },
+
+  "aiPrompts": {
+    "deductionHelp": "Suggest applicable deductions for a [businessType] business with uploaded documents.",
+    "errorCheck": "Analyze uploaded forms and detect missing fields, incorrect entries, or inconsistencies.",
+    "strategy": "Suggest tax optimization strategies for a [businessType] based on available documents and tier selection.",
+    "upgradePrompt": "Recommend upgrade if filing appears complex, documents are incomplete, or audit risk is flagged."
+  }
+}

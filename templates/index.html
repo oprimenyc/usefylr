@@ -1,378 +1,229 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>.fylr - AI-Powered Tax Automation</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <style>
-        :root {
-            --fylr-orange: #FF6B00;
-            --fylr-dark: #212529;
-        }
-        .btn-fylr {
-            background-color: var(--fylr-orange);
-            border-color: var(--fylr-orange);
-            color: white;
-        }
-        .btn-fylr:hover {
-            background-color: #e65c00;
-            border-color: #e65c00;
-            color: white;
-        }
-        .text-fylr {
-            color: var(--fylr-orange);
-        }
-        .bg-fylr {
-            background-color: var(--fylr-orange);
-        }
-        .hero {
-            background: linear-gradient(135deg, #FF6B00 0%, #FF9E00 100%);
-            color: white;
-            padding: 100px 0;
-        }
-        .feature-icon {
-            background-color: rgba(255, 107, 0, 0.1);
-            border-radius: 50%;
-            height: 80px;
-            width: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .feature-icon i {
-            font-size: 32px;
-            color: var(--fylr-orange);
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#"><span class="text-fylr fw-bold">.fylr</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.plans') }}">Plans</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Features</a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <a href="/login" class="btn btn-outline-light me-2">Login</a>
-                    <a href="/register" class="btn btn-fylr">Sign Up</a>
+{% extends "layout.html" %}
+
+{% block title %}.fylr | AI-Powered Tax Solutions{% endblock %}
+
+{% block content %}
+<div class="landing-hero bg-dark text-white py-5">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Tap. File. Done.</h1>
+                <p class="lead mb-4">The AI-powered tax platform for entrepreneurs and small businesses.</p>
+                <p class="mb-5">Say goodbye to tax season stress. Our smart AI system guides you through the entire filing process with accurate recommendations and real-time tax saving opportunities.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg px-4 me-md-2" style="background: linear-gradient(45deg, #FF6B00, #FF9E00); border: none;">Get Started</a>
+                    <a href="{{ url_for('main.plans') }}" class="btn btn-outline-light btn-lg px-4">View Plans</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <img src="{{ url_for('static', filename='img/hero-illustration.svg') }}" alt="Tax filing illustration" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Features Section -->
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">How .fylr Makes Taxes Simple</h2>
+        <p class="lead text-muted">Our AI-powered platform handles the complexity so you don't have to.</p>
+    </div>
+    
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h5 class="card-title">AI-Guided Experience</h5>
+                    <p class="card-text">Our AI assistant guides you through each step, explaining complex tax concepts in simple terms.</p>
                 </div>
             </div>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container text-center">
-            <h1 class="display-4 fw-bold mb-4">AI-Powered Tax Automation</h1>
-            <p class="lead mb-5">Simplify your business tax preparation with AI assistance. <br>No tax expertise required.</p>
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a href="{{ url_for('main.plans') }}" class="btn btn-light btn-lg px-4 gap-3">View Plans</a>
-                <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h5 class="card-title">Smart Form Generation</h5>
+                    <p class="card-text">Automatically generate the right tax forms based on your business structure and needs.</p>
+                </div>
             </div>
         </div>
-    </section>
-
-    <!-- Key Features -->
-    <section class="py-5" id="features">
-        <div class="container">
-            <h2 class="text-center mb-5">Why Choose .fylr?</h2>
-            
-            <div class="row g-4 py-5">
-                <div class="col-md-4">
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <h3 class="fs-5 text-center">AI-Guided Experience</h3>
-                        <p class="text-center">Our AI asks simple questions in plain language and guides you through the entire tax preparation process.</p>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="feature-icon bg-info bg-gradient text-white rounded-circle mb-3">
+                        <i class="fas fa-lightbulb"></i>
                     </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
-                        <h3 class="fs-5 text-center">Smart Tax Forms</h3>
-                        <p class="text-center">Automatically select and fill the right tax forms based on your business type and financial data.</p>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-search-dollar"></i>
-                        </div>
-                        <h3 class="fs-5 text-center">Deduction Detection</h3>
-                        <p class="text-center">AI-powered analysis finds potential deductions you might miss, maximizing your tax savings.</p>
-                    </div>
+                    <h5 class="card-title">Tax-Saving Strategies</h5>
+                    <p class="card-text">Discover personalized strategies to reduce your tax burden based on your business activities.</p>
                 </div>
             </div>
-
-            <div class="row g-4 py-5">
-                <div class="col-md-4">
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-sync-alt"></i>
-                        </div>
-                        <h3 class="fs-5 text-center">Accounting Integration</h3>
-                        <p class="text-center">Connect with QuickBooks, Xero, and other accounting platforms to import your financial data automatically.</p>
-                    </div>
+        </div>
+    </div>
+    
+    <!-- How It Works -->
+    <div class="row my-5 align-items-center">
+        <div class="col-lg-6 order-lg-2">
+            <h2 class="display-6 fw-bold mb-3">How It Works</h2>
+            <div class="step d-flex align-items-start mb-4">
+                <div class="step-number me-3">1</div>
+                <div>
+                    <h5>Answer Simple Questions</h5>
+                    <p class="text-muted">Our AI asks you relevant questions about your business in plain language.</p>
                 </div>
-                
-                <div class="col-md-4">
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <h3 class="fs-5 text-center">Real-Time Validation</h3>
-                        <p class="text-center">Identify errors and inconsistencies before filing, reducing the risk of audits and penalties.</p>
-                    </div>
+            </div>
+            <div class="step d-flex align-items-start mb-4">
+                <div class="step-number me-3">2</div>
+                <div>
+                    <h5>Upload Documents or Connect Accounts</h5>
+                    <p class="text-muted">Connect your accounting software or upload documents for AI analysis.</p>
                 </div>
-                
-                <div class="col-md-4">
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-file-export"></i>
-                        </div>
-                        <h3 class="fs-5 text-center">Multiple Export Options</h3>
-                        <p class="text-center">Download your completed tax forms as PDF, JSON, or HTML for your records or to share with others.</p>
+            </div>
+            <div class="step d-flex align-items-start mb-4">
+                <div class="step-number me-3">3</div>
+                <div>
+                    <h5>Review AI-Generated Forms</h5>
+                    <p class="text-muted">Our system generates your tax forms and explains key items along the way.</p>
+                </div>
+            </div>
+            <div class="step d-flex align-items-start">
+                <div class="step-number me-3">4</div>
+                <div>
+                    <h5>File or Export</h5>
+                    <p class="text-muted">Choose to file electronically or export forms for your accountant.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 order-lg-1 mt-4 mt-lg-0">
+            <img src="{{ url_for('static', filename='img/process-illustration.svg') }}" alt="Tax filing process" class="img-fluid rounded shadow">
+        </div>
+    </div>
+    
+    <!-- Pricing CTA -->
+    <div class="row my-5">
+        <div class="col-12">
+            <div class="card border-0 bg-gradient-primary text-white p-5">
+                <div class="card-body text-center">
+                    <h2 class="card-title mb-4">Ready to simplify your taxes?</h2>
+                    <p class="card-text lead mb-4">Choose a plan that's right for your business needs.</p>
+                    <div class="d-flex justify-content-center">
+                        <a href="{{ url_for('main.plans') }}" class="btn btn-light btn-lg px-5">View Pricing Plans</a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Plan Overview -->
-    <section class="bg-light py-5">
-        <div class="container">
-            <h2 class="text-center mb-5">Choose the Right Plan for Your Business</h2>
-            
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header bg-dark text-white text-center py-3">
-                            <h3 class="fs-5 mb-0">Self-Service</h3>
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="mb-4 text-center">
-                                <span class="display-6">$97</span>
-                            </div>
-                            <ul class="list-unstyled mb-4">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Auto-fill IRS forms</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Smart document upload</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> AI assistance</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Download-ready PDFs</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Basic error check</li>
-                            </ul>
-                            <a href="{{ url_for('main.plans') }}" class="btn btn-outline-dark mt-auto">Learn More</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card h-100 shadow">
-                        <div class="card-header bg-fylr text-white text-center py-3">
-                            <h3 class="fs-5 mb-0">Guided</h3>
-                            <span class="badge bg-white text-fylr">POPULAR</span>
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="mb-4 text-center">
-                                <span class="display-6">$197</span>
-                            </div>
-                            <ul class="list-unstyled mb-4">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Everything in Self-Service</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> AI tax strategy recommendations</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Smart deduction alerts</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Compliance warnings</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Year-end closing guidance</li>
-                            </ul>
-                            <a href="{{ url_for('main.plans') }}" class="btn btn-fylr mt-auto">Get Started</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header bg-dark text-white text-center py-3">
-                            <h3 class="fs-5 mb-0">Concierge</h3>
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="mb-4 text-center">
-                                <span class="display-6">$497</span>
-                            </div>
-                            <ul class="list-unstyled mb-4">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Everything in Guided</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Automated document collection</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> AI-reviewed tax package</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Lifetime digital backup</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Audit protection included</li>
-                            </ul>
-                            <a href="{{ url_for('main.plans') }}" class="btn btn-outline-dark mt-auto">Learn More</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    </div>
+    
     <!-- Testimonials -->
-    <section class="py-5">
-        <div class="container">
-            <h2 class="text-center mb-5">What Our Users Say</h2>
-            
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text">"As a freelancer, taxes were my biggest headache. With .fylr, I completed my Schedule C in under 30 minutes with confidence."</p>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <small class="text-muted">Alex P. — Freelance Designer</small>
-                        </div>
+    <div class="row my-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="display-6 fw-bold">What Our Users Say</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
                     </div>
-                </div>
-                
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text">"The AI questionnaire asked exactly what I needed to consider for my LLC. I discovered deductions I would have missed."</p>
+                    <p class="card-text fst-italic">"I used to dread tax season as a freelancer. .fylr made it so much easier. The AI explanations really helped me understand deductions I was missing."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="testimonial-avatar me-3">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">JS</div>
                         </div>
-                        <div class="card-footer bg-transparent">
-                            <small class="text-muted">Jamie L. — Small Business Owner</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text">"Operating in three states used to mean three tax headaches. .fylr simplified the entire process with state-specific guidance."</p>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <small class="text-muted">Michael T. — Online Retailer</small>
+                        <div>
+                            <h6 class="mb-0">Jamie S.</h6>
+                            <p class="text-muted small mb-0">Freelance Designer</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Call to Action -->
-    <section class="bg-dark text-white py-5">
-        <div class="container text-center">
-            <h2 class="mb-4">Ready to simplify your business taxes?</h2>
-            <p class="lead mb-4">Join thousands of business owners who have streamlined their tax preparation with .fylr</p>
-            <a href="/register" class="btn btn-fylr btn-lg">Get Started Today</a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-4 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="text-fylr">.fylr</h5>
-                    <p>AI-powered tax automation for your business. Simplify tax preparation and maximize deductions with intelligent assistance.</p>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="card-text fst-italic">"The tax strategies recommended by .fylr saved my consulting business thousands of dollars. The Pro tier is definitely worth the investment."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="testimonial-avatar me-3">
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">TM</div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Thomas M.</h6>
+                            <p class="text-muted small mb-0">IT Consultant</p>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="col-md-2 mb-4">
-                    <h5>Company</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-decoration-none text-dark">About</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Team</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-md-2 mb-4">
-                    <h5>Product</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-decoration-none text-dark">Features</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Pricing</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Security</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-md-2 mb-4">
-                    <h5>Resources</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-decoration-none text-dark">Blog</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Guides</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Support</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">API</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-md-2 mb-4">
-                    <h5>Legal</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-decoration-none text-dark">Privacy</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Terms</a></li>
-                        <li><a href="#" class="text-decoration-none text-dark">Disclaimer</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <hr>
-            
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <p class="small text-muted mb-0">&copy; 2025 .fylr. All rights reserved.</p>
-                </div>
-                <div>
-                    <a href="#" class="text-dark me-2"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-dark me-2"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="text-dark me-2"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="text-dark"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-            
-            <div class="mt-3">
-                <p class="small text-muted mb-0">DISCLAIMER: This tool is provided for informational purposes only and does not constitute professional tax advice. All information should be verified for accuracy and applicability to your specific situation. .fylr is a self-service platform and does not provide licensed tax professional services.</p>
             </div>
         </div>
-    </footer>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                    </div>
+                    <p class="card-text fst-italic">"My small bakery used to pay an accountant $1,200 each year. With .fylr, I can handle my own taxes with confidence and save money."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="testimonial-avatar me-3">
+                            <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">AL</div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Anna L.</h6>
+                            <p class="text-muted small mb-0">Small Business Owner</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<style>
+    .landing-hero {
+        background: linear-gradient(135deg, #264653, #2a9d8f);
+    }
+    
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #FF6B00, #FF9E00);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #264653, #2a9d8f);
+    }
+</style>
+{% endblock %}
