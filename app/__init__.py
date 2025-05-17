@@ -43,6 +43,10 @@ def create_app():
     from app.routes import main_bp
     app.register_blueprint(main_bp)
     
+    # Register authentication blueprint
+    from app.auth import auth_bp
+    app.register_blueprint(auth_bp)
+    
     # Try to register optional blueprints if they exist
     try:
         from modules.tax_strategy_routes import tax_strategy_bp
