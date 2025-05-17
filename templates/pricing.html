@@ -40,24 +40,10 @@
         </div>
     </div>
     
-    {% if current_user.is_authenticated %}
-        {% if current_user.plan.name == 'PRO' %}
-            <div class="alert alert-success mb-5">
-                <i class="fas fa-crown me-2"></i>
-                You're a <strong>.fylr Pro</strong> member! You have full access to all premium features.
-            </div>
-        {% elif current_user.plan.name == 'FYLR_PLUS' %}
-            <div class="alert alert-info mb-5">
-                <i class="fas fa-certificate me-2"></i>
-                You're a <strong>.fylr+</strong> member with enhanced features and capabilities.
-            </div>
-        {% elif current_user.plan.name == 'BASIC' %}
-            <div class="alert alert-light mb-5">
-                <i class="fas fa-info-circle me-2"></i>
-                You're currently on the <strong>.fylr Basic</strong> plan. Upgrade to unlock more features.
-            </div>
-        {% endif %}
-    {% endif %}
+    <div class="alert alert-light mb-5">
+        <i class="fas fa-info-circle me-2"></i>
+        You're currently on the <strong>.fylr Basic</strong> plan. Upgrade to unlock more features.
+    </div>
 
     <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
         <!-- .fylr Basic -->
@@ -85,21 +71,9 @@
                         <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Optional tooltips/educational guidance</li>
                     </ul>
                     <div class="mt-auto">
-                        {% if current_user.is_authenticated %}
-                            {% if current_user.plan.name == 'BASIC' or current_user.plan.name == 'FYLR_PLUS' or current_user.plan.name == 'PRO' %}
-                                <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-unlock me-2"></i> Access Now
-                                </a>
-                            {% else %}
-                                <a href="{{ url_for('billing.create_checkout_session', product_id='basic_plan') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
-                                    <i class="fas fa-user-plus me-2"></i> Sign Up
-                                </a>
-                            {% endif %}
-                        {% else %}
-                            <a href="{{ url_for('auth.register') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
-                                <i class="fas fa-user-plus me-2"></i> Sign Up Free
-                            </a>
-                        {% endif %}
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                            <i class="fas fa-unlock me-2"></i> Access Now
+                        </a>
                     </div>
                 </div>
             </div>
@@ -132,24 +106,9 @@
                         <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Export clean, ready-to-file forms</li>
                     </ul>
                     <div class="mt-auto">
-                        {% if current_user.is_authenticated %}
-                            {% if current_user.plan.name == 'FYLR_PLUS' or current_user.plan.name == 'PRO' %}
-                                <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-unlock me-2"></i> Access Now
-                                </a>
-                            {% else %}
-                                <a href="{{ url_for('billing.create_checkout_session', product_id='fylr_plus_monthly') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
-                                    <i class="fas fa-shopping-cart me-2"></i> Subscribe Monthly
-                                </a>
-                                <a href="{{ url_for('billing.create_checkout_session', product_id='fylr_plus_onetime') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 mt-2">
-                                    <i class="fas fa-shopping-cart me-2"></i> One-time Purchase
-                                </a>
-                            {% endif %}
-                        {% else %}
-                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In to Subscribe
-                            </a>
-                        {% endif %}
+                        <a href="{{ url_for('main.index') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
+                            <i class="fas fa-arrow-circle-up me-2"></i> Upgrade
+                        </a>
                     </div>
                 </div>
             </div>
@@ -185,29 +144,9 @@
                         <li class="mb-2 text-muted small fst-italic">* Audit protection through 3rd party only</li>
                     </ul>
                     <div class="mt-auto">
-                        {% if current_user.is_authenticated %}
-                            {% if current_user.plan.name == 'PRO' %}
-                                <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-primary rounded-pill px-4 py-2">
-                                    <i class="fas fa-unlock me-2"></i> Access Now
-                                </a>
-                            {% else %}
-                                <div class="btn-group-vertical w-100">
-                                    <a href="{{ url_for('billing.create_checkout_session', product_id='pro_basic') }}" class="btn btn-primary rounded-pill px-4 py-2 mb-2" style="background-color: #FF6B00; border-color: #FF6B00;">
-                                        <i class="fas fa-shopping-cart me-2"></i> Basic Pro - $97
-                                    </a>
-                                    <a href="{{ url_for('billing.create_checkout_session', product_id='pro_standard') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 mb-2">
-                                        <i class="fas fa-shopping-cart me-2"></i> Standard Pro - $147
-                                    </a>
-                                    <a href="{{ url_for('billing.create_checkout_session', product_id='pro_premium') }}" class="btn btn-outline-dark rounded-pill px-4 py-2">
-                                        <i class="fas fa-crown me-2"></i> Premium Pro - $197
-                                    </a>
-                                </div>
-                            {% endif %}
-                        {% else %}
-                            <a href="{{ url_for('auth.login') }}?next={{ url_for('main.pricing') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background-color: #FF6B00; border-color: #FF6B00;">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In to Purchase
-                            </a>
-                        {% endif %}
+                        <a href="{{ url_for('main.index') }}" class="btn btn-primary rounded-pill px-4 py-2" style="background: linear-gradient(45deg, #FF6B00, #FF9E00); border: none;">
+                            <i class="fas fa-arrow-circle-up me-2"></i> Upgrade to Pro
+                        </a>
                     </div>
                 </div>
             </div>
