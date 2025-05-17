@@ -30,7 +30,7 @@ def plans():
     """Pricing plans route"""
     from app.pricing import TIERS, BUSINESS_TYPES, AUDIT_PROTECTION
     return render_template(
-        "plans.html",
+        "pricing.html",
         tiers=TIERS, 
         business_types=BUSINESS_TYPES,
         audit_protection=AUDIT_PROTECTION
