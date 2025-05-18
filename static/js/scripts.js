@@ -111,6 +111,14 @@ function setupFormValidation() {
 }
 
 /**
+ * Show guided tour of the application
+ */
+function showGuidedTour() {
+    console.log("Guided tour button clicked");
+    alert("The guided tour feature is being implemented. Thank you for your patience.");
+}
+
+/**
  * Format currency values
  * @param {number} value - The value to format
  * @param {string} currency - The currency code (default: USD)
