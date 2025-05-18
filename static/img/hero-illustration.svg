@@ -1,97 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Main Dashboard Panel -->
-  <rect x="50" y="50" width="700" height="500" rx="16" fill="white" filter="drop-shadow(0px 20px 40px rgba(0, 0, 0, 0.15))"/>
+<svg width="500" height="400" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main document background -->
+  <rect x="100" y="50" width="300" height="300" rx="10" fill="#f8f9fa" stroke="#e9ecef" stroke-width="2"/>
   
-  <!-- Top Navigation Bar -->
-  <rect x="50" y="50" width="700" height="70" rx="16" fill="#2A9D8F"/>
-  <rect x="50" y="70" width="700" height="50" fill="#2A9D8F"/>
+  <!-- Document header -->
+  <rect x="120" y="70" width="260" height="30" rx="5" fill="#FF6B00" opacity="0.8"/>
+  <rect x="130" y="80" width="100" height="10" rx="2" fill="white"/>
+  <rect x="240" y="80" width="80" height="10" rx="2" fill="white"/>
   
-  <!-- Logo Area -->
-  <rect x="70" y="65" width="120" height="40" rx="6" fill="white" fill-opacity="0.2"/>
-  <path d="M85 75H95V80H90V82H94V87H90V95H85V75Z" fill="white"/>
-  <path d="M100 75H110V80H105V95H100V75Z" fill="white"/>
-  <path d="M115 75H120V85H130V95H115V75Z" fill="white"/>
-  <path d="M135 75H145V80H140V82H144V87H140V90H145V95H135V75Z" fill="white"/>
+  <!-- Document body content -->
+  <rect x="120" y="120" width="260" height="10" rx="2" fill="#adb5bd"/>
+  <rect x="120" y="140" width="200" height="10" rx="2" fill="#adb5bd"/>
+  <rect x="120" y="160" width="240" height="10" rx="2" fill="#adb5bd"/>
+  <rect x="120" y="180" width="180" height="10" rx="2" fill="#adb5bd"/>
   
-  <!-- Top Navigation Items -->
-  <rect x="220" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.2"/>
-  <rect x="310" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.1"/>
-  <rect x="400" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.1"/>
-  <rect x="490" y="70" width="70" height="30" rx="15" fill="white" fill-opacity="0.1"/>
+  <!-- Form fields -->
+  <rect x="120" y="210" width="120" height="30" rx="4" fill="white" stroke="#ced4da" stroke-width="1"/>
+  <rect x="260" y="210" width="120" height="30" rx="4" fill="white" stroke="#ced4da" stroke-width="1"/>
+  <rect x="120" y="250" width="260" height="30" rx="4" fill="white" stroke="#ced4da" stroke-width="1"/>
   
-  <!-- User Profile Area -->
-  <circle cx="700" cy="85" r="20" fill="white" fill-opacity="0.2"/>
-  <path d="M700 78C698.343 78 697 79.3431 697 81C697 82.6569 698.343 84 700 84C701.657 84 703 82.6569 703 81C703 79.3431 701.657 78 700 78Z" fill="white"/>
-  <path d="M700 85C697.239 85 695 87.2386 695 90V91H705V90C705 87.2386 702.761 85 700 85Z" fill="white"/>
+  <!-- Submit button -->
+  <rect x="120" y="300" width="100" height="30" rx="15" fill="#FF6B00"/>
+  <rect x="150" y="310" width="40" height="10" rx="2" fill="white"/>
   
-  <!-- Sidebar Navigation -->
-  <rect x="50" y="120" width="160" height="430" fill="#F8F9FA"/>
-  <rect x="65" y="150" width="130" height="40" rx="8" fill="#E9ECEF"/>
-  <rect x="75" y="165" width="20" height="10" rx="2" fill="#2A9D8F"/>
-  <rect x="105" y="165" width="80" height="10" rx="2" fill="#2A9D8F" fill-opacity="0.7"/>
+  <!-- AI assistant element -->
+  <circle cx="380" cy="330" r="30" fill="#264653"/>
+  <rect x="365" y="320" width="30" height="5" rx="2" fill="white"/>
+  <rect x="365" y="330" width="30" height="5" rx="2" fill="white"/>
+  <rect x="365" y="340" width="30" height="5" rx="2" fill="white"/>
   
-  <rect x="65" y="200" width="130" height="40" rx="8" fill="#F8F9FA"/>
-  <rect x="75" y="215" width="20" height="10" rx="2" fill="#ADB5BD"/>
-  <rect x="105" y="215" width="80" height="10" rx="2" fill="#CED4DA"/>
-  
-  <rect x="65" y="250" width="130" height="40" rx="8" fill="#F8F9FA"/>
-  <rect x="75" y="265" width="20" height="10" rx="2" fill="#ADB5BD"/>
-  <rect x="105" y="265" width="80" height="10" rx="2" fill="#CED4DA"/>
-  
-  <rect x="65" y="300" width="130" height="40" rx="8" fill="#F8F9FA"/>
-  <rect x="75" y="315" width="20" height="10" rx="2" fill="#ADB5BD"/>
-  <rect x="105" y="315" width="80" height="10" rx="2" fill="#CED4DA"/>
-  
-  <!-- Main Content Area -->
-  <rect x="230" y="140" width="500" height="80" rx="10" fill="#E9ECEF"/>
-  <rect x="250" y="160" width="200" height="20" rx="4" fill="#2A9D8F" fill-opacity="0.7"/>
-  <rect x="250" y="190" width="120" height="10" rx="2" fill="#6C757D"/>
-  
-  <!-- Stats Cards -->
-  <rect x="230" y="240" width="150" height="100" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
-  <rect x="250" y="260" width="80" height="15" rx="2" fill="#2A9D8F" fill-opacity="0.7"/>
-  <rect x="250" y="285" width="50" height="30" rx="2" fill="#2A9D8F"/>
-  <rect x="250" y="320" width="110" height="10" rx="2" fill="#CED4DA"/>
-  
-  <rect x="400" y="240" width="150" height="100" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
-  <rect x="420" y="260" width="80" height="15" rx="2" fill="#f4a261" fill-opacity="0.7"/>
-  <rect x="420" y="285" width="50" height="30" rx="2" fill="#f4a261"/>
-  <rect x="420" y="320" width="110" height="10" rx="2" fill="#CED4DA"/>
-  
-  <rect x="570" y="240" width="150" height="100" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
-  <rect x="590" y="260" width="80" height="15" rx="2" fill="#e76f51" fill-opacity="0.7"/>
-  <rect x="590" y="285" width="50" height="30" rx="2" fill="#e76f51"/>
-  <rect x="590" y="320" width="110" height="10" rx="2" fill="#CED4DA"/>
-  
-  <!-- Chart Area -->
-  <rect x="230" y="360" width="500" height="170" rx="10" fill="white" filter="drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.05))"/>
-  <rect x="250" y="380" width="150" height="15" rx="2" fill="#2A9D8F"/>
-  <rect x="250" y="400" width="80" height="10" rx="2" fill="#6C757D"/>
-  
-  <!-- Chart Visualization -->
-  <path d="M250 490L290 450L330 470L370 420L410 440L450 400L490 420L530 390L570 420L610 380L650 410L690 370" stroke="#2A9D8F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M250 490L290 460L330 480L370 450L410 470L450 440L490 460L530 450L570 470L610 450L650 470L690 460" stroke="#f4a261" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  
-  <!-- Chart Axis -->
-  <line x1="250" y1="490" x2="690" y2="490" stroke="#CED4DA" stroke-width="1"/>
-  <line x1="250" y1="490" x2="250" y2="410" stroke="#CED4DA" stroke-width="1"/>
-  
-  <!-- Axis Labels -->
-  <rect x="280" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  <rect x="330" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  <rect x="380" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  <rect x="430" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  <rect x="480" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  <rect x="530" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  <rect x="580" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  <rect x="630" y="500" width="20" height="5" rx="1" fill="#ADB5BD"/>
-  
-  <rect x="230" y="430" width="5" height="20" rx="1" fill="#ADB5BD"/>
-  <rect x="230" y="460" width="5" height="20" rx="1" fill="#ADB5BD"/>
-
-  <!-- Decorative Element -->
-  <circle cx="650" cy="330" r="30" fill="#2A9D8F" fill-opacity="0.1"/>
-  <circle cx="650" cy="330" r="20" fill="#2A9D8F" fill-opacity="0.2"/>
-  <circle cx="650" cy="330" r="10" fill="#2A9D8F"/>
+  <!-- Decorative elements -->
+  <circle cx="80" cy="100" r="15" fill="#FF6B00" opacity="0.6"/>
+  <circle cx="60" cy="200" r="25" fill="#FF6B00" opacity="0.4"/>
+  <circle cx="90" cy="280" r="20" fill="#FF6B00" opacity="0.5"/>
+  <circle cx="420" cy="90" r="18" fill="#264653" opacity="0.3"/>
+  <circle cx="440" cy="180" r="22" fill="#264653" opacity="0.4"/>
+  <circle cx="410" cy="260" r="15" fill="#264653" opacity="0.5"/>
 </svg>

@@ -1,206 +1,201 @@
+/* Custom styles for .fylr platform */
+
 :root {
-  /* Light Theme Colors (Default) */
-  --fylr-orange: #FF6B00; /* Neon orange */
-  --fylr-orange-dark: #e55e00;
-  --fylr-orange-light: #ff7f22;
-  --fylr-dark: #264653;
-  --fylr-accent: #FF6B00;
-  --fylr-bg-primary: #ffffff;
-  --fylr-bg-secondary: #f5f7fa;
-  --fylr-text-primary: #264653;
-  --fylr-text-secondary: #4b5563;
-  --fylr-card-bg: #ffffff;
-  --fylr-header-bg: #264653;
-  --fylr-green: #FF6B00; /* Keeping for backward compatibility */
-  --fylr-green-dark: #e55e00;
-  --fylr-green-light: #ff7f22;
+  --fylr-orange: #FF6B00;
+  --fylr-dark-blue: #264653;
+  --fylr-light-bg: #f8f9fa;
 }
 
-/* Dark Theme Colors */
+/* Branding & General Styles */
+.navbar-brand img {
+  max-height: 55px;
+}
+
+.bg-fylr-gradient {
+  background: linear-gradient(45deg, var(--fylr-orange), #FF9E00);
+}
+
+.text-fylr-orange {
+  color: var(--fylr-orange) !important;
+}
+
+.btn-fylr {
+  background-color: var(--fylr-orange);
+  border-color: var(--fylr-orange);
+  color: white;
+}
+
+.btn-fylr:hover {
+  background-color: #e05e00;
+  border-color: #e05e00;
+  color: white;
+}
+
+.btn-outline-fylr {
+  border-color: var(--fylr-orange);
+  color: var(--fylr-orange);
+}
+
+.btn-outline-fylr:hover {
+  background-color: var(--fylr-orange);
+  color: white;
+}
+
+/* Landing Page */
+.landing-hero {
+  background: linear-gradient(135deg, #264653, #2a9d8f);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Pricing Page */
+.pricing-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-feature {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: start;
+}
+
+.pricing-feature i {
+  color: var(--fylr-orange);
+  margin-right: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* Dashboard Elements */
+.dashboard-card {
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.feature-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  background-color: rgba(255, 107, 0, 0.1);
+  color: var(--fylr-orange);
+}
+
+/* Form Elements */
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.form-help-text {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Business Type Cards */
+.business-type-card {
+  border-left: 4px solid var(--fylr-orange);
+  background-color: var(--fylr-light-bg);
+  margin-bottom: 1rem;
+}
+
+.business-type-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-size: 1.25rem;
+}
+
+/* Tier Comparison */
+.tier-table th {
+  font-weight: 600;
+  color: var(--fylr-dark-blue);
+}
+
+.tier-feature-check {
+  color: #28a745;
+}
+
+.tier-feature-times {
+  color: #dc3545;
+}
+
+/* Legal Pages */
+.legal-section {
+  margin-bottom: 2rem;
+}
+
+.legal-section h4 {
+  color: var(--fylr-dark-blue);
+  margin-bottom: 1rem;
+}
+
+/* Dark Mode Support */
 [data-theme="dark"] {
-  --fylr-bg-primary: #121212;
-  --fylr-bg-secondary: #1e1e1e;
-  --fylr-text-primary: #f5f5f5;
-  --fylr-text-secondary: #b0b0b0;
-  --fylr-card-bg: #1e1e1e;
-  --fylr-header-bg: #000000;
-  --fylr-orange: #121212; /* Override orange in dark mode */
-  --fylr-orange-dark: #000000;
-  --fylr-orange-light: #1e1e1e;
-  --fylr-accent: #FFFFFF;
-  --fylr-green: #121212; /* Override green in dark mode */
+  --fylr-light-bg: #343a40;
 }
 
-/* Apply theme variables */
-body {
-  background-color: var(--fylr-bg-primary);
-  color: var(--fylr-text-primary);
-  transition: all 0.3s ease;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.bg-primary {
-  background-color: var(--fylr-header-bg) !important;
-}
-
-.card {
-  background-color: var(--fylr-card-bg);
-  transition: all 0.3s ease;
+[data-theme="dark"] .card {
+  background-color: #212529;
+  border-color: #495057;
 }
 
 [data-theme="dark"] .text-muted {
-  color: #d0d0d0 !important;
+  color: #adb5bd !important;
 }
 
-[data-theme="dark"] h1, 
-[data-theme="dark"] h2, 
-[data-theme="dark"] h3, 
-[data-theme="dark"] h4, 
-[data-theme="dark"] h5, 
-[data-theme="dark"] h6 {
-  color: #ffffff;
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
 }
 
-[data-theme="dark"] .hero-section {
-  background: linear-gradient(135deg, #121212 0%, #000000 100%) !important;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-/* Theme Toggle Switch */
-.theme-switch-wrapper {
-  display: flex;
-  align-items: center;
+.slide-up {
+  animation: slideUp 0.5s ease-out;
 }
 
-.theme-switch-wrapper span {
-  font-size: 0.75rem;
-  letter-spacing: 1px;
-}
-
-.theme-switch {
-  display: inline-block;
-  height: 24px;
-  position: relative;
-  width: 50px;
-}
-
-.theme-switch input {
-  display: none;
-}
-
-.slider {
-  background-color: #ccc;
-  bottom: 0;
-  cursor: pointer;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  background-color: white;
-  bottom: 4px;
-  content: "";
-  height: 16px;
-  left: 4px;
-  position: absolute;
-  transition: .4s;
-  width: 16px;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #FF6B00;
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-.bg-fylr-green {
-  background-color: var(--fylr-green) !important;
-}
-
-.text-fylr-green {
-  color: var(--fylr-green) !important;
-}
-
-.btn-fylr-green {
-  background-color: var(--fylr-green);
-  color: white;
-  border-color: var(--fylr-green);
-}
-
-.btn-fylr-green:hover {
-  background-color: var(--fylr-green-dark);
-  border-color: var(--fylr-green-dark);
-  color: white;
-}
-
-.btn-outline-fylr-green {
-  color: var(--fylr-green);
-  border-color: var(--fylr-green);
-}
-
-.btn-outline-fylr-green:hover {
-  background-color: var(--fylr-green);
-  color: white;
-}
-
-.navbar-dark.bg-primary {
-  background-color: var(--fylr-dark) !important;
-}
-
-.nav-item .nav-link:hover {
-  color: var(--fylr-green) !important;
-}
-
-.premium-card {
-  border: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-}
-
-.premium-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
-
-.badge-premium {
-  background-color: var(--fylr-green);
-  color: white;
-}
-
-.border-fylr {
-  border-color: var(--fylr-green) !important;
-}
-
-/* Price cards highlight */
-.pricing-price {
-  color: var(--fylr-green) !important;
-  font-weight: bold;
-}
-
-.pricing-card.featured {
-  border-top: 5px solid var(--fylr-green) !important;
-  transform: scale(1.05);
-}
-
-/* Custom divider */
-.fylr-divider {
-  width: 80px;
-  height: 4px;
-  background-color: var(--fylr-green);
-  margin: 1.5rem auto;
-}
-
-.fylr-gradient {
-  background: linear-gradient(135deg, var(--fylr-green) 0%, #cc3600 100%);
-}
-
-.neon-gradient {
-  background: linear-gradient(135deg, #FF6B00 0%, #ff4500 70%, #cc3600 100%);
-  box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
