@@ -55,3 +55,8 @@ def privacy():
 def legal_disclaimer():
     """Legal disclaimer page"""
     return render_template("legal/legal_disclaimer.html")
+
+@main_bp.route("/export")
+def export():
+    """Export tax documents page"""
+    return render_template("export.html")

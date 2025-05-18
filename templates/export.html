@@ -1,0 +1,228 @@
+{% extends "layout.html" %}
+
+{% block title %}.fylr | Export Documents{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3">Export Tax Documents</h1>
+            <p class="text-muted lead">Choose your preferred export format below.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Available Documents</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">2024 Schedule C - Profit or Loss From Business</h6>
+                                    <p class="mb-0 text-muted small">Created: May 15, 2025</p>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="scheduleC" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">2024 Schedule SE - Self-Employment Tax</h6>
+                                    <p class="mb-0 text-muted small">Created: May 15, 2025</p>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="scheduleSE" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">2024 Form 4562 - Depreciation and Amortization</h6>
+                                    <p class="mb-0 text-muted small">Created: May 15, 2025</p>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="form4562" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">2024 Tax Strategies Report</h6>
+                                    <p class="mb-0 text-muted small">Created: May 15, 2025</p>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="strategyReport" checked>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-3">
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-times-circle me-1"></i> Deselect All
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-check-circle me-1"></i> Select All
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-info-circle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="alert-heading">File Verification</h5>
+                        <p class="mb-0">All exported documents have been AI-verified for accuracy, but we recommend reviewing all information before filing or submission.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Export Options</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Export Format</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="exportFormat" id="formatPDF" checked>
+                                <label class="form-check-label" for="formatPDF">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i> PDF (Printable)
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="exportFormat" id="formatJSON">
+                                <label class="form-check-label" for="formatJSON">
+                                    <i class="fas fa-file-code text-primary me-2"></i> JSON (Data)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="exportFormat" id="formatHTML">
+                                <label class="form-check-label" for="formatHTML">
+                                    <i class="fas fa-file-alt text-success me-2"></i> HTML (Email/Web)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Export Options</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="includeWorksheets" checked>
+                                <label class="form-check-label" for="includeWorksheets">
+                                    Include worksheets
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="includeSummary" checked>
+                                <label class="form-check-label" for="includeSummary">
+                                    Include summary page
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="includeNotes">
+                                <label class="form-check-label" for="includeNotes">
+                                    Include AI notes
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Delivery Method</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="deliveryMethod" id="methodDownload" checked>
+                                <label class="form-check-label" for="methodDownload">
+                                    <i class="fas fa-download me-2"></i> Direct download
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="deliveryMethod" id="methodEmail">
+                                <label class="form-check-label" for="methodEmail">
+                                    <i class="fas fa-envelope me-2"></i> Email to me
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary" style="background-color: #FF6B00; border-color: #FF6B00;">
+                                <i class="fas fa-file-export me-2"></i> Export Documents
+                            </button>
+                            <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Need Help?</h5>
+                    <p class="card-text small">Our AI assistant can help you choose the right export format for your needs.</p>
+                    <button class="btn btn-sm btn-outline-primary w-100" style="color: #FF6B00; border-color: #FF6B00;">
+                        <i class="fas fa-robot me-2"></i> Ask AI Assistant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-5">
+        <h4>About Export Formats</h4>
+        <div class="row mt-3">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-file-pdf text-danger me-2"></i> PDF Format</h5>
+                        <p class="card-text">Ideal for printing or submitting to tax authorities. PDF exports maintain the official form layout and are ready to print or e-file.</p>
+                        <p class="card-text text-muted small">Best for: Official submissions, printing, record-keeping</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-file-code text-primary me-2"></i> JSON Format</h5>
+                        <p class="card-text">Export your tax data in machine-readable format. Perfect for importing into other systems or for digital storage.</p>
+                        <p class="card-text text-muted small">Best for: Data import to other systems, developers, archiving</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-file-alt text-success me-2"></i> HTML Format</h5>
+                        <p class="card-text">Get your tax documents in web-friendly format. Easy to view in browsers, share via email, or embed in websites.</p>
+                        <p class="card-text text-muted small">Best for: Sharing with advisors, digital viewing, embedding</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-warning mt-4">
+        <div class="d-flex">
+            <div class="me-3">
+                <i class="fas fa-exclamation-triangle fa-2x"></i>
+            </div>
+            <div>
+                <h5 class="alert-heading">Important Notice</h5>
+                <p class="mb-0">While .fylr provides export capabilities for your tax documents, you are responsible for verifying all information and submitting to appropriate tax authorities. No human review is conducted on exported documents.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
