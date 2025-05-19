@@ -13,4 +13,7 @@ dependencies = [
     "psycopg2-binary>=2.9.10",
     "stripe>=12.1.0",
     "trafilatura>=2.0.0",
+    "oauthlib>=3.2.2",
+    "pyjwt>=2.10.1",
+    "flask-dance>=7.1.0",
 ]
