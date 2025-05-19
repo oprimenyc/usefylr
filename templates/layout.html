@@ -73,7 +73,7 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <button id="take-tour-button" class="btn btn-sm btn-outline-light mt-1" onclick="showGuidedTour()">
+                        <button id="take-tour-button" class="btn btn-sm btn-outline-light mt-1">
                             <i class="fas fa-map-marked-alt me-1"></i> Take Tour
                         </button>
                     </li>
@@ -171,54 +171,40 @@
     <script src="{{ url_for('static', filename='js/intro.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/guided-tour.js') }}"></script>
     
-    <!-- Theme Toggle Script -->
+    <!-- Initialize guided tour and theme toggle -->
     <script>
-      // Theme toggle functionality
-      const toggleSwitch = document.getElementById('theme-toggle');
-      const currentTheme = localStorage.getItem('theme');
-      
-      if (currentTheme) {
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        if (currentTheme === 'dark') {
-          toggleSwitch.checked = true;
-          // Apply dark theme to hero section on page load
-          const heroSection = document.querySelector('.hero-section');
-          if (heroSection) {
-            const bgDiv = heroSection.querySelector('.position-absolute');
-            if (bgDiv) {
-              bgDiv.style.background = 'linear-gradient(135deg, #121212 0%, #000000 100%)';
-            }
-          }
+      // Set up the tour button click handler
+      document.addEventListener('DOMContentLoaded', function() {
+        const tourButton = document.getElementById('take-tour-button');
+        if (tourButton) {
+          tourButton.addEventListener('click', function() {
+            alert('The guided tour feature is coming soon!');
+          });
         }
-      }
-      
-      function switchTheme(e) {
-        if (e.target.checked) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          localStorage.setItem('theme', 'dark');
-          // Hide orange elements in dark mode
-          const heroSection = document.querySelector('.hero-section');
-          if (heroSection) {
-            const bgDiv = heroSection.querySelector('.position-absolute');
-            if (bgDiv) {
-              bgDiv.style.background = 'linear-gradient(135deg, #121212 0%, #000000 100%)';
-            }
+        
+        // Theme toggle functionality
+        const toggleSwitch = document.getElementById('theme-toggle');
+        if (toggleSwitch) {
+          const currentTheme = localStorage.getItem('theme') || 'light';
+          
+          // Set initial theme
+          document.documentElement.setAttribute('data-theme', currentTheme);
+          if (currentTheme === 'dark') {
+            toggleSwitch.checked = true;
           }
-        } else {
-          document.documentElement.setAttribute('data-theme', 'light');
-          localStorage.setItem('theme', 'light');
-          // Restore orange elements in light mode
-          const heroSection = document.querySelector('.hero-section');
-          if (heroSection) {
-            const bgDiv = heroSection.querySelector('.position-absolute');
-            if (bgDiv) {
-              bgDiv.style.background = 'linear-gradient(135deg, #FF6B00 0%, #cc3600 100%)';
+          
+          // Add event listener
+          toggleSwitch.addEventListener('change', function(e) {
+            if (e.target.checked) {
+              document.documentElement.setAttribute('data-theme', 'dark');
+              localStorage.setItem('theme', 'dark');
+            } else {
+              document.documentElement.setAttribute('data-theme', 'light');
+              localStorage.setItem('theme', 'light');
             }
-          }
+          });
         }
-      }
-      
-      toggleSwitch.addEventListener('change', switchTheme, false);
+      });
     </script>
     
     {% block extra_js %}{% endblock %}
