@@ -1,0 +1,388 @@
+{% macro render_form(form_template, form_data, mode='edit', section_index=0) %}
+{# 
+Form Renderer Component
+Renders a dynamic form based on the form template JSON structure
+Parameters:
+  - form_template: The form template object with sections and fields
+  - form_data: A dictionary with the current form data values
+  - mode: 'edit' (editable form) or 'view' (read-only form)
+  - section_index: For multi-step forms, the current section index to display
+#}
+
+{% if form_template %}
+  <div class="dynamic-form" data-form-id="{{ form_template.form_id }}">
+    {# Form Progress Display #}
+    {% if form_template.sections|length > 1 %}
+      <div class="form-progress mb-4">
+        <div class="progress">
+          {% set progress_value = ((section_index + 1) / form_template.sections|length) * 100 %}
+          <div class="progress-bar bg-fylr" role="progressbar" style="width: {{ progress_value }}%;" 
+               aria-valuenow="{{ progress_value }}" aria-valuemin="0" aria-valuemax="100">
+            {{ section_index + 1 }} of {{ form_template.sections|length }}
+          </div>
+        </div>
+        <div class="d-flex justify-content-between mt-1">
+          <small class="text-muted">Step {{ section_index + 1 }}: {{ form_template.sections[section_index].title }}</small>
+          <small class="text-muted">{{ progress_value|int }}% Complete</small>
+        </div>
+      </div>
+    {% endif %}
+    
+    {# Current Section Display #}
+    {% set current_section = form_template.sections[section_index] %}
+    
+    <div class="form-section" id="section-{{ section_index }}">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">{{ current_section.title }}</h5>
+          {% if current_section.description %}
+            <p class="mb-0 text-muted small">{{ current_section.description }}</p>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          {% for field in current_section.fields %}
+            {% set field_name = field.name %}
+            {% set field_id = form_template.form_id + '_' + field_name %}
+            {% set field_value = form_data.get(field_name, field.default) %}
+            {% set is_required = field.required %}
+            
+            {# Check conditional display logic #}
+            {% set display_field = true %}
+            {% if field.conditional %}
+              {% set condition_field = field.conditional.field %}
+              {% set condition_value = field.conditional.value %}
+              {% set form_condition_value = form_data.get(condition_field) %}
+              
+              {% if form_condition_value != condition_value %}
+                {% set display_field = false %}
+              {% endif %}
+            {% endif %}
+            
+            {% if display_field %}
+              <div class="mb-4 form-field" data-field-type="{{ field.type }}">
+                {% if field.type == 'checkbox' %}
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="{{ field_name }}" 
+                           id="{{ field_id }}" value="true" {% if field_value %}checked{% endif %}
+                           {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>
+                    <label class="form-check-label" for="{{ field_id }}">
+                      {{ field.label }}
+                      {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {% if field.help_text %}
+                      <div class="form-text text-muted small">{{ field.help_text }}</div>
+                    {% endif %}
+                  </div>
+                
+                {% elif field.type == 'radio' %}
+                  <fieldset>
+                    <legend class="form-label">
+                      {{ field.label }}
+                      {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                    </legend>
+                    {% for option in field.options %}
+                      <div class="form-check">
+                        <input type="radio" class="form-check-input" name="{{ field_name }}" 
+                               id="{{ field_id }}_{{ loop.index }}" value="{{ option.value }}"
+                               {% if field_value == option.value %}checked{% endif %}
+                               {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>
+                        <label class="form-check-label" for="{{ field_id }}_{{ loop.index }}">
+                          {{ option.label }}
+                        </label>
+                      </div>
+                    {% endfor %}
+                    {% if field.help_text %}
+                      <div class="form-text text-muted small">{{ field.help_text }}</div>
+                    {% endif %}
+                  </fieldset>
+                
+                {% elif field.type == 'select' %}
+                  <label for="{{ field_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  <select class="form-select" name="{{ field_name }}" id="{{ field_id }}"
+                          {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}
+                          {% if field.multiple %}multiple{% endif %}>
+                    <option value="" {% if not field_value %}selected{% endif %}>-- Select --</option>
+                    {% for option in field.options %}
+                      <option value="{{ option.value }}" {% if field_value == option.value %}selected{% endif %}>
+                        {{ option.label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                  {% endif %}
+                
+                {% elif field.type == 'textarea' %}
+                  <label for="{{ field_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  <textarea class="form-control" name="{{ field_name }}" id="{{ field_id }}"
+                            rows="{{ field.rows|default(3) }}" 
+                            {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+                            {% if field.max_length %}maxlength="{{ field.max_length }}"{% endif %}
+                            {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>{{ field_value }}</textarea>
+                  {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                  {% endif %}
+                
+                {% elif field.type == 'currency' %}
+                  <label for="{{ field_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" name="{{ field_name }}" id="{{ field_id }}"
+                           value="{{ field_value }}" step="0.01" min="0"
+                           {% if field.min_value is not none %}min="{{ field.min_value }}"{% endif %}
+                           {% if field.max_value is not none %}max="{{ field.max_value }}"{% endif %}
+                           {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>
+                  </div>
+                  {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                  {% endif %}
+                
+                {% elif field.type == 'percentage' %}
+                  <label for="{{ field_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" name="{{ field_name }}" id="{{ field_id }}"
+                           value="{{ field_value }}" step="0.01"
+                           {% if field.min_value is not none %}min="{{ field.min_value }}"{% endif %}
+                           {% if field.max_value is not none %}max="{{ field.max_value }}"{% endif %}
+                           {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>
+                    <span class="input-group-text">%</span>
+                  </div>
+                  {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                  {% endif %}
+                
+                {% elif field.type == 'date' %}
+                  <label for="{{ field_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  <input type="date" class="form-control" name="{{ field_name }}" id="{{ field_id }}"
+                         value="{{ field_value }}"
+                         {% if field.min_date %}min="{{ field.min_date }}"{% endif %}
+                         {% if field.max_date %}max="{{ field.max_date }}"{% endif %}
+                         {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>
+                  {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                  {% endif %}
+                
+                {% elif field.type in ['ein', 'ssn', 'phone', 'zipcode'] %}
+                  <label for="{{ field_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  <input type="text" class="form-control" name="{{ field_name }}" id="{{ field_id }}"
+                         value="{{ field_value }}"
+                         {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+                         {% if field.validation and field.validation.pattern %}
+                           pattern="{{ field.validation.pattern }}"
+                         {% endif %}
+                         {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>
+                  {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                  {% endif %}
+                
+                {% else %}{# default text input #}
+                  <label for="{{ field_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if is_required %}<span class="text-danger">*</span>{% endif %}
+                  </label>
+                  <input type="text" class="form-control" name="{{ field_name }}" id="{{ field_id }}"
+                         value="{{ field_value }}"
+                         {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+                         {% if field.max_length %}maxlength="{{ field.max_length }}"{% endif %}
+                         {% if field.validation and field.validation.pattern %}
+                           pattern="{{ field.validation.pattern }}"
+                         {% endif %}
+                         {% if is_required %}required{% endif %} {% if mode == 'view' %}disabled{% endif %}>
+                  {% if field.help_text %}
+                    <div class="form-text text-muted small">{{ field.help_text }}</div>
+                  {% endif %}
+                {% endif %}
+                
+                {# Display field validation errors if any #}
+                {% if field_errors and field_errors[field_name] %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in field_errors[field_name] %}
+                      <div>{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    
+    {# Navigation Buttons #}
+    <div class="form-navigation d-flex justify-content-between">
+      {% if section_index > 0 %}
+        <button type="button" class="btn btn-outline-secondary prev-btn" 
+                data-section="{{ section_index - 1 }}">
+          <i class="fas fa-arrow-left me-2"></i> Previous
+        </button>
+      {% else %}
+        <div></div> {# Empty div for spacing #}
+      {% endif %}
+      
+      <div>
+        {% if mode == 'edit' %}
+          <button type="button" class="btn btn-outline-secondary save-draft-btn">
+            <i class="fas fa-save me-2"></i> Save Draft
+          </button>
+        {% endif %}
+      </div>
+      
+      {% if section_index < form_template.sections|length - 1 %}
+        <button type="button" class="btn btn-primary next-btn" 
+                data-section="{{ section_index + 1 }}">
+          Next <i class="fas fa-arrow-right ms-2"></i>
+        </button>
+      {% else %}
+        {% if mode == 'edit' %}
+          <button type="submit" class="btn btn-success submit-btn">
+            <i class="fas fa-check-circle me-2"></i> Complete Form
+          </button>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle me-2"></i> Form template not found.
+  </div>
+{% endif %}
+{% endmacro %}
+
+{% macro render_field_view(field, value) %}
+{# 
+Field View Renderer Component
+Renders a single field in view mode with formatted display
+Parameters:
+  - field: The field definition from the template
+  - value: The current value of the field
+#}
+
+<div class="mb-3">
+  <div class="field-label text-muted small">{{ field.label }}</div>
+  
+  {% if field.type == 'checkbox' %}
+    <div class="field-value">
+      {% if value %}
+        <i class="fas fa-check-circle text-success"></i> Yes
+      {% else %}
+        <i class="fas fa-times-circle text-muted"></i> No
+      {% endif %}
+    </div>
+    
+  {% elif field.type == 'radio' or field.type == 'select' %}
+    <div class="field-value">
+      {% for option in field.options %}
+        {% if value == option.value %}
+          {{ option.label }}
+        {% endif %}
+      {% endfor %}
+      {% if not value %}
+        <span class="text-muted">None selected</span>
+      {% endif %}
+    </div>
+    
+  {% elif field.type == 'currency' %}
+    <div class="field-value">
+      {% if value %}
+        ${{ "%.2f"|format(value|float) }}
+      {% else %}
+        <span class="text-muted">$0.00</span>
+      {% endif %}
+    </div>
+    
+  {% elif field.type == 'percentage' %}
+    <div class="field-value">
+      {% if value %}
+        {{ "%.2f"|format(value|float) }}%
+      {% else %}
+        <span class="text-muted">0.00%</span>
+      {% endif %}
+    </div>
+    
+  {% elif field.type == 'date' %}
+    <div class="field-value">
+      {% if value %}
+        {{ value }}
+      {% else %}
+        <span class="text-muted">No date provided</span>
+      {% endif %}
+    </div>
+    
+  {% else %}
+    <div class="field-value">
+      {% if value %}
+        {{ value }}
+      {% else %}
+        <span class="text-muted">Not provided</span>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro render_summary_view(form_template, form_data) %}
+{# 
+Form Summary View Component
+Renders a concise read-only summary of the form data
+Parameters:
+  - form_template: The form template object with sections and fields
+  - form_data: A dictionary with the current form data values
+#}
+
+<div class="form-summary">
+  {% for section in form_template.sections %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">{{ section.title }}</h5>
+        {% if loop.index == 1 %}
+          <span class="badge bg-fylr">{{ form_template.metadata.tax_form_type }}</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="row">
+          {% for field in section.fields %}
+            {% set field_name = field.name %}
+            {% set field_value = form_data.get(field_name) %}
+            
+            {# Check conditional display logic #}
+            {% set display_field = true %}
+            {% if field.conditional %}
+              {% set condition_field = field.conditional.field %}
+              {% set condition_value = field.conditional.value %}
+              {% set form_condition_value = form_data.get(condition_field) %}
+              
+              {% if form_condition_value != condition_value %}
+                {% set display_field = false %}
+              {% endif %}
+            {% endif %}
+            
+            {% if display_field and field_value %}
+              <div class="col-md-6 mb-3">
+                {{ render_field_view(field, field_value) }}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endmacro %}

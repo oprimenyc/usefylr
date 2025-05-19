@@ -1,0 +1,375 @@
+{
+  "form_id": "schedule_c",
+  "title": "Schedule C - Profit or Loss From Business",
+  "description": "Use Schedule C to report income or loss from a business you operated or a profession you practiced as a sole proprietor.",
+  "metadata": {
+    "tax_form_type": "SCHEDULE_C",
+    "for_entity_type": "SOLE_PROPRIETOR",
+    "irs_form_number": "1040-C",
+    "default_tax_year": "2024"
+  },
+  "sections": [
+    {
+      "title": "Business Information",
+      "description": "Enter basic information about your business",
+      "fields": [
+        {
+          "name": "business_name",
+          "label": "Business Name",
+          "type": "text",
+          "required": true,
+          "help_text": "Enter the name of your business as shown on your business documents",
+          "placeholder": "Your Business Name"
+        },
+        {
+          "name": "business_code",
+          "label": "Business Code",
+          "type": "text",
+          "required": true,
+          "help_text": "Enter the 6-digit code that identifies your main business activity",
+          "placeholder": "000000",
+          "validation": {
+            "pattern": "^[0-9]{6}$",
+            "pattern_error": "Business code must be 6 digits"
+          }
+        },
+        {
+          "name": "business_address",
+          "label": "Business Address",
+          "type": "textarea",
+          "required": true,
+          "rows": 2,
+          "help_text": "Enter the full address where your business is located"
+        },
+        {
+          "name": "ein",
+          "type": "ein",
+          "required": false
+        },
+        {
+          "name": "accounting_method",
+          "label": "Accounting Method",
+          "type": "radio",
+          "required": true,
+          "help_text": "Select the accounting method used for your business",
+          "options": [
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "accrual",
+              "label": "Accrual"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "name": "first_business",
+          "label": "Is this your first year filing Schedule C for this business?",
+          "type": "checkbox",
+          "required": false,
+          "help_text": "Check if this is the first Schedule C you're filing for this business"
+        }
+      ]
+    },
+    {
+      "title": "Income",
+      "description": "Report all income from your business during the tax year",
+      "fields": [
+        {
+          "name": "gross_receipts",
+          "label": "Gross receipts or sales",
+          "type": "currency",
+          "required": true,
+          "help_text": "Enter the total income from your business before deducting any expenses"
+        },
+        {
+          "name": "returns_allowances",
+          "label": "Returns and allowances",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter the total amount of refunds you gave to customers and any allowances you made for merchandise your customers kept but were unsatisfied with"
+        },
+        {
+          "name": "other_income",
+          "label": "Other business income",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter any other income from your business that isn't included in gross receipts"
+        }
+      ]
+    },
+    {
+      "title": "Expenses",
+      "description": "Report the ordinary and necessary expenses for your business",
+      "fields": [
+        {
+          "name": "advertising",
+          "label": "Advertising",
+          "type": "currency",
+          "required": false,
+          "help_text": "Costs for advertising your business (flyers, business cards, online ads, etc.)"
+        },
+        {
+          "name": "vehicle_expenses",
+          "label": "Car and truck expenses",
+          "type": "currency",
+          "required": false,
+          "help_text": "Costs for business use of your vehicle"
+        },
+        {
+          "name": "commissions_fees",
+          "label": "Commissions and fees",
+          "type": "currency",
+          "required": false,
+          "help_text": "Amounts paid to others as commissions or fees for services"
+        },
+        {
+          "name": "contract_labor",
+          "label": "Contract labor",
+          "type": "currency",
+          "required": false,
+          "help_text": "Amounts paid to independent contractors for services"
+        },
+        {
+          "name": "depletion",
+          "label": "Depletion",
+          "type": "currency",
+          "required": false,
+          "help_text": "Depletion expenses for business assets"
+        },
+        {
+          "name": "depreciation",
+          "label": "Depreciation",
+          "type": "currency",
+          "required": false,
+          "help_text": "Depreciation expenses for business assets"
+        },
+        {
+          "name": "insurance",
+          "label": "Insurance (other than health)",
+          "type": "currency",
+          "required": false,
+          "help_text": "Business insurance costs excluding health insurance"
+        },
+        {
+          "name": "interest_mortgage",
+          "label": "Interest on mortgage",
+          "type": "currency",
+          "required": false,
+          "help_text": "Mortgage interest paid for business property"
+        },
+        {
+          "name": "interest_other",
+          "label": "Interest - other",
+          "type": "currency",
+          "required": false,
+          "help_text": "Interest paid on business loans and credit"
+        },
+        {
+          "name": "legal_professional",
+          "label": "Legal and professional services",
+          "type": "currency",
+          "required": false,
+          "help_text": "Fees paid for legal, accounting, and other professional services"
+        },
+        {
+          "name": "office_expenses",
+          "label": "Office expenses",
+          "type": "currency",
+          "required": false,
+          "help_text": "Office supplies and expenses"
+        },
+        {
+          "name": "pension_profit_sharing",
+          "label": "Pension and profit-sharing plans",
+          "type": "currency",
+          "required": false,
+          "help_text": "Contributions to employee pension and profit-sharing plans"
+        },
+        {
+          "name": "rent_lease_vehicles",
+          "label": "Rent/lease - vehicles, machinery, and equipment",
+          "type": "currency",
+          "required": false,
+          "help_text": "Amounts paid to rent or lease vehicles, machinery, or equipment for your business"
+        },
+        {
+          "name": "rent_lease_other",
+          "label": "Rent/lease - other",
+          "type": "currency",
+          "required": false,
+          "help_text": "Amounts paid to rent or lease other items for your business, such as office space"
+        },
+        {
+          "name": "repairs_maintenance",
+          "label": "Repairs and maintenance",
+          "type": "currency",
+          "required": false,
+          "help_text": "Costs for repairs and maintenance of business property"
+        },
+        {
+          "name": "supplies",
+          "label": "Supplies",
+          "type": "currency",
+          "required": false,
+          "help_text": "Costs for supplies that are not considered inventory"
+        },
+        {
+          "name": "taxes_licenses",
+          "label": "Taxes and licenses",
+          "type": "currency",
+          "required": false,
+          "help_text": "Business taxes and license fees"
+        },
+        {
+          "name": "travel",
+          "label": "Travel",
+          "type": "currency",
+          "required": false,
+          "help_text": "Business travel expenses (flights, hotels, etc.)"
+        },
+        {
+          "name": "meals",
+          "label": "Meals",
+          "type": "currency",
+          "required": false,
+          "help_text": "Business meal expenses (typically 50% deductible)"
+        },
+        {
+          "name": "utilities",
+          "label": "Utilities",
+          "type": "currency",
+          "required": false,
+          "help_text": "Utilities for your business (electricity, water, gas, phone, internet)"
+        },
+        {
+          "name": "wages",
+          "label": "Wages",
+          "type": "currency",
+          "required": false,
+          "help_text": "Wages paid to employees"
+        },
+        {
+          "name": "other_expenses",
+          "label": "Other expenses",
+          "type": "textarea",
+          "required": false,
+          "rows": 3,
+          "help_text": "Description and amount of any other ordinary and necessary business expenses not listed above"
+        }
+      ]
+    },
+    {
+      "title": "Vehicle Information",
+      "description": "If you claimed vehicle expenses, provide information about your vehicle use",
+      "conditional": {
+        "field": "vehicle_expenses",
+        "condition": "gt",
+        "value": 0
+      },
+      "fields": [
+        {
+          "name": "vehicle_description",
+          "label": "Vehicle Description",
+          "type": "text",
+          "required": false,
+          "help_text": "Make, model, and year of your vehicle",
+          "placeholder": "e.g., 2022 Honda Accord"
+        },
+        {
+          "name": "date_placed_in_service",
+          "label": "Date Vehicle Placed in Service",
+          "type": "date",
+          "required": false,
+          "help_text": "Date you began using the vehicle for business purposes"
+        },
+        {
+          "name": "business_miles",
+          "label": "Business miles driven",
+          "type": "number",
+          "required": false,
+          "help_text": "Total business miles driven during the tax year"
+        },
+        {
+          "name": "commuting_miles",
+          "label": "Commuting miles driven",
+          "type": "number",
+          "required": false,
+          "help_text": "Miles driven commuting to and from work"
+        },
+        {
+          "name": "other_miles",
+          "label": "Other personal miles",
+          "type": "number",
+          "required": false,
+          "help_text": "Miles driven for personal purposes other than commuting"
+        },
+        {
+          "name": "vehicle_questions",
+          "label": "Vehicle Use Questions",
+          "type": "checkbox",
+          "required": false,
+          "help_text": "Check all that apply to your vehicle use",
+          "options": [
+            {
+              "value": "available_personal",
+              "label": "Was the vehicle available for personal use during off-duty hours?"
+            },
+            {
+              "value": "another_vehicle",
+              "label": "Do you have another vehicle available for personal use?"
+            },
+            {
+              "value": "evidence_written",
+              "label": "Do you have evidence to support your deduction?"
+            },
+            {
+              "value": "evidence_written_yes",
+              "label": "If 'Yes,' is the evidence written?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Home Office Deduction",
+      "description": "If you use part of your home regularly and exclusively for business, you may be able to claim a home office deduction",
+      "fields": [
+        {
+          "name": "home_office",
+          "label": "Do you use part of your home for business?",
+          "type": "checkbox",
+          "required": false,
+          "help_text": "Check if you use part of your home regularly and exclusively for business"
+        },
+        {
+          "name": "home_office_area",
+          "label": "Area used for business (square feet)",
+          "type": "number",
+          "required": false,
+          "help_text": "Square footage of the area used for business",
+          "conditional": {
+            "field": "home_office",
+            "value": true
+          }
+        },
+        {
+          "name": "home_total_area",
+          "label": "Total area of home (square feet)",
+          "type": "number",
+          "required": false,
+          "help_text": "Total square footage of your home",
+          "conditional": {
+            "field": "home_office",
+            "value": true
+          }
+        }
+      ]
+    }
+  ]
+}

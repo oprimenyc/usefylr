@@ -1,0 +1,186 @@
+{
+  "form_id": "schedule_se",
+  "title": "Schedule SE - Self-Employment Tax",
+  "description": "Use Schedule SE to figure the tax due on net earnings from self-employment.",
+  "metadata": {
+    "tax_form_type": "SCHEDULE_SE",
+    "for_entity_type": "SOLE_PROPRIETOR",
+    "irs_form_number": "1040-SE",
+    "default_tax_year": "2024"
+  },
+  "sections": [
+    {
+      "title": "Taxpayer Information",
+      "description": "Enter your personal information",
+      "fields": [
+        {
+          "name": "taxpayer_name",
+          "label": "Your Name",
+          "type": "text",
+          "required": true,
+          "help_text": "Enter your full legal name as shown on your tax return"
+        },
+        {
+          "name": "ssn",
+          "label": "Social Security Number",
+          "type": "ssn",
+          "required": true
+        }
+      ]
+    },
+    {
+      "title": "Calculation Method",
+      "description": "Choose which method to use for calculating your self-employment tax",
+      "fields": [
+        {
+          "name": "calculation_method",
+          "label": "Calculation Method",
+          "type": "radio",
+          "required": true,
+          "help_text": "Choose the method to calculate your self-employment tax",
+          "options": [
+            {
+              "value": "short_schedule",
+              "label": "Short Schedule SE (Section A)"
+            },
+            {
+              "value": "long_schedule",
+              "label": "Long Schedule SE (Section B)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Short Schedule SE (Section A)",
+      "description": "Use if your only self-employment income is from a business you own as a sole proprietor or from a farm you operate",
+      "conditional": {
+        "field": "calculation_method",
+        "value": "short_schedule"
+      },
+      "fields": [
+        {
+          "name": "net_farm_profit",
+          "label": "Net farm profit or (loss)",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter amount from Schedule F, line 34, or comparable line from farm partnerships, Schedule K-1"
+        },
+        {
+          "name": "net_business_profit",
+          "label": "Net profit or (loss) from business",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter amount from Schedule C, line 31, or comparable lines from partnerships, Schedule K-1"
+        },
+        {
+          "name": "minister_earnings",
+          "label": "Minister's earnings (if exempt from self-employment tax)",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter your net earnings as a minister if you've filed Form 4361 for exemption from self-employment tax"
+        }
+      ]
+    },
+    {
+      "title": "Long Schedule SE (Section B) - Part I",
+      "description": "Self-Employment Tax",
+      "conditional": {
+        "field": "calculation_method",
+        "value": "long_schedule"
+      },
+      "fields": [
+        {
+          "name": "net_farm_profit_b",
+          "label": "Net farm profit or (loss)",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter amount from Schedule F, line 34, or comparable line from farm partnerships, Schedule K-1"
+        },
+        {
+          "name": "net_business_profit_b",
+          "label": "Net profit or (loss) from business",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter amount from Schedule C, line 31, or comparable lines from partnerships, Schedule K-1"
+        },
+        {
+          "name": "conservation_reserve_payments",
+          "label": "Conservation Reserve Program payments",
+          "type": "currency",
+          "required": false,
+          "help_text": "If you received CRP payments, enter the amount"
+        },
+        {
+          "name": "prior_year_earnings",
+          "label": "Net earnings (or loss) from prior years",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter any amount from prior years that should be included"
+        },
+        {
+          "name": "optional_methods",
+          "label": "Are you using optional methods to calculate net earnings?",
+          "type": "checkbox",
+          "required": false,
+          "help_text": "Check if you are using optional methods to figure your net earnings"
+        }
+      ]
+    },
+    {
+      "title": "Long Schedule SE (Section B) - Optional Methods",
+      "description": "Optional methods for calculating net earnings",
+      "conditional": {
+        "field": "optional_methods",
+        "value": true
+      },
+      "fields": [
+        {
+          "name": "farm_optional_method",
+          "label": "Farm Optional Method",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter your net farm profits if using the farm optional method"
+        },
+        {
+          "name": "nonfarm_optional_method",
+          "label": "Nonfarm Optional Method",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter your net nonfarm profits if using the nonfarm optional method"
+        }
+      ]
+    },
+    {
+      "title": "Additional Information",
+      "description": "Additional information for your Schedule SE calculation",
+      "fields": [
+        {
+          "name": "other_employment",
+          "label": "Do you have wages or salary from employment in addition to self-employment?",
+          "type": "checkbox",
+          "required": false,
+          "help_text": "Check if you have income from both self-employment and employment"
+        },
+        {
+          "name": "wage_amount",
+          "label": "Total wages subject to Social Security tax",
+          "type": "currency",
+          "required": false,
+          "help_text": "Enter total wages subject to Social Security tax from Form W-2",
+          "conditional": {
+            "field": "other_employment",
+            "value": true
+          }
+        },
+        {
+          "name": "medicare_qualified_government_employment",
+          "label": "Do you have Medicare-qualified government employment?",
+          "type": "checkbox",
+          "required": false,
+          "help_text": "Check if you have Medicare-qualified government employment"
+        }
+      ]
+    }
+  ]
+}
