@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup form validation
     setupFormValidation();
+    
+    // Setup theme switcher
+    setupThemeSwitcher();
 });
 
 /**
@@ -241,4 +244,34 @@ function isInViewport(el) {
         rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
         rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
+}
+
+/**
+ * Setup theme switcher functionality
+ */
+function setupThemeSwitcher() {
+    const toggleSwitch = document.getElementById('theme-toggle');
+    if (!toggleSwitch) return;
+    
+    // Check for saved user preference
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // Set initial theme
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    // Update toggle switch position
+    if (currentTheme === 'dark') {
+        toggleSwitch.checked = true;
+    }
+    
+    // Add event listener for theme toggle
+    toggleSwitch.addEventListener('change', function(e) {
+        if (e.target.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+        }
+    });
 }
