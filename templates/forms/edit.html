@@ -1,112 +1,435 @@
 {% extends 'layout.html' %}
+{% from 'components/form_renderer.html' import render_form %}
 
-{% block title %}Edit Tax Form{% endblock %}
+{% block title %}{{ form_template.title if form_template else 'Edit Tax Form' }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .form-progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .form-section {
+    transition: all 0.3s ease;
+  }
+  
+  .bg-fylr {
+    background-color: var(--fylr-orange);
+  }
+  
+  .validation-error {
+    border-color: #dc3545;
+  }
+  
+  .validation-error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+  }
+  
+  .field-help-icon {
+    color: var(--fylr-orange);
+    cursor: pointer;
+  }
+  
+  .field-help-tooltip {
+    display: none;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-width: 300px;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="mb-4">
-        <h1 class="h2 mb-0">
-            {% if form %}
-                Edit {{ form.form_type.value }}
-            {% else %}
-                New {{ form_type }} Form
-            {% endif %}
-        </h1>
-        <p class="lead text-muted">Complete the form below to generate your tax document</p>
-    </div>
-    
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle me-2"></i>
-        <strong>Development Notice:</strong> This is a placeholder for the tax form creation feature. In the production version, you'll see a multi-step form with all relevant fields for the selected tax form type.
-    </div>
-    
-    <!-- Form Progress Bar -->
-    <div class="form-progress-container mb-4">
-        <div class="form-progress" style="width: 25%;"></div>
-    </div>
-    
-    <!-- Sample Form Section -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Business Information</h5>
+    <!-- Form Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="h2 mb-0">
+                {% if form %}
+                    Edit {{ form_template.title }}
+                {% else %}
+                    New {{ form_template.title }}
+                {% endif %}
+            </h1>
+            <p class="lead text-muted">Tax Year {{ tax_year }}</p>
         </div>
+        <div>
+            <a href="{{ url_for('forms.form_list') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Forms
+            </a>
+        </div>
+    </div>
+
+    <!-- AI Assistant Card -->
+    <div class="card bg-light mb-4 shadow-sm">
         <div class="card-body">
-            <form>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="business_name" class="form-label">Business Name</label>
-                        <input type="text" class="form-control" id="business_name" placeholder="Your Business Name">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="ein" class="form-label">EIN</label>
-                        <input type="text" class="form-control" id="ein" placeholder="XX-XXXXXXX">
-                    </div>
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-robot fa-2x text-fylr-orange"></i>
                 </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="business_address" class="form-label">Business Address</label>
-                        <input type="text" class="form-control" id="business_address" placeholder="Street Address">
-                    </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5 class="card-title mb-1">AI Filing Assistant</h5>
+                    <p class="card-text mb-0">I'm here to help you complete this form. Need guidance on a particular field? Click the <i class="fas fa-info-circle text-fylr-orange"></i> icon next to any field for AI-powered help.</p>
                 </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="city" class="form-label">City</label>
-                        <input type="text" class="form-control" id="city">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="state" class="form-label">State</label>
-                        <select class="form-select" id="state">
-                            <option selected disabled>Select State</option>
-                            <option>Alabama</option>
-                            <option>Alaska</option>
-                            <option>Arizona</option>
-                            <!-- Other states would be here -->
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="zip" class="form-label">ZIP Code</label>
-                        <input type="text" class="form-control" id="zip">
-                    </div>
-                </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="tax_year" class="form-label">Tax Year</label>
-                        <select class="form-select" id="tax_year">
-                            <option selected>2025</option>
-                            <option>2024</option>
-                            <option>2023</option>
-                            <option>2022</option>
-                            <option>2021</option>
-                            <option>2020</option>
-                            <option>2019</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="business_type" class="form-label">Business Type</label>
-                        <select class="form-select" id="business_type">
-                            <option selected disabled>Select Type</option>
-                            <option>Sole Proprietorship</option>
-                            <option>LLC</option>
-                            <option>C Corporation</option>
-                            <option>S Corporation</option>
-                            <option>Partnership</option>
-                        </select>
-                    </div>
-                </div>
-            </form>
+            </div>
+        </div>
+        <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Using {{ current_user.plan.value|title }} Plan</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="helpBtn">
+                    <i class="fas fa-question-circle me-1"></i> Ask for Help
+                </button>
+            </div>
         </div>
     </div>
-    
-    <div class="d-flex justify-content-between mt-4">
-        <a href="{{ url_for('form.new_form') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i> Back
-        </a>
-        <button type="button" class="btn btn-primary">
-            Continue <i class="fas fa-arrow-right ms-2"></i>
-        </button>
+
+    <!-- Form Container -->
+    <form id="taxForm" method="POST" action="{{ url_for('forms.edit_form', form_type_id=form_template.form_id) }}">
+        {{ render_form(form_template, form_data, 'edit', section_index) }}
+        
+        <input type="hidden" name="tax_year" value="{{ tax_year }}">
+        <input type="hidden" name="form_type" value="{{ form_template.form_id }}">
+        <input type="hidden" name="section_index" id="section_index" value="{{ section_index }}">
+    </form>
+</div>
+
+<!-- AI Help Modal -->
+<div class="modal fade" id="aiHelpModal" tabindex="-1" aria-labelledby="aiHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aiHelpModalLabel">AI Filing Assistant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>What would you like help with?</p>
+                <textarea class="form-control" id="aiHelpQuestion" rows="3" placeholder="Ask a question about this form..."></textarea>
+                <div id="aiHelpResponse" class="mt-3 p-3 border rounded" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="aiHelpSubmit">Ask</button>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Field Help Modal -->
+<div class="modal fade" id="fieldHelpModal" tabindex="-1" aria-labelledby="fieldHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fieldHelpModalLabel">Field Guidance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="fieldHelpContent" class="p-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Form section navigation
+    setupFormNavigation();
+    
+    // Auto-save form progress
+    setupAutoSave();
+    
+    // Field-specific help
+    setupFieldHelp();
+    
+    // AI help modal
+    setupAIHelp();
+    
+    // Form validation
+    setupFormValidation();
+  });
+  
+  function setupFormNavigation() {
+    // Get form sections
+    const formSections = document.querySelectorAll('.form-section');
+    const progressBar = document.querySelector('.progress-bar');
+    
+    // Next button handler
+    document.querySelectorAll('.next-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const nextSection = parseInt(this.dataset.section);
+        showSection(nextSection);
+      });
+    });
+    
+    // Previous button handler
+    document.querySelectorAll('.prev-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const prevSection = parseInt(this.dataset.section);
+        showSection(prevSection);
+      });
+    });
+    
+    // Function to show a specific section
+    function showSection(sectionIndex) {
+      // Hide all sections
+      formSections.forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Show selected section
+      formSections[sectionIndex].style.display = 'block';
+      
+      // Update section index input
+      document.getElementById('section_index').value = sectionIndex;
+      
+      // Update progress bar
+      const progress = ((sectionIndex + 1) / formSections.length) * 100;
+      progressBar.style.width = progress + '%';
+      progressBar.setAttribute('aria-valuenow', progress);
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+  
+  function setupAutoSave() {
+    const form = document.getElementById('taxForm');
+    const formType = form.querySelector('input[name="form_type"]').value;
+    let autoSaveTimer;
+    
+    // Autosave when form fields change
+    form.addEventListener('change', function() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(function() {
+        saveFormProgress();
+      }, 2000); // 2 second delay
+    });
+    
+    // Also save when user types in text fields
+    form.querySelectorAll('input[type="text"], textarea').forEach(field => {
+      field.addEventListener('input', function() {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(function() {
+          saveFormProgress();
+        }, 2000); // 2 second delay
+      });
+    });
+    
+    // Save draft button
+    const saveDraftBtn = form.querySelector('.save-draft-btn');
+    if (saveDraftBtn) {
+      saveDraftBtn.addEventListener('click', function() {
+        saveFormProgress(true);
+      });
+    }
+    
+    // Function to save form progress
+    function saveFormProgress(showConfirmation = false) {
+      const formData = new FormData(form);
+      const jsonData = {};
+      
+      formData.forEach((value, key) => {
+        jsonData[key] = value;
+      });
+      
+      // Send AJAX request to save progress
+      fetch('/forms/save-progress/' + formType, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (showConfirmation) {
+          // Show confirmation message
+          alert('Progress saved successfully');
+        }
+      })
+      .catch(error => {
+        console.error('Error saving progress:', error);
+      });
+    }
+  }
+  
+  function setupFieldHelp() {
+    // Add help icons to fields with help text
+    document.querySelectorAll('.form-text').forEach(helpText => {
+      const fieldLabel = helpText.previousElementSibling;
+      if (fieldLabel) {
+        const helpIcon = document.createElement('i');
+        helpIcon.className = 'fas fa-info-circle ms-2 field-help-icon';
+        helpIcon.setAttribute('title', 'Click for help');
+        helpIcon.setAttribute('data-help', helpText.textContent);
+        
+        // Add to label if it's a label element
+        if (fieldLabel.tagName === 'LABEL') {
+          fieldLabel.appendChild(helpIcon);
+        }
+      }
+    });
+    
+    // Initialize field help tooltips
+    const fieldHelpModal = new bootstrap.Modal(document.getElementById('fieldHelpModal'));
+    
+    document.querySelectorAll('.field-help-icon').forEach(icon => {
+      icon.addEventListener('click', function() {
+        const fieldName = this.closest('.form-field').querySelector('input, select, textarea').name;
+        const helpText = this.getAttribute('data-help');
+        
+        // Set modal content
+        document.getElementById('fieldHelpModalLabel').textContent = 
+          this.closest('.form-field').querySelector('label').textContent.trim().replace('*', '');
+        document.getElementById('fieldHelpContent').innerHTML = `
+          <p>${helpText}</p>
+          <div class="ai-enhanced-help mt-3">
+            <h6>AI-Enhanced Guidance:</h6>
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div id="aiFieldHelp" class="mt-2"></div>
+          </div>
+        `;
+        
+        // Show modal
+        fieldHelpModal.show();
+        
+        // Fetch AI-enhanced help for this field
+        fetch('/api/field-help', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            form_type: document.querySelector('input[name="form_type"]').value,
+            field_name: fieldName
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.querySelector('.spinner-border').style.display = 'none';
+          document.getElementById('aiFieldHelp').innerHTML = data.help_text;
+        })
+        .catch(error => {
+          document.querySelector('.spinner-border').style.display = 'none';
+          document.getElementById('aiFieldHelp').innerHTML = 
+            '<div class="alert alert-warning">Unable to load enhanced guidance. Please try again later.</div>';
+        });
+      });
+    });
+  }
+  
+  function setupAIHelp() {
+    const aiHelpModal = new bootstrap.Modal(document.getElementById('aiHelpModal'));
+    const helpBtn = document.getElementById('helpBtn');
+    
+    helpBtn.addEventListener('click', function() {
+      aiHelpModal.show();
+    });
+    
+    const aiHelpSubmit = document.getElementById('aiHelpSubmit');
+    aiHelpSubmit.addEventListener('click', function() {
+      const question = document.getElementById('aiHelpQuestion').value.trim();
+      
+      if (!question) {
+        return;
+      }
+      
+      // Show loading
+      document.getElementById('aiHelpResponse').style.display = 'block';
+      document.getElementById('aiHelpResponse').innerHTML = `
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      `;
+      
+      // Send request to AI assistance API
+      fetch('/api/assistant', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: question,
+          context: {
+            form_type: document.querySelector('input[name="form_type"]').value,
+            tax_year: document.querySelector('input[name="tax_year"]').value
+          }
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('aiHelpResponse').innerHTML = `
+          <h6>Response:</h6>
+          <p>${data.response}</p>
+        `;
+      })
+      .catch(error => {
+        document.getElementById('aiHelpResponse').innerHTML = `
+          <div class="alert alert-danger">
+            Sorry, I couldn't process your request. Please try again.
+          </div>
+        `;
+      });
+    });
+  }
+  
+  function setupFormValidation() {
+    const form = document.getElementById('taxForm');
+    
+    form.addEventListener('submit', function(event) {
+      const currentSection = parseInt(document.getElementById('section_index').value);
+      const formSections = document.querySelectorAll('.form-section');
+      const currentSectionElement = formSections[currentSection];
+      
+      // Only validate required fields in current section
+      let isValid = true;
+      const requiredFields = currentSectionElement.querySelectorAll('[required]');
+      
+      requiredFields.forEach(field => {
+        if (!field.value) {
+          field.classList.add('validation-error');
+          isValid = false;
+          
+          // Add error message if not already present
+          const errorMsg = field.nextElementSibling;
+          if (!errorMsg || !errorMsg.classList.contains('invalid-feedback')) {
+            const invalidFeedback = document.createElement('div');
+            invalidFeedback.className = 'invalid-feedback d-block';
+            invalidFeedback.textContent = 'This field is required';
+            field.parentNode.insertBefore(invalidFeedback, field.nextSibling);
+          }
+        } else {
+          field.classList.remove('validation-error');
+          
+          // Remove error message if present
+          const errorMsg = field.nextElementSibling;
+          if (errorMsg && errorMsg.classList.contains('invalid-feedback')) {
+            errorMsg.remove();
+          }
+        }
+      });
+      
+      if (!isValid) {
+        event.preventDefault();
+        alert('Please fill in all required fields before proceeding.');
+      }
+    });
+  }
+</script>
 {% endblock %}

@@ -2,165 +2,263 @@
 
 {% block title %}My Tax Forms{% endblock %}
 
+{% block extra_head %}
+<style>
+  .form-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .form-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+  
+  .form-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background-color: rgba(255, 107, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fylr-orange);
+    font-size: 24px;
+  }
+  
+  .form-filters {
+    background-color: rgba(255, 107, 0, 0.05);
+    border-radius: 10px;
+    padding: 15px;
+  }
+  
+  .empty-forms {
+    text-align: center;
+    padding: 60px 0;
+  }
+  
+  .empty-forms i {
+    color: var(--fylr-orange);
+    opacity: 0.3;
+    margin-bottom: 20px;
+  }
+  
+  .new-form-card {
+    border: 2px dashed rgba(255, 107, 0, 0.3);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .new-form-card:hover {
+    border-color: var(--fylr-orange);
+    background-color: rgba(255, 107, 0, 0.05);
+  }
+  
+  .new-form-card i {
+    font-size: 32px;
+    color: var(--fylr-orange);
+    margin-bottom: 10px;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
+    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 mb-0">My Tax Forms</h1>
-        <a href="{{ url_for('form.new_form') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i> New Form
-        </a>
-    </div>
-    
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle me-2"></i>
-        <strong>Development Notice:</strong> This is a placeholder for the tax forms listing feature. In the production version, you'll see all your tax forms here.
-    </div>
-    
-    <!-- Sample Forms Table -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            {% if forms %}
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Form Type</th>
-                                <th>Tax Year</th>
-                                <th>Date Created</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for form in forms %}
-                            <tr>
-                                <td>{{ form.form_type.value }}</td>
-                                <td>{{ form.tax_year }}</td>
-                                <td>{{ form.created_at.strftime('%m/%d/%Y') }}</td>
-                                <td>
-                                    {% if form.status == 'completed' %}
-                                        <span class="badge bg-success">Completed</span>
-                                    {% elif form.status == 'draft' %}
-                                        <span class="badge bg-warning text-dark">Draft</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">{{ form.status }}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ url_for('form.view_form', form_id=form.id) }}" class="btn btn-outline-primary" title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ url_for('form.edit_form', form_type=form.form_type.value, form_id=form.id) }}" class="btn btn-outline-secondary" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        {% if form.status == 'completed' %}
-                                        <a href="{{ url_for('form.download_form', form_id=form.id) }}" class="btn btn-outline-success" title="Download">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <div class="text-center py-5">
-                    <img src="{{ url_for('static', filename='img/tax-forms.svg') }}" alt="Tax Forms" style="width: 120px; opacity: 0.3;" class="mb-3">
-                    <h5>No Tax Forms Yet</h5>
-                    <p class="text-muted">Get started by creating your first tax form.</p>
-                    <a href="{{ url_for('form.new_form') }}" class="btn btn-primary">
-                        <i class="fas fa-plus-circle me-2"></i> Create Your First Form
-                    </a>
-                </div>
-            {% endif %}
+        <div>
+            <h1 class="h2 mb-0">My Tax Forms</h1>
+            <p class="lead text-muted">Manage and view all your tax forms</p>
+        </div>
+        <div>
+            <a href="{{ url_for('forms.new_form') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i> Create New Form
+            </a>
         </div>
     </div>
     
-    <!-- Sample Tax Forms for Development -->
-    <div class="card shadow-sm mt-4">
-        <div class="card-header bg-light">
-            <h5 class="mb-0">Sample Forms (Development Only)</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>Form Type</th>
-                            <th>Tax Year</th>
-                            <th>Date Created</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Form 1120</td>
-                            <td>2024</td>
-                            <td>05/01/2025</td>
-                            <td><span class="badge bg-success">Completed</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ url_for('form.view_form', form_id=1) }}" class="btn btn-outline-primary" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ url_for('form.edit_form', form_type='FORM_1120', form_id=1) }}" class="btn btn-outline-secondary" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{{ url_for('form.download_form', form_id=1) }}" class="btn btn-outline-success" title="Download">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Form 1065</td>
-                            <td>2024</td>
-                            <td>04/15/2025</td>
-                            <td><span class="badge bg-warning text-dark">Draft</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ url_for('form.view_form', form_id=2) }}" class="btn btn-outline-primary" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ url_for('form.edit_form', form_type='FORM_1065', form_id=2) }}" class="btn btn-outline-secondary" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Schedule C</td>
-                            <td>2023</td>
-                            <td>03/10/2025</td>
-                            <td><span class="badge bg-success">Completed</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ url_for('form.view_form', form_id=3) }}" class="btn btn-outline-primary" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ url_for('form.edit_form', form_type='Schedule C', form_id=3) }}" class="btn btn-outline-secondary" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{{ url_for('form.download_form', form_id=3) }}" class="btn btn-outline-success" title="Download">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- Filters -->
+    <div class="form-filters mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="yearFilter" class="form-label">Tax Year</label>
+                <select class="form-select" id="yearFilter">
+                    <option value="all">All Years</option>
+                    {% for year in range(current_year, current_year-4, -1) %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="statusFilter" class="form-label">Status</label>
+                <select class="form-select" id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="completed">Completed</option>
+                    <option value="draft">Draft</option>
+                    <option value="in_progress">In Progress</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="typeFilter" class="form-label">Form Type</label>
+                <select class="form-select" id="typeFilter">
+                    <option value="all">All Types</option>
+                    {% for form_type in form_types %}
+                        <option value="{{ form_type.id }}">{{ form_type.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
     </div>
     
-    <div class="text-center mt-4">
-        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
-        </a>
+    {% if forms %}
+        <!-- Form Cards -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="formCards">
+            <!-- Create New Form Card (Always shown) -->
+            <div class="col" data-year="all" data-status="all" data-type="all">
+                <a href="{{ url_for('forms.new_form') }}" class="card form-card new-form-card h-100 text-decoration-none">
+                    <div class="text-center">
+                        <i class="fas fa-plus-circle"></i>
+                        <h5>Create New Form</h5>
+                        <p class="text-muted small mb-0">Start a new tax form</p>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Form Cards -->
+            {% for form in forms %}
+                <div class="col form-item" 
+                     data-year="{{ form.tax_year }}"
+                     data-status="{{ form.status }}"
+                     data-type="{{ form.form_type.name|lower }}">
+                    <div class="card form-card h-100">
+                        <div class="card-body position-relative">
+                            <span class="badge bg-{{ 'success' if form.status == 'completed' else 'warning' }} form-status">
+                                {{ form.status|title }}
+                            </span>
+                            
+                            <div class="d-flex mb-3">
+                                <div class="form-card-icon me-3">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-0">{{ form.form_type.name|replace('_', ' ')|title }}</h5>
+                                    <p class="card-text text-muted small">Tax Year: {{ form.tax_year }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-meta mb-3">
+                                <div class="row row-cols-2 g-2">
+                                    <div class="col">
+                                        <div class="text-muted small">Created</div>
+                                        <div>{{ form.created_at.strftime('%b %d, %Y') }}</div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="text-muted small">Updated</div>
+                                        <div>{{ form.updated_at.strftime('%b %d, %Y') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('forms.view_form', form_id=form.id) }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye me-2"></i> View Form
+                                </a>
+                                {% if form.status == 'completed' and form.pdf_path %}
+                                    <a href="{{ url_for('forms.download_form', form_id=form.id) }}" class="btn btn-outline-success">
+                                        <i class="fas fa-download me-2"></i> Download PDF
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-forms">
+            <i class="fas fa-file-invoice fa-5x"></i>
+            <h3>No Tax Forms Yet</h3>
+            <p class="text-muted mb-4">Create your first tax form to get started with filing your taxes.</p>
+            <a href="{{ url_for('forms.new_form') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus-circle me-2"></i> Create Your First Form
+            </a>
+        </div>
+    {% endif %}
+    
+    <!-- Form Type Information -->
+    <div class="card mt-5">
+        <div class="card-header">
+            <h5 class="mb-0">Available Tax Forms</h5>
+        </div>
+        <div class="card-body">
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for form_type in form_types %}
+                    <div class="col">
+                        <div class="d-flex">
+                            <div class="form-card-icon me-3">
+                                <i class="fas fa-{% if 'schedule' in form_type.id|lower %}clipboard-list{% else %}file-alt{% endif %}"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">{{ form_type.name }}</h5>
+                                <p class="text-muted small mb-1">{{ form_type.description }}</p>
+                                <div>
+                                    <span class="badge bg-light text-dark">{{ form_type.entity_type|replace('_', ' ')|title }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up filtering
+        const yearFilter = document.getElementById('yearFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const typeFilter = document.getElementById('typeFilter');
+        const formItems = document.querySelectorAll('.form-item');
+        
+        // Filter function
+        function filterForms() {
+            const yearValue = yearFilter.value;
+            const statusValue = statusFilter.value;
+            const typeValue = typeFilter.value;
+            
+            formItems.forEach(item => {
+                const yearMatch = yearValue === 'all' || item.dataset.year === yearValue;
+                const statusMatch = statusValue === 'all' || item.dataset.status === statusValue;
+                const typeMatch = typeValue === 'all' || item.dataset.type === typeValue;
+                
+                if (yearMatch && statusMatch && typeMatch) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Add event listeners
+        yearFilter.addEventListener('change', filterForms);
+        statusFilter.addEventListener('change', filterForms);
+        typeFilter.addEventListener('change', filterForms);
+    });
+</script>
 {% endblock %}

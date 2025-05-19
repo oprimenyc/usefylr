@@ -2,61 +2,322 @@
 
 {% block title %}New Tax Form{% endblock %}
 
+{% block extra_head %}
+<style>
+  .form-type-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  
+  .form-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-color: rgba(255, 107, 0, 0.3);
+  }
+  
+  .form-type-card.selected {
+    border-color: var(--fylr-orange);
+    background-color: rgba(255, 107, 0, 0.05);
+  }
+  
+  .form-type-card.selected .card-title {
+    color: var(--fylr-orange);
+  }
+  
+  .form-type-card.selected .form-check-input {
+    background-color: var(--fylr-orange);
+    border-color: var(--fylr-orange);
+  }
+  
+  .form-type-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background-color: rgba(255, 107, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fylr-orange);
+    font-size: 32px;
+    margin: 0 auto 15px;
+  }
+  
+  .form-type-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+  
+  .entity-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <div class="text-center mb-5">
-        <h1 class="display-5">Choose Tax Form Type</h1>
-        <p class="lead text-muted">Select the form type that matches your business entity</p>
+        <h1 class="display-5">Create a New Tax Form</h1>
+        <p class="lead text-muted">Select the form type and tax year</p>
     </div>
     
-    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-        <!-- Form 1120 for C-Corps -->
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title mb-3">Form 1120</h5>
-                    <p class="card-text text-muted mb-4">U.S. Corporation Income Tax Return</p>
-                    <p class="text-muted small mb-4">For C-Corporations and associations taxed as corporations</p>
-                    <a href="{{ url_for('form.edit_form', form_type='FORM_1120') }}" class="btn btn-primary">
-                        <i class="fas fa-file-alt me-2"></i> Select Form 1120
-                    </a>
+    <form method="GET" action="{{ url_for('forms.edit_form', form_type_id='placeholder') }}" id="createFormForm">
+        <div class="row g-4">
+            <!-- Form Selection Column -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Step 1: Select Form Type</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+                            {% for form_type in form_types %}
+                                <div class="col">
+                                    <div class="card form-type-card h-100" data-form-type="{{ form_type.id }}" data-entity-type="{{ form_type.entity_type }}">
+                                        <div class="card-body text-center">
+                                            <span class="form-type-badge badge bg-light text-dark">{{ form_type.entity_type|replace('_', ' ')|title }}</span>
+                                            
+                                            <div class="form-type-icon">
+                                                <i class="fas fa-{% if 'schedule' in form_type.id|lower %}clipboard-list{% else %}file-alt{% endif %}"></i>
+                                            </div>
+                                            
+                                            <h5 class="card-title mb-1">{{ form_type.name }}</h5>
+                                            <p class="text-muted small mb-3">{{ form_type.description }}</p>
+                                            
+                                            <div class="form-check d-flex justify-content-center">
+                                                <input class="form-check-input" type="radio" name="form_type_id" value="{{ form_type.id }}" id="formType{{ loop.index }}" required>
+                                                <label class="form-check-label ms-2" for="formType{{ loop.index }}">
+                                                    Select
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Step 2: Select Tax Year</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select class="form-select form-select-lg" name="tax_year" required>
+                                    <option value="" selected disabled>-- Select Tax Year --</option>
+                                    {% for year in available_years %}
+                                        <option value="{{ year }}" {% if year == current_year-1 %}selected{% endif %}>
+                                            {{ year }} Tax Year
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Form Guide -->
+                <div class="card mb-4" id="form-guide">
+                    <div class="card-header">
+                        <h5 class="mb-0">Form Selection Guide</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Not sure which form to select? Here's a quick guide:</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Business Type</th>
+                                        <th>Required Forms</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div><span class="entity-indicator bg-primary"></span> Sole Proprietor</div>
+                                        </td>
+                                        <td>
+                                            <div>Schedule C (Profit or Loss from Business)</div>
+                                            <div>Schedule SE (Self-Employment Tax)</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div><span class="entity-indicator bg-success"></span> Partnership</div>
+                                        </td>
+                                        <td>
+                                            <div>Form 1065 (U.S. Return of Partnership Income)</div>
+                                            <div>Schedule K-1 (Partner's Share of Income)</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div><span class="entity-indicator bg-info"></span> S Corporation</div>
+                                        </td>
+                                        <td>
+                                            <div>Form 1120-S (U.S. Income Tax Return for an S Corporation)</div>
+                                            <div>Schedule K-1 (Shareholder's Share of Income)</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div><span class="entity-indicator bg-warning"></span> C Corporation</div>
+                                        </td>
+                                        <td>
+                                            <div>Form 1120 (U.S. Corporation Income Tax Return)</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Business Profile Card -->
+                {% if business_profile %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Your Business Profile</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">{{ business_profile.business_name }}</h6>
+                            
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <span class="text-muted">Entity Type:</span>
+                                    <span class="fw-bold">{{ business_profile.business_type.value|replace('_', ' ')|title }}</span>
+                                </li>
+                                {% if business_profile.ein %}
+                                    <li class="mb-2">
+                                        <span class="text-muted">EIN:</span>
+                                        <span class="fw-bold">{{ business_profile.ein }}</span>
+                                    </li>
+                                {% endif %}
+                                <li class="mb-2">
+                                    <span class="text-muted">Industry:</span>
+                                    <span class="fw-bold">{{ business_profile.industry }}</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                The form will be pre-filled with your business information.
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">No Business Profile</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">You haven't set up your business profile yet.</p>
+                            <a href="{{ url_for('dashboard') }}?setup=business" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-building me-2"></i> Set Up Business Profile
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- AI Form Assistant -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-robot me-2 text-fylr-orange"></i> AI Form Assistant</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Our AI Form Assistant can help guide you through completing your tax forms.</p>
+                        
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                Field-by-field guidance
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                Explains tax concepts
+                            </li>
+                            <li class="list-group-item px-0">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                Helps maximize deductions
+                            </li>
+                        </ul>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="continueBtn">
+                                <i class="fas fa-arrow-right me-2"></i> Continue to Form
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Form 1065 for Partnerships -->
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title mb-3">Form 1065</h5>
-                    <p class="card-text text-muted mb-4">U.S. Return of Partnership Income</p>
-                    <p class="text-muted small mb-4">For partnerships, LLCs with multiple members, and joint ventures</p>
-                    <a href="{{ url_for('form.edit_form', form_type='FORM_1065') }}" class="btn btn-primary">
-                        <i class="fas fa-file-alt me-2"></i> Select Form 1065
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Schedule C for Sole Props -->
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title mb-3">Schedule C</h5>
-                    <p class="card-text text-muted mb-4">Profit or Loss From Business</p>
-                    <p class="text-muted small mb-4">For sole proprietorships, single-member LLCs, and contractors</p>
-                    <a href="{{ url_for('form.edit_form', form_type='Schedule C') }}" class="btn btn-primary">
-                        <i class="fas fa-file-alt me-2"></i> Select Schedule C
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="text-center mt-5">
-        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
-        </a>
-    </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formTypeCards = document.querySelectorAll('.form-type-card');
+        const formTypeRadios = document.querySelectorAll('input[name="form_type_id"]');
+        const form = document.getElementById('createFormForm');
+        const continueBtn = document.getElementById('continueBtn');
+        
+        // Form type card selection
+        formTypeCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const formType = this.dataset.formType;
+                const radio = document.querySelector(`input[value="${formType}"]`);
+                
+                // Clear selection from all cards
+                formTypeCards.forEach(c => c.classList.remove('selected'));
+                formTypeRadios.forEach(r => r.checked = false);
+                
+                // Select clicked card and radio
+                this.classList.add('selected');
+                radio.checked = true;
+                
+                // Update form action with the selected form type
+                form.action = form.action.replace('placeholder', formType);
+            });
+        });
+        
+        // Form submission validation
+        form.addEventListener('submit', function(event) {
+            const selectedFormType = document.querySelector('input[name="form_type_id"]:checked');
+            const selectedTaxYear = document.querySelector('select[name="tax_year"]').value;
+            
+            if (!selectedFormType || !selectedTaxYear) {
+                event.preventDefault();
+                alert('Please select both a form type and tax year before continuing.');
+            }
+        });
+        
+        // Business type highlighting based on entity
+        {% if business_profile %}
+            const businessType = '{{ business_profile.business_type.value }}';
+            const recommendedCards = document.querySelectorAll(`.form-type-card[data-entity-type="${businessType}"]`);
+            
+            recommendedCards.forEach(card => {
+                const badge = card.querySelector('.form-type-badge');
+                badge.classList.remove('bg-light', 'text-dark');
+                badge.classList.add('bg-success', 'text-white');
+                badge.textContent = 'Recommended';
+            });
+        {% endif %}
+    });
+</script>
 {% endblock %}
