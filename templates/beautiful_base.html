@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}.fylr - AI Tax Intelligence{% endblock %}</title>
+    
+    <!-- Beautiful UI CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/beautiful-ui.css') }}">
+    
+    <!-- Inter font for modern tech look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    {% block head %}{% endblock %}
+    
+    <style>
+        /* Override any conflicting styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            background: var(--bg-primary) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Beautiful Navigation Header -->
+    <header class="beautiful-header">
+        <div class="header-container">
+            <div class="header-content">
+                <!-- Logo Section -->
+                <div class="logo-section">
+                    <div class="logo-container">
+                        <div class="logo-glow"></div>
+                        <div class="logo-inner">
+                            <span class="logo-text">.fylr</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Beautiful Navigation -->
+                    <nav class="main-nav">
+                        <a class="nav-item" href="{{ url_for('index') }}">Dashboard</a>
+                        <a class="nav-item" href="{{ url_for('smart_ledger') }}">Smart Ledger</a>
+                        <a class="nav-item" href="{{ url_for('tax_form_builder') }}">Forms</a>
+                        <a class="nav-item" href="{{ url_for('enhanced_smart_ledger') }}">Enhanced Ledger</a>
+                        <a class="nav-item {% if request.endpoint == 'gorgeous_ai_chat' %}active{% endif %}" href="{{ url_for('gorgeous_ai_chat') }}">AI Assistant</a>
+                        <a class="nav-item" href="{{ url_for('ai_chat_test') }}">AI Chat Test</a>
+                    </nav>
+                </div>
+
+                <!-- Header Right Section -->
+                <div class="header-right">
+                    <div class="user-status">
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span class="status-text">Trial - 14 days left</span>
+                        </div>
+                        <div class="divider"></div>
+                        <span class="user-email">john@example.com</span>
+                    </div>
+                    
+                    <a href="#" class="cta-button">
+                        Upgrade Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

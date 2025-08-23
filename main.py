@@ -94,6 +94,11 @@ def ai_chat_test():
     """AI Chat Interface for testing tax questions"""
     return render_template('ai_chat_test.html')
 
+@app.route('/gorgeous-ai-chat')
+def gorgeous_ai_chat():
+    """Gorgeous AI Chat with beautiful tech company UI"""
+    return render_template('gorgeous_ai_chat.html')
+
 # =============================================================================
 # BACKEND API INTEGRATION
 # =============================================================================

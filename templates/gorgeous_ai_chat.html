@@ -1,0 +1,982 @@
+{% extends "beautiful_base.html" %}
+
+{% block title %}Gorgeous AI Chat - .fylr{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/beautiful-ui.css') }}">
+<!-- React and required dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* Gorgeous AI Chat Specific Styles */
+.gorgeous-chat-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(255,107,0,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255,107,0,0.05) 0%, transparent 50%);
+  overflow: hidden;
+}
+
+.chat-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+  height: calc(100vh - 140px);
+}
+
+@media (max-width: 1024px) {
+  .chat-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
+
+/* Stunning Sidebar */
+.chat-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quick-actions-card {
+  background: linear-gradient(135deg, rgba(17,17,17,0.8) 0%, rgba(17,17,17,0.4) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  border: 1px solid var(--border-secondary);
+  box-shadow: var(--shadow-large);
+}
+
+.quick-actions-title {
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.title-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--text-orange);
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.quick-action-btn {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.quick-action-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--border-focus);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-medium);
+}
+
+.action-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.action-text {
+  color: var(--text-primary);
+  font-weight: var(--font-medium);
+  transition: color 0.2s ease;
+}
+
+.quick-action-btn:hover .action-text {
+  color: var(--text-orange);
+}
+
+/* Stats Card */
+.stats-card {
+  background: var(--orange-gradient-subtle);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  border: 1px solid rgba(255,107,0,0.2);
+  box-shadow: var(--shadow-orange);
+}
+
+.stats-title {
+  color: var(--text-orange);
+  font-weight: var(--font-semibold);
+  margin-bottom: 1rem;
+}
+
+.stats-amount {
+  font-size: 2rem;
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.stats-label {
+  color: rgba(255,133,51,0.8);
+  font-size: var(--text-sm);
+}
+
+.stats-progress {
+  width: 100%;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  height: 8px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.stats-progress-bar {
+  background: var(--orange-gradient-primary);
+  height: 100%;
+  width: 75%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+.stats-meta {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-top: 0.5rem;
+}
+
+/* Main Chat Container */
+.main-chat-container {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(17,17,17,0.6) 0%, rgba(17,17,17,0.2) 100%);
+  backdrop-filter: blur(40px);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-secondary);
+  box-shadow: var(--shadow-large);
+  overflow: hidden;
+}
+
+/* Chat Header */
+.chat-header {
+  background: linear-gradient(135deg, rgba(17,17,17,0.8) 0%, rgba(17,17,17,0.4) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-secondary);
+  padding: 1.5rem 2rem;
+}
+
+.chat-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-title {
+  font-size: 1.5rem;
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.chat-badge {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 4px 12px;
+  background: var(--orange-gradient-subtle);
+  color: var(--text-orange);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  border-radius: 20px;
+}
+
+.chat-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+}
+
+.chat-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16,185,129,0.2);
+  border-radius: 20px;
+  padding: 6px 12px;
+}
+
+.status-pulse {
+  width: 8px;
+  height: 8px;
+  background: #10B981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-label {
+  color: #10B981;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+.control-btn {
+  padding: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--border-focus);
+}
+
+.control-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-secondary);
+}
+
+.control-btn:hover .control-icon {
+  color: var(--text-primary);
+}
+
+/* Messages Area */
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.messages-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Message Bubbles */
+.message-group {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.message-avatar-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.message-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-inner {
+  width: 48px;
+  height: 48px;
+  background: var(--orange-gradient-primary);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-orange);
+}
+
+.avatar-glow {
+  position: absolute;
+  inset: -4px;
+  background: var(--orange-gradient-primary);
+  border-radius: var(--radius-lg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.message-group:hover .avatar-glow {
+  opacity: 0.6;
+}
+
+.avatar-text {
+  color: white;
+  font-weight: var(--font-bold);
+  font-size: 1.1rem;
+}
+
+.message-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.welcome-message {
+  background: var(--orange-gradient-subtle);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-2xl);
+  padding: 2rem;
+  border: 1px solid rgba(255,107,0,0.2);
+  box-shadow: var(--shadow-orange);
+}
+
+.welcome-title {
+  font-size: 1.25rem;
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcome-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.capabilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.capability-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.capability-item:hover {
+  border-color: var(--border-focus);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.capability-emoji {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.capability-name {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
+}
+
+/* Typing Indicator */
+.typing-message {
+  background: rgba(255,107,0,0.1);
+  border: 1px solid rgba(255,107,0,0.3);
+  border-radius: var(--radius-2xl);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.typing-text {
+  color: var(--text-primary);
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--text-orange);
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+/* Input Area */
+.input-area {
+  padding: 1.5rem 2rem;
+  background: rgba(255,255,255,0.02);
+  border-top: 1px solid var(--border-secondary);
+}
+
+.quick-questions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.quick-question-pill {
+  background: rgba(255,107,0,0.1);
+  border: 1px solid rgba(255,107,0,0.3);
+  border-radius: 20px;
+  padding: 6px 12px;
+  color: var(--text-orange);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-question-pill:hover {
+  background: rgba(255,107,0,0.2);
+  transform: translateY(-1px);
+}
+
+.input-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.chat-textarea {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-family: var(--font-primary);
+  resize: none;
+  min-height: 50px;
+  max-height: 120px;
+  transition: all 0.3s ease;
+}
+
+.chat-textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 4px rgba(255,107,0,0.1);
+  background: rgba(255,255,255,0.08);
+}
+
+.send-btn {
+  background: var(--orange-gradient-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  color: white;
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-orange);
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-orange-glow);
+}
+
+.send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.send-btn:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-orange);
+}
+
+/* Loading State */
+.send-btn.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chat-grid {
+    padding: 1rem;
+  }
+  
+  .chat-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .messages-area {
+    padding: 1.5rem 1rem;
+  }
+  
+  .input-area {
+    padding: 1rem 1.5rem;
+  }
+  
+  .chat-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .capabilities-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-questions-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="gorgeous-ai-chat" class="gorgeous-chat-container"></div>
+{% endblock %}
+
+{% block scripts %}
+{% raw %}
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const GorgeousAIChat = () => {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'ai',
+      content: 'welcome',
+      timestamp: new Date()
+    }
+  ]);
+  
+  const [currentMessage, setCurrentMessage] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+  const [projectedSavings, setProjectedSavings] = useState(12847);
+  const [analyzedTransactions, setAnalyzedTransactions] = useState(47);
+  const messagesEndRef = useRef(null);
+
+  const quickQuestions = [
+    "How much can I deduct for business meals?",
+    "What's the home office deduction limit?", 
+    "Should I elect S-Corp taxation for my LLC?",
+    "What documentation do I need for travel expenses?",
+    "How do I calculate self-employment tax?",
+    "What are red flags that trigger audits?"
+  ];
+
+  const quickActions = [
+    { 
+      icon: '📊', 
+      text: 'Calculate Tax Savings', 
+      gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)'
+    },
+    { 
+      icon: '🏢', 
+      text: 'Entity Optimization', 
+      gradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)'
+    },
+    { 
+      icon: '⚠️', 
+      text: 'Audit Risk Check', 
+      gradient: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)'
+    },
+    { 
+      icon: '📋', 
+      text: 'Form Guidance', 
+      gradient: 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)'
+    }
+  ];
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const sendMessage = async (messageText = currentMessage) => {
+    if (!messageText.trim()) return;
+
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      content: messageText,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentMessage('');
+    setIsThinking(true);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const aiResponse = await getAIResponse(messageText);
+      
+      const aiMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: aiResponse,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: `I apologize, but I encountered an error. Please try again.\n\nError: ${error.message}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
+  const getAIResponse = async (question) => {
+    const response = await fetch('/api/ai/tax-guidance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: question,
+        user_context: {
+          entity_type: 'sole_proprietorship',
+          annual_revenue: 75000,
+          business_type: 'consulting'
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get AI response');
+    }
+
+    const data = await response.json();
+    return data.response;
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const renderWelcomeMessage = () => (
+    <div className="welcome-message">
+      <h3 className="welcome-title">
+        Welcome to .fylr's AI Tax Intelligence! 
+        <span style={{ fontSize: '1.2rem' }}>🎯</span>
+      </h3>
+      <p className="welcome-description">
+        I'm powered by entity-specific tax intelligence and can provide expert guidance on:
+      </p>
+      
+      <div className="capabilities-grid">
+        <div className="capability-item">
+          <div className="capability-emoji">📊</div>
+          <div className="capability-name">Real Tax Calculations</div>
+        </div>
+        <div className="capability-item">
+          <div className="capability-emoji">🏢</div>
+          <div className="capability-name">Entity Analysis</div>
+        </div>
+        <div className="capability-item">
+          <div className="capability-emoji">⚠️</div>
+          <div className="capability-name">Audit Risk Assessment</div>
+        </div>
+        <div className="capability-item">
+          <div className="capability-emoji">📋</div>
+          <div className="capability-name">Schedule C Guidance</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const formatMessage = (content) => {
+    if (content === 'welcome') {
+      return renderWelcomeMessage();
+    }
+    
+    const parts = content.split('\n');
+    return (
+      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: 'var(--radius-2xl)', border: '1px solid var(--border-secondary)' }}>
+        {parts.map((part, index) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return (
+              <h4 key={index} style={{ color: 'var(--text-orange)', fontWeight: 'var(--font-bold)', marginBottom: '1rem' }}>
+                {part.slice(2, -2)}
+              </h4>
+            );
+          }
+          if (part.startsWith('• ')) {
+            return (
+              <div key={index} style={{ marginLeft: '1rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
+                {part}
+              </div>
+            );
+          }
+          if (part.includes('$') && (part.includes('savings') || part.includes('deduction'))) {
+            return (
+              <div key={index} style={{ 
+                background: 'rgba(16,185,129,0.1)', 
+                border: '1px solid rgba(16,185,129,0.3)', 
+                borderRadius: '12px', 
+                padding: '1rem', 
+                margin: '0.5rem 0',
+                color: '#10B981'
+              }}>
+                💰 {part}
+              </div>
+            );
+          }
+          if (part.includes('Risk Level:') || part.includes('Audit Risk:')) {
+            const riskLevel = part.toLowerCase().includes('high') ? 'high' : 
+                             part.toLowerCase().includes('medium') ? 'medium' : 'low';
+            const riskColor = riskLevel === 'high' ? '#EF4444' : 
+                            riskLevel === 'medium' ? '#F59E0B' : '#10B981';
+            return (
+              <div key={index} style={{ marginBottom: '0.5rem' }}>
+                {part}
+                <span style={{
+                  marginLeft: '0.5rem',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
+                  fontWeight: 'var(--font-semibold)',
+                  background: `${riskColor}20`,
+                  color: riskColor,
+                  border: `1px solid ${riskColor}30`
+                }}>
+                  {riskLevel.toUpperCase()} RISK
+                </span>
+              </div>
+            );
+          }
+          return <div key={index} style={{ marginBottom: '0.5rem', color: 'var(--text-primary)', lineHeight: 1.6 }}>{part}</div>;
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className="chat-grid">
+      {/* Stunning Sidebar */}
+      <div className="chat-sidebar">
+        {/* Quick Actions Card */}
+        <div className="quick-actions-card">
+          <h3 className="quick-actions-title">
+            <div className="title-dot"></div>
+            Quick Actions
+          </h3>
+          
+          <div>
+            {quickActions.map((action, i) => (
+              <button key={i} className="quick-action-btn">
+                <div className="action-content">
+                  <div className="action-icon" style={{ background: action.gradient }}>
+                    {action.icon}
+                  </div>
+                  <span className="action-text">{action.text}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats Card */}
+        <div className="stats-card">
+          <h4 className="stats-title">Your Tax Intelligence</h4>
+          <div>
+            <div className="stats-amount">${projectedSavings.toLocaleString()}</div>
+            <div className="stats-label">Potential Savings Found</div>
+            <div className="stats-progress">
+              <div className="stats-progress-bar"></div>
+            </div>
+            <div className="stats-meta">
+              Based on {analyzedTransactions} analyzed transactions
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Chat Container */}
+      <div className="main-chat-container">
+        {/* Chat Header */}
+        <div className="chat-header">
+          <div className="chat-header-content">
+            <div>
+              <h1 className="chat-title">
+                AI Tax Assistant
+                <span className="chat-badge">Advanced</span>
+              </h1>
+              <p className="chat-subtitle">Entity-aware tax intelligence powered by advanced AI</p>
+            </div>
+            
+            <div className="chat-controls">
+              <div className="status-badge">
+                <div className="status-pulse"></div>
+                <span className="status-label">AI Online</span>
+              </div>
+              
+              <button className="control-btn">
+                <svg className="control-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Messages Area */}
+        <div className="messages-area">
+          <div className="messages-container">
+            {messages.map((message) => (
+              <div key={message.id} className="message-group">
+                <div className="message-avatar-container">
+                  <div className="message-avatar">
+                    <div className="avatar-glow"></div>
+                    <div className="avatar-inner">
+                      <span className="avatar-text">{message.type === 'ai' ? 'AI' : 'U'}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="message-content">
+                    {formatMessage(message.content)}
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.5rem' }}>
+                      {message.timestamp.toLocaleTimeString()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {isThinking && (
+              <div className="message-group">
+                <div className="message-avatar-container">
+                  <div className="message-avatar">
+                    <div className="avatar-glow"></div>
+                    <div className="avatar-inner">
+                      <span className="avatar-text">AI</span>
+                    </div>
+                  </div>
+                  
+                  <div className="message-content">
+                    <div className="typing-message">
+                      <span className="typing-text">AI is analyzing your tax question</span>
+                      <div className="typing-dots">
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Input Area */}
+        <div className="input-area">
+          <div className="quick-questions-row">
+            {quickQuestions.map((question, index) => (
+              <button
+                key={index}
+                className="quick-question-pill"
+                onClick={() => sendMessage(question)}
+                disabled={isThinking}
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+
+          <div className="input-container">
+            <textarea
+              className="chat-textarea"
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask me about tax strategies, deductions, entity optimization..."
+              disabled={isThinking}
+              rows={1}
+              onInput={(e) => {
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+              }}
+            />
+            <button
+              className={`send-btn ${isThinking ? 'loading' : ''}`}
+              onClick={() => sendMessage()}
+              disabled={isThinking || !currentMessage.trim()}
+            >
+              {isThinking ? (
+                <div className="typing-dots">
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                </div>
+              ) : (
+                'Send'
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Render the gorgeous AI chat
+const container = document.getElementById('gorgeous-ai-chat');
+const root = ReactDOM.createRoot(container);
+root.render(<GorgeousAIChat />);
+</script>
+{% endraw %}
+{% endblock %}
