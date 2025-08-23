@@ -99,6 +99,11 @@ def gorgeous_ai_chat():
     """Gorgeous AI Chat with beautiful tech company UI"""
     return render_template('gorgeous_ai_chat.html')
 
+@app.route('/clean-ai-chat')
+def clean_ai_chat():
+    """Clean AI Chat with fixed UX and readability issues"""
+    return render_template('clean_ai_chat.html')
+
 # =============================================================================
 # BACKEND API INTEGRATION
 # =============================================================================

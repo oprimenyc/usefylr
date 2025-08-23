@@ -1,0 +1,962 @@
+{% extends "beautiful_base.html" %}
+
+{% block title %}Clean AI Chat - .fylr{% endblock %}
+
+{% block head %}
+<!-- React and required dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* CLEAN CHAT INTERFACE - NO MORE UX ISSUES */
+.clean-chat-container {
+  min-height: 100vh;
+  background: #0A0A0B;
+  display: flex;
+  flex-direction: column;
+}
+
+/* CLEAN HEADER - DARK WITH ORANGE ACCENTS ONLY */
+.clean-header {
+  background: #111111;
+  border-bottom: 1px solid #2A2A2D;
+  padding: 1rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.clean-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.clean-nav {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .clean-nav {
+    display: flex;
+  }
+}
+
+.nav-link {
+  color: #B4B4B8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+.nav-link.active {
+  color: #FF6B00;
+  border-bottom-color: #FF6B00;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  display: none;
+  font-size: 0.8rem;
+  color: #6B6B6F;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .user-info {
+    display: flex;
+  }
+}
+
+.trial-status {
+  color: #B4B4B8;
+}
+
+.upgrade-btn {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upgrade-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+
+/* MAIN CHAT AREA - CLEAN & SPACIOUS */
+.chat-main {
+  flex: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* MINIMAL CHAT HEADER */
+.chat-title-area {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.chat-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.chat-subtitle {
+  color: #B4B4B8;
+  margin-bottom: 1rem;
+}
+
+.ai-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #10B981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-text {
+  color: #10B981;
+  font-weight: 500;
+}
+
+/* CLEAN MESSAGE FLOW - NO HUNTING REQUIRED */
+.messages-container {
+  flex: 1;
+  min-height: 400px;
+  margin-bottom: 2rem;
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.message-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.message-item.user-message {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ai-avatar {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+}
+
+.user-avatar {
+  background: #2A2A2D;
+  color: #B4B4B8;
+}
+
+.message-content {
+  flex: 1;
+  max-width: 700px;
+}
+
+.message-bubble {
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ai-message .message-bubble {
+  background: #1A1A1D;
+  border: 1px solid #2A2A2D;
+  border-top-left-radius: 4px;
+}
+
+.user-message .message-bubble {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+  border-top-right-radius: 4px;
+}
+
+.message-text {
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ai-message .message-text {
+  color: #FFFFFF;
+}
+
+.message-timestamp {
+  font-size: 0.7rem;
+  color: #6B6B6F;
+  margin-top: 0.5rem;
+  text-align: left;
+}
+
+.user-message .message-timestamp {
+  text-align: right;
+}
+
+/* AI RESPONSE FORMATTING - HIGHLY READABLE */
+.ai-response-header {
+  color: #FF6B00;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.ai-response-section {
+  margin-bottom: 1.5rem;
+}
+
+.ai-response-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.bullet-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.bullet-list li {
+  color: #B4B4B8;
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.bullet-list li::before {
+  content: '•';
+  color: #FF6B00;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.highlight-box {
+  background: rgba(255, 107, 0, 0.1);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.highlight-title {
+  color: #FF6B00;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.highlight-content {
+  color: #B4B4B8;
+  font-size: 0.9rem;
+}
+
+.tax-calculation {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.tax-calculation .highlight-title {
+  color: #10B981;
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.risk-high {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.risk-medium {
+  background: rgba(245, 158, 11, 0.2);
+  color: #F59E0B;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.risk-low {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* SUGGESTION PILLS - CLEAN & ACCESSIBLE */
+.suggestion-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.suggestion-pill {
+  background: #2A2A2D;
+  color: #B4B4B8;
+  border: 1px solid #2A2A2D;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestion-pill:hover {
+  background: #FF6B00;
+  color: white;
+  border-color: #FF6B00;
+}
+
+/* TYPING INDICATOR - OBVIOUS BUT NOT DISTRACTING */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #B4B4B8;
+  font-size: 0.9rem;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: #FF6B00;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  30% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* STICKY INPUT - ALWAYS ACCESSIBLE */
+.chat-input-area {
+  position: sticky;
+  bottom: 0;
+  background: #111111;
+  border-top: 1px solid #2A2A2D;
+  padding: 1.5rem;
+  z-index: 20;
+}
+
+.input-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.input-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chat-input {
+  flex: 1;
+  background: #1A1A1D;
+  border: 2px solid #2A2A2D;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: white;
+  font-size: 1rem;
+  resize: none;
+  min-height: 50px;
+  max-height: 120px;
+  transition: all 0.2s ease;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #FF6B00;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+.chat-input::placeholder {
+  color: #6B6B6F;
+}
+
+.send-button {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* QUICK ACTIONS - ACCESSIBLE BUT NOT CLUTTERED */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.quick-action-btn {
+  background: #1A1A1D;
+  color: #B4B4B8;
+  border: 1px solid #2A2A2D;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-action-btn:hover {
+  background: #2A2A2D;
+  color: white;
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .chat-main {
+    padding: 1rem;
+  }
+  
+  .chat-title {
+    font-size: 1.5rem;
+  }
+  
+  .message-item {
+    gap: 0.75rem;
+  }
+  
+  .message-content {
+    max-width: 100%;
+  }
+  
+  .message-bubble {
+    padding: 1rem;
+  }
+  
+  .chat-input-area {
+    padding: 1rem;
+  }
+  
+  .input-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .send-button {
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .quick-actions {
+    justify-content: flex-start;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="clean-ai-chat"></div>
+{% endblock %}
+
+{% block scripts %}
+{% raw %}
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const CleanAIChat = () => {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'ai',
+      content: 'welcome',
+      timestamp: new Date()
+    }
+  ]);
+  
+  const [currentMessage, setCurrentMessage] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const quickActions = [
+    "Calculate tax savings",
+    "Entity optimization", 
+    "Audit risk check",
+    "Form guidance"
+  ];
+
+  const suggestionPills = [
+    "Business meal deductions",
+    "Home office limits", 
+    "S-Corp election analysis",
+    "Audit risk factors"
+  ];
+
+  // AUTO-SCROLL TO NEW MESSAGES - NO MORE HUNTING
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const sendMessage = async (messageText = currentMessage) => {
+    if (!messageText.trim()) return;
+
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      content: messageText,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentMessage('');
+    setIsThinking(true);
+
+    // Auto-scroll to show user message immediately
+    setTimeout(scrollToBottom, 100);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const aiResponse = await getAIResponse(messageText);
+      
+      const aiMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: aiResponse,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: `I apologize, but I encountered an error. Please try again.\n\nError: ${error.message}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
+  const getAIResponse = async (question) => {
+    const response = await fetch('/api/ai/tax-guidance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: question,
+        user_context: {
+          entity_type: 'sole_proprietorship',
+          annual_revenue: 75000,
+          business_type: 'consulting'
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get AI response');
+    }
+
+    const data = await response.json();
+    return data.response;
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const autoResize = (e) => {
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+  };
+
+  // WELCOME MESSAGE - CLEAN & READABLE
+  const renderWelcomeMessage = () => (
+    <div className="ai-response-content">
+      <h3 className="ai-response-header">Welcome to .fylr's AI Tax Intelligence! 🎯</h3>
+      <p className="message-text" style={{ marginBottom: '1.5rem' }}>
+        I provide entity-specific tax advice, real calculations, and audit-safe strategies. 
+        Ask me anything about business taxes, deductions, or entity optimization.
+      </p>
+      
+      <div className="suggestion-pills">
+        {suggestionPills.map((suggestion, i) => (
+          <button 
+            key={i}
+            className="suggestion-pill"
+            onClick={() => sendMessage(suggestion)}
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // FORMAT AI RESPONSES - HIGHLY READABLE
+  const formatAIResponse = (content) => {
+    if (content === 'welcome') {
+      return renderWelcomeMessage();
+    }
+    
+    const sections = content.split('\n\n');
+    return (
+      <div className="ai-response-content">
+        {sections.map((section, sectionIndex) => {
+          const lines = section.split('\n');
+          
+          return (
+            <div key={sectionIndex} className="ai-response-section">
+              {lines.map((line, lineIndex) => {
+                // Section headers with **
+                if (line.startsWith('**') && line.endsWith('**')) {
+                  return (
+                    <h4 key={lineIndex} className="ai-response-header">
+                      {line.slice(2, -2)}
+                    </h4>
+                  );
+                }
+                
+                // Subsection headers
+                if (line.includes(':') && !line.startsWith('•')) {
+                  return (
+                    <h5 key={lineIndex} className="section-title">
+                      {line}
+                    </h5>
+                  );
+                }
+                
+                // Bullet points
+                if (line.startsWith('• ')) {
+                  return (
+                    <ul key={lineIndex} className="bullet-list">
+                      <li>{line.slice(2)}</li>
+                    </ul>
+                  );
+                }
+                
+                // Tax calculations
+                if (line.includes('$') && (line.includes('savings') || line.includes('deduction'))) {
+                  return (
+                    <div key={lineIndex} className="tax-calculation">
+                      <div className="highlight-title">Tax Savings</div>
+                      <div className="highlight-content">{line}</div>
+                    </div>
+                  );
+                }
+                
+                // Risk assessments
+                if (line.includes('Risk Level:') || line.includes('Audit Risk:')) {
+                  const riskLevel = line.toLowerCase().includes('high') ? 'high' : 
+                                   line.toLowerCase().includes('medium') ? 'medium' : 'low';
+                  return (
+                    <div key={lineIndex}>
+                      {line.split(':')[0]}:
+                      <span className={`risk-badge risk-${riskLevel}`}>
+                        {riskLevel.toUpperCase()} RISK
+                      </span>
+                    </div>
+                  );
+                }
+                
+                // Documentation/Important notes
+                if (line.includes('Documentation') || line.includes('Requirements')) {
+                  return (
+                    <div key={lineIndex} className="highlight-box">
+                      <div className="highlight-title">{line.split(':')[0]}</div>
+                      <div className="highlight-content">{line.split(':').slice(1).join(':')}</div>
+                    </div>
+                  );
+                }
+                
+                // Regular text
+                return (
+                  <p key={lineIndex} className="message-text" style={{ marginBottom: '0.5rem' }}>
+                    {line}
+                  </p>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className="clean-chat-container">
+      {/* CLEAN HEADER - DARK WITH ORANGE ACCENTS ONLY */}
+      <header className="clean-header">
+        <div className="header-content">
+          <div className="logo-nav">
+            <div className="clean-logo">.fylr</div>
+            <nav className="clean-nav">
+              <a href="#" className="nav-link">Dashboard</a>
+              <a href="#" className="nav-link">Forms</a>
+              <a href="#" className="nav-link">Smart Ledger</a>
+              <a href="#" className="nav-link active">AI Assistant</a>
+              <a href="#" className="nav-link">Tools</a>
+            </nav>
+          </div>
+          
+          <div className="header-user">
+            <div className="user-info">
+              <span className="trial-status">Trial - 14 days left</span>
+              <span style={{ color: '#6B6B6F' }}>john@example.com</span>
+            </div>
+            <button className="upgrade-btn">Upgrade Now</button>
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN CHAT AREA - CLEAN & SPACIOUS */}
+      <div className="chat-main">
+        {/* MINIMAL CHAT HEADER */}
+        <div className="chat-title-area">
+          <h1 className="chat-title">AI Tax Assistant</h1>
+          <p className="chat-subtitle">Entity-aware tax intelligence • No scroll hunting required</p>
+          <div className="ai-status">
+            <div className="status-dot"></div>
+            <span className="status-text">AI Online & Ready</span>
+          </div>
+        </div>
+
+        {/* CLEAN MESSAGE FLOW - NO HUNTING REQUIRED */}
+        <div className="messages-container">
+          <div className="message-list">
+            {messages.map((message) => (
+              <div key={message.id} className={`message-item ${message.type}-message`}>
+                <div className={`message-avatar ${message.type}-avatar`}>
+                  {message.type === 'ai' ? 'AI' : 'You'}
+                </div>
+                
+                <div className="message-content">
+                  <div className="message-bubble">
+                    {message.type === 'ai' ? 
+                      formatAIResponse(message.content) : 
+                      <p className="message-text">{message.content}</p>
+                    }
+                  </div>
+                  <div className="message-timestamp">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {/* TYPING INDICATOR - OBVIOUS BUT NOT DISTRACTING */}
+            {isThinking && (
+              <div className="message-item ai-message">
+                <div className="message-avatar ai-avatar">AI</div>
+                <div className="message-content">
+                  <div className="message-bubble">
+                    <div className="typing-indicator">
+                      <span>AI is analyzing your tax question</span>
+                      <div className="typing-dots">
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+      </div>
+
+      {/* STICKY INPUT - ALWAYS ACCESSIBLE */}
+      <div className="chat-input-area">
+        <div className="input-container">
+          <div className="input-row">
+            <textarea
+              ref={inputRef}
+              className="chat-input"
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              onInput={autoResize}
+              placeholder="Ask about tax strategies, deductions, entity optimization..."
+              disabled={isThinking}
+              rows={1}
+            />
+            <button
+              className="send-button"
+              onClick={() => sendMessage()}
+              disabled={isThinking || !currentMessage.trim()}
+            >
+              {isThinking ? (
+                <div className="typing-dots">
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                </div>
+              ) : (
+                'Send'
+              )}
+            </button>
+          </div>
+          
+          {/* QUICK ACTIONS - ACCESSIBLE BUT NOT CLUTTERED */}
+          <div className="quick-actions">
+            {quickActions.map((action, i) => (
+              <button 
+                key={i}
+                className="quick-action-btn"
+                onClick={() => sendMessage(action)}
+                disabled={isThinking}
+              >
+                {action}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Render the clean AI chat
+const container = document.getElementById('clean-ai-chat');
+const root = ReactDOM.createRoot(container);
+root.render(<CleanAIChat />);
+</script>
+{% endraw %}
+{% endblock %}
