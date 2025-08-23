@@ -89,6 +89,11 @@ def enhanced_smart_ledger():
     """Enhanced Smart Ledger with premium dark theme"""
     return render_template('enhanced_smart_ledger.html')
 
+@app.route('/ai-chat-test')
+def ai_chat_test():
+    """AI Chat Interface for testing tax questions"""
+    return render_template('ai_chat_test.html')
+
 # =============================================================================
 # BACKEND API INTEGRATION
 # =============================================================================
@@ -291,6 +296,311 @@ def api_ai_guidance():
         }
         
         return jsonify(response)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/ai/tax-guidance', methods=['POST'])
+def api_ai_tax_guidance():
+    """Advanced AI tax guidance for chat interface"""
+    try:
+        data = request.get_json()
+        question = data.get('question', '').lower()
+        user_context = data.get('user_context', {})
+        entity_type = user_context.get('entity_type', 'sole_proprietorship')
+        annual_revenue = user_context.get('annual_revenue', 50000)
+        
+        # Advanced AI responses based on question patterns
+        if 'home office' in question:
+            response = f"""**Home Office Deduction Analysis**
+
+For {entity_type} with ${annual_revenue:,} revenue:
+
+**Deduction Methods:**
+• Simplified Method: $5 per sq ft, maximum 300 sq ft = $1,500
+• Actual Method: Percentage of home expenses (utilities, mortgage interest, etc.)
+
+**Requirements:**
+• Exclusive business use of the space
+• Regular business use (daily/weekly)
+• Principal place of business OR regular client meetings
+
+**Tax Savings Estimate:**
+• Simplified method: $1,500 × 42.3% tax rate = $635 annual savings
+• Actual method: Could be $2,000-4,000 depending on home expenses
+
+**Audit Risk Assessment:**
+• Risk Level: HIGH - IRS closely scrutinizes home office claims
+• Red Flags: Claiming too large percentage, inconsistent use
+• Protection: Maintain detailed records, photos of workspace, business activity logs
+
+**Schedule C Reporting:**
+• Line 30: Enter total home office deduction
+• Form 8829: Required for actual method calculation"""
+
+        elif 'business meal' in question or 'meal' in question:
+            response = f"""**Business Meals Deduction Guide**
+
+**Current Tax Law (2023-2024):**
+• Business meals: 50% deductible
+• Business entertainment: 0% deductible (not allowed)
+
+**Requirements:**
+• Ordinary and necessary business expense
+• Not lavish or extravagant
+• Business purpose must be discussed
+• You or employee must be present
+
+**Documentation Needed:**
+• Receipt showing amount, date, location
+• Business purpose and topics discussed
+• Names of attendees and their business relationship
+
+**Tax Savings Example:**
+• $100 business meal × 50% = $50 deductible
+• Tax savings: $50 × 42.3% = $21.15
+
+**Schedule C Reporting:**
+• Line 24b: Enter total meals deduction
+• Remember: Only 50% of actual cost
+
+**Audit Risk: MEDIUM**
+• Common mistakes: Personal meals, entertainment disguised as meals
+• Best practice: Keep detailed log of business purpose"""
+
+        elif 's-corp' in question or 'salary' in question:
+            salary_benchmark = annual_revenue * 0.4
+            response = f"""**S-Corp Salary Optimization Analysis**
+
+**Current Situation:**
+• Annual Revenue: ${annual_revenue:,}
+• Recommended Salary Range: ${salary_benchmark*0.75:,.0f} - ${salary_benchmark*1.25:,.0f}
+
+**Tax Strategy:**
+• Salary: Subject to payroll taxes (15.3% total)
+• Distributions: No payroll tax, only income tax
+
+**Optimization Example:**
+• Conservative salary: ${salary_benchmark:,.0f}
+• Potential distribution: ${annual_revenue - salary_benchmark:,.0f}
+• Payroll tax savings: ${(annual_revenue - salary_benchmark) * 0.153:,.0f}
+
+**IRS Requirements:**
+• Must pay "reasonable compensation"
+• Consider industry standards, duties, qualifications
+• Document salary justification
+
+**Risk Assessment:**
+• Audit Risk: HIGH if salary too low
+• Safe harbor: 40-60% of net profit as salary
+• Red flag: Salary under $30,000 for profitable business
+
+**Compliance Tips:**
+• Run payroll consistently
+• Issue W-2 to officer
+• File Form 1120S annually
+• Maintain corporate formalities"""
+
+        elif 'audit' in question or 'risk' in question:
+            response = f"""**Audit Risk Assessment & Protection**
+
+**High-Risk Factors:**
+• Home office deduction (especially large percentages)
+• Unreasonable S-Corp officer compensation
+• High meal/entertainment expenses
+• Round numbers (suggests estimates, not records)
+• Large charitable deductions relative to income
+
+**Medium-Risk Factors:**
+• Business travel expenses
+• Vehicle expenses without detailed logs
+• Cash-intensive businesses
+• Losses for multiple years
+
+**Low-Risk Factors:**
+• Office supplies and equipment
+• Software subscriptions
+• Professional development
+• Well-documented business expenses
+
+**Audit Protection Strategies:**
+• Maintain detailed records for ALL deductions
+• Keep receipts for 7 years (3 years + extension)
+• Document business purpose for every expense
+• Use business bank accounts exclusively
+• Consider audit insurance (Pro tier feature)
+
+**Documentation Best Practices:**
+• Digital receipt storage with business purpose notes
+• Mileage logs for vehicle expenses
+• Calendar entries for business meetings/travel
+• Bank statements showing business payments
+
+**If Audited:**
+• Respond promptly to IRS notices
+• Provide only requested documentation
+• Consider professional representation
+• Maintain professional, factual communication"""
+
+        elif 'deduct' in question or 'expense' in question:
+            response = f"""**Comprehensive Deduction Guide**
+
+**100% Deductible Expenses:**
+• Office supplies and equipment
+• Software subscriptions (business use)
+• Professional development/training
+• Business insurance premiums
+• Legal and professional fees
+
+**Partially Deductible:**
+• Business meals: 50% (2023-2024)
+• Vehicle expenses: Business percentage only
+• Home office: Percentage of home used
+
+**Common Deductions by Category:**
+
+**Equipment (Schedule C Line 13):**
+• Computers, printers, machinery
+• Section 179: Up to $1,160,000 immediate expensing
+• Bonus depreciation: 60% in 2024
+
+**Travel (Schedule C Line 24a):**
+• Transportation, lodging, meals (50%)
+• Must be overnight and away from tax home
+• Document business purpose
+
+**Utilities (Schedule C Line 25):**
+• Business percentage of phone, internet
+• 100% if exclusively business line
+
+**Professional Services (Schedule C Line 17):**
+• Legal, accounting, consulting fees
+• Tax preparation fees
+
+**Marketing (Schedule C Line 8):**
+• Advertising, website costs
+• Business cards, promotional materials
+
+**Tax Savings Formula:**
+Deductible Amount × Tax Rate = Savings
+Example: $1,000 deduction × 42.3% = $423 savings"""
+
+        elif 'self-employment tax' in question or 'se tax' in question:
+            se_tax = annual_revenue * 0.9235 * 0.153
+            response = f"""**Self-Employment Tax Calculation**
+
+**Your Estimated SE Tax:**
+• Net Profit: ${annual_revenue:,}
+• SE Tax Base: ${annual_revenue * 0.9235:,.0f} (92.35% of profit)
+• SE Tax Rate: 15.3% (12.4% Social Security + 2.9% Medicare)
+• **Total SE Tax: ${se_tax:,.0f}**
+
+**SE Tax Breakdown:**
+• Social Security: 12.4% on first $160,200 (2023)
+• Medicare: 2.9% on all earnings
+• Additional Medicare: 0.9% on earnings over $200,000
+
+**Reduction Strategies:**
+• Business expenses reduce SE tax base
+• Retirement contributions (SEP-IRA, Solo 401k)
+• S-Corp election eliminates SE tax on distributions
+
+**S-Corp Comparison:**
+• Current SE Tax: ${se_tax:,.0f}
+• With S-Corp election: Payroll tax only on salary
+• Potential savings: ${se_tax * 0.4:,.0f} annually
+
+**Schedule SE Filing:**
+• Required if net earnings > $400
+• File with Form 1040
+• 50% of SE tax is deductible on Form 1040
+
+**Quarterly Payments:**
+• Required if owing > $1,000
+• Due dates: Apr 15, Jun 15, Sep 15, Jan 15
+• Safe harbor: 100% of prior year tax (110% if AGI > $150k)"""
+
+        elif 'llc' in question or 'entity' in question:
+            response = f"""**Entity Selection & Optimization**
+
+**LLC Tax Elections:**
+
+**Default (Single-Member):**
+• Taxed as sole proprietorship
+• Subject to SE tax on all profits
+• File Schedule C with Form 1040
+
+**S-Corp Election:**
+• Salary + distributions structure
+• SE tax only on salary portion
+• File Form 1120S + individual returns
+• Best for profits > $60,000
+
+**Partnership (Multi-Member):**
+• Pass-through taxation
+• File Form 1065 + K-1s
+• Guaranteed payments vs. distributions
+
+**Analysis for ${annual_revenue:,} Revenue:**
+
+**Current (LLC default):**
+• Income Tax: ${annual_revenue * 0.22:,.0f}
+• SE Tax: ${annual_revenue * 0.153 * 0.9235:,.0f}
+• Total: ${annual_revenue * (0.22 + 0.153 * 0.9235):,.0f}
+
+**S-Corp Election:**
+• Recommended Salary: ${annual_revenue * 0.4:,.0f}
+• Distribution: ${annual_revenue * 0.6:,.0f}
+• Payroll Tax Savings: ${annual_revenue * 0.6 * 0.153:,.0f}
+
+**Recommendation:**
+For your revenue level, S-Corp election could save ${annual_revenue * 0.6 * 0.153:,.0f} annually in SE taxes.
+
+**Implementation:**
+• File Form 2553 by March 15
+• Set up payroll system
+• Maintain corporate formalities
+• File 1120S annually"""
+
+        else:
+            response = f"""**General Tax Guidance**
+
+I can help with specific tax questions about:
+
+**Deductions & Credits:**
+• Home office deduction calculations
+• Business meal requirements (50% rule)
+• Equipment and software expenses
+• Travel and vehicle expenses
+
+**Entity Optimization:**
+• S-Corp vs LLC analysis
+• Salary optimization strategies
+• Tax election timing
+
+**Compliance & Risk:**
+• Audit risk assessment
+• Documentation requirements
+• IRS red flags to avoid
+
+**Calculations:**
+• Self-employment tax estimates
+• Quarterly payment requirements
+• Tax savings projections
+
+**Schedule C Guidance:**
+• Line-by-line completion help
+• Income and expense categorization
+• Form filing requirements
+
+Try asking something more specific like:
+"How much can I save with S-Corp election?"
+"What documentation do I need for travel expenses?"
+"Should I use the simplified home office method?"
+
+Current context: {entity_type} with ${annual_revenue:,} annual revenue"""
+
+        return jsonify({'response': response})
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -1,0 +1,562 @@
+{% extends "base_layout.html" %}
+
+{% block title %}AI Tax Chat - .fylr{% endblock %}
+
+{% block head %}
+<!-- React and required dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* AI Chat Interface Styling */
+.ai-chat-container {
+  background: linear-gradient(135deg, #0A0A0B 0%, #1A1A1D 100%);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border: 1px solid rgba(255, 107, 0, 0.1);
+  max-width: 900px;
+  margin: 0 auto;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  background: linear-gradient(135deg, #1A1A1D 0%, #2A2A2D 100%);
+  padding: 2rem;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.2);
+  position: relative;
+}
+
+.chat-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 107, 0, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.message {
+  max-width: 80%;
+  padding: 1rem 1.5rem;
+  border-radius: 20px;
+  position: relative;
+  animation: messageSlide 0.3s ease-out;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--fylr-orange) 0%, #FF8533 100%);
+  color: white;
+  border-bottom-right-radius: 8px;
+}
+
+.message.ai {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-bottom-left-radius: 8px;
+}
+
+.message.ai.thinking {
+  background: rgba(255, 107, 0, 0.1);
+  border-color: rgba(255, 107, 0, 0.3);
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--fylr-orange);
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+.chat-input-area {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.chat-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  resize: none;
+  min-height: 50px;
+  max-height: 120px;
+  transition: all 0.3s ease;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--fylr-orange);
+  box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.send-button {
+  background: linear-gradient(135deg, var(--fylr-orange) 0%, #FF8533 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 107, 0, 0.4);
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quick-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.quick-question-btn {
+  background: rgba(255, 107, 0, 0.1);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  color: var(--fylr-orange);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-question-btn:hover {
+  background: rgba(255, 107, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.tax-calculation-display {
+  background: rgba(0, 208, 132, 0.1);
+  border: 1px solid rgba(0, 208, 132, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.entity-analysis {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.risk-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0.25rem 0.5rem 0.25rem 0;
+}
+
+.risk-low { background: rgba(0, 208, 132, 0.2); color: #00D084; }
+.risk-medium { background: rgba(245, 158, 11, 0.2); color: #F59E0B; }
+.risk-high { background: rgba(239, 68, 68, 0.2); color: #EF4444; }
+
+@keyframes messageSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+.ai-capabilities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.capability-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.capability-card:hover {
+  border-color: var(--fylr-orange);
+  transform: translateY(-2px);
+}
+
+.capability-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.smart-suggestion {
+  background: rgba(147, 51, 234, 0.1);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.code-block {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div id="ai-chat-test"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% raw %}
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const AIChatTest = () => {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'ai',
+      content: `Welcome to .fylr's Advanced AI Tax Assistant! 🎯
+
+I'm powered by entity-specific tax intelligence and can help with:
+• Real tax calculations (federal, state, SE tax)
+• Schedule C line-by-line guidance
+• S-Corp salary optimization
+• Audit risk assessment
+• Deduction strategies
+
+Try asking me something like:
+"How much can I save with a home office deduction?"
+"Should my S-Corp pay me more salary?"
+"What are the audit risks for business meals?"`,
+      timestamp: new Date()
+    }
+  ]);
+  
+  const [currentMessage, setCurrentMessage] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const quickQuestions = [
+    "How much can I deduct for business meals?",
+    "What's the home office deduction limit?",
+    "Should I elect S-Corp taxation for my LLC?",
+    "What documentation do I need for travel expenses?",
+    "How do I calculate self-employment tax?",
+    "What are red flags that trigger audits?"
+  ];
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const sendMessage = async (messageText = currentMessage) => {
+    if (!messageText.trim()) return;
+
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      content: messageText,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentMessage('');
+    setIsThinking(true);
+
+    try {
+      // Simulate AI processing time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const aiResponse = await getAIResponse(messageText);
+      
+      const aiMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: aiResponse,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: `I apologize, but I encountered an error processing your question. Please try again or rephrase your question.
+
+Error: ${error.message}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
+  const getAIResponse = async (question) => {
+    // Call the AI guidance API
+    const response = await fetch('/api/ai/tax-guidance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: question,
+        user_context: {
+          entity_type: 'sole_proprietorship',
+          annual_revenue: 75000,
+          business_type: 'consulting'
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get AI response');
+    }
+
+    const data = await response.json();
+    return data.response;
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const formatMessage = (content) => {
+    // Simple formatting for better display
+    const parts = content.split('\n');
+    return parts.map((part, index) => {
+      if (part.startsWith('• ')) {
+        return <div key={index} style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>{part}</div>;
+      }
+      if (part.includes('$') && part.includes('savings')) {
+        return (
+          <div key={index} className="tax-calculation-display">
+            💰 {part}
+          </div>
+        );
+      }
+      if (part.includes('risk') || part.includes('audit')) {
+        const riskLevel = part.toLowerCase().includes('high') ? 'high' : 
+                         part.toLowerCase().includes('medium') ? 'medium' : 'low';
+        return (
+          <div key={index}>
+            {part} <span className={`risk-indicator risk-${riskLevel}`}>{riskLevel} risk</span>
+          </div>
+        );
+      }
+      if (part.includes('Schedule C')) {
+        return (
+          <div key={index} className="entity-analysis">
+            📋 {part}
+          </div>
+        );
+      }
+      return <div key={index} style={{ marginBottom: '0.5rem' }}>{part}</div>;
+    });
+  };
+
+  return (
+    <div className="ai-chat-container">
+      {/* Chat Header */}
+      <div className="chat-header">
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+          🤖 AI Tax Assistant
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
+          Advanced tax intelligence powered by entity-specific AI
+        </p>
+        
+        {/* AI Capabilities */}
+        <div className="ai-capabilities">
+          <div className="capability-card">
+            <div className="capability-icon">📊</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Real Tax Calculations</div>
+          </div>
+          <div className="capability-card">
+            <div className="capability-icon">🏢</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Entity Analysis</div>
+          </div>
+          <div className="capability-card">
+            <div className="capability-icon">⚠️</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Audit Risk Assessment</div>
+          </div>
+          <div className="capability-card">
+            <div className="capability-icon">📋</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Form Guidance</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Messages */}
+      <div className="chat-messages">
+        {messages.map((message) => (
+          <div key={message.id} className={`message ${message.type}`}>
+            <div style={{ marginBottom: '0.5rem' }}>
+              {formatMessage(message.content)}
+            </div>
+            <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '0.5rem' }}>
+              {message.timestamp.toLocaleTimeString()}
+            </div>
+          </div>
+        ))}
+        
+        {isThinking && (
+          <div className="message ai thinking">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>AI is analyzing your tax question</span>
+              <div className="typing-indicator">
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Chat Input */}
+      <div className="chat-input-area">
+        {/* Quick Questions */}
+        <div className="quick-questions">
+          {quickQuestions.map((question, index) => (
+            <button
+              key={index}
+              className="quick-question-btn"
+              onClick={() => sendMessage(question)}
+              disabled={isThinking}
+            >
+              {question}
+            </button>
+          ))}
+        </div>
+
+        <div className="chat-input-container">
+          <textarea
+            className="chat-input"
+            value={currentMessage}
+            onChange={(e) => setCurrentMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Ask me about tax strategies, deductions, entity optimization..."
+            disabled={isThinking}
+            rows={1}
+            style={{ height: 'auto' }}
+            onInput={(e) => {
+              e.target.style.height = 'auto';
+              e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+            }}
+          />
+          <button
+            className="send-button"
+            onClick={() => sendMessage()}
+            disabled={isThinking || !currentMessage.trim()}
+          >
+            {isThinking ? (
+              <div className="typing-indicator">
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+              </div>
+            ) : (
+              'Send'
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Render the AI chat
+const container = document.getElementById('ai-chat-test');
+const root = ReactDOM.createRoot(container);
+root.render(<AIChatTest />);
+</script>
+{% endraw %}
+{% endblock %}
