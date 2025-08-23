@@ -1,0 +1,750 @@
+{% extends "base_layout.html" %}
+
+{% block title %}React Dashboard - .fylr{% endblock %}
+
+{% block head %}
+<!-- React and required dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* React Component Styling - Premium Dark Theme */
+.fylr-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.2s var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.fylr-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--fylr-orange), transparent);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-smooth);
+}
+
+.fylr-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--fylr-orange);
+}
+
+.fylr-card:hover::before {
+  opacity: 1;
+}
+
+.fylr-button-primary {
+  background: linear-gradient(45deg, var(--fylr-orange), var(--fylr-orange-hover));
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fylr-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.4);
+  filter: brightness(1.1);
+}
+
+.fylr-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
+.fylr-input {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  width: 100%;
+  transition: all 0.2s var(--ease-smooth);
+  font-size: 1rem;
+}
+
+.fylr-input:focus {
+  outline: none;
+  border-color: var(--fylr-orange);
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+  background: var(--bg-secondary);
+}
+
+.fylr-input::placeholder {
+  color: var(--text-muted);
+}
+
+.fylr-progress {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.fylr-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--fylr-orange), var(--fylr-orange-hover));
+  border-radius: 4px;
+  transition: width 0.6s var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.fylr-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.animate-pulse-subtle {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 20px rgba(255, 107, 0, 0.3); }
+  to { box-shadow: 0 0 30px rgba(255, 107, 0, 0.6); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.confidence-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.confidence-high {
+  background: rgba(0, 208, 132, 0.1);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.confidence-medium {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+  border: 1px solid var(--warning);
+}
+
+.confidence-low {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+.expense-entry {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.expense-entry:hover {
+  border-color: var(--fylr-orange);
+  background: rgba(255, 107, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.tax-readiness-score {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, var(--fylr-orange), var(--fylr-orange-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.upgrade-trigger {
+  background: rgba(255, 107, 0, 0.05);
+  border: 2px solid var(--fylr-orange);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.upgrade-trigger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 0, 0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+.tab-navigation {
+  display: flex;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  transition: all 0.2s var(--ease-smooth);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.tab-button.active {
+  background: var(--fylr-orange);
+  color: white;
+  transform: scale(1.02);
+}
+
+.tab-button:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.loading-skeleton {
+  background: linear-gradient(90deg, var(--bg-secondary), var(--bg-tertiary), var(--bg-secondary));
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  height: 1rem;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.ai-processing {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--fylr-orange);
+  font-size: 0.875rem;
+}
+
+.ai-processing::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--fylr-orange);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div id="react-dashboard"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% raw %}
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// Smart Ledger Component with Dark Theme
+const SmartLedger = ({ userId, onSavingsUpdate }) => {
+  const [expenses, setExpenses] = useState([]);
+  const [newExpense, setNewExpense] = useState({ amount: '', description: '', date: '' });
+  const [taxReadinessScore, setTaxReadinessScore] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const addExpense = async () => {
+    if (!newExpense.amount || !newExpense.description) return;
+    
+    setLoading(true);
+    
+    // Simulate AI processing
+    const mockAnalysis = {
+      category: 'Office Supplies',
+      confidence: 0.92,
+      deductible_percentage: 100,
+      tax_savings_estimate: parseFloat(newExpense.amount) * 0.25
+    };
+
+    setTimeout(() => {
+      const expense = {
+        id: Date.now(),
+        amount: parseFloat(newExpense.amount),
+        description: newExpense.description,
+        date: newExpense.date || new Date().toISOString().split('T')[0],
+        ai_analysis: mockAnalysis,
+        tax_savings_estimate: mockAnalysis.tax_savings_estimate
+      };
+
+      setExpenses(prev => [expense, ...prev]);
+      setNewExpense({ amount: '', description: '', date: '' });
+      
+      // Update tax readiness score
+      setTaxReadinessScore({
+        score: Math.min(95, (expenses.length + 1) * 8 + 35),
+        recommendations: ['Great progress on expense tracking!']
+      });
+
+      if (onSavingsUpdate) {
+        onSavingsUpdate(mockAnalysis.tax_savings_estimate);
+      }
+      
+      setLoading(false);
+    }, 2000);
+  };
+
+  return (
+    <div className="fylr-card animate-slide-up">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>
+          Smart Ledger
+        </h2>
+        {taxReadinessScore && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Tax Readiness:</span>
+            <span className="tax-readiness-score">{taxReadinessScore.score}%</span>
+          </div>
+        )}
+      </div>
+      
+      <div className="fylr-card" style={{ marginBottom: '1.5rem', background: 'var(--bg-tertiary)' }}>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-primary)' }}>
+          Add Business Expense
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+          <input
+            type="number"
+            placeholder="Amount ($)"
+            value={newExpense.amount}
+            onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
+            className="fylr-input"
+            step="0.01"
+          />
+          <input
+            type="text"
+            placeholder="Description"
+            value={newExpense.description}
+            onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
+            className="fylr-input"
+          />
+          <input
+            type="date"
+            value={newExpense.date}
+            onChange={(e) => setNewExpense({...newExpense, date: e.target.value})}
+            className="fylr-input"
+          />
+        </div>
+        <button
+          onClick={addExpense}
+          disabled={loading || !newExpense.amount || !newExpense.description}
+          className="fylr-button-primary"
+        >
+          {loading ? (
+            <>
+              <span className="ai-processing"></span>
+              AI Processing...
+            </>
+          ) : (
+            'Add Expense'
+          )}
+        </button>
+      </div>
+
+      <div>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-primary)' }}>
+          Recent Expenses
+        </h3>
+        {expenses.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+            No expenses tracked yet. Add your first business expense above!
+          </div>
+        ) : (
+          <div>
+            {expenses.map((expense) => (
+              <div key={expense.id} className="expense-entry animate-scale-in">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+                      {expense.description}
+                    </div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                      {expense.ai_analysis?.category} • {expense.date}
+                    </div>
+                    <div className={`confidence-badge ${
+                      expense.ai_analysis?.confidence > 0.8 ? 'confidence-high' :
+                      expense.ai_analysis?.confidence > 0.6 ? 'confidence-medium' : 'confidence-low'
+                    }`}>
+                      {Math.round(expense.ai_analysis?.confidence * 100)}% AI Confidence
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '1.125rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                      ${expense.amount.toFixed(2)}
+                    </div>
+                    {expense.tax_savings_estimate > 0 && (
+                      <div style={{ fontSize: '0.875rem', color: 'var(--success)' }}>
+                        ~${expense.tax_savings_estimate.toFixed(2)} tax savings
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Tax Form Builder Component
+const TaxFormBuilder = ({ formType = 'schedule_c', userId, onCompletion }) => {
+  const [formData, setFormData] = useState({});
+  const [aiGuidance, setAiGuidance] = useState(null);
+  const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const updateField = (field, value) => {
+    const updatedData = { ...formData, [field]: value };
+    setFormData(updatedData);
+    
+    // Calculate completion
+    const fields = ['business_name', 'gross_receipts', 'advertising', 'office_expenses'];
+    const completed = fields.filter(f => updatedData[f] && String(updatedData[f]).trim()).length;
+    const completion = Math.round((completed / fields.length) * 100);
+    setCompletionPercentage(completion);
+
+    // Simulate AI guidance
+    setAiGuidance({
+      message: `Good progress! Based on your ${field} entry, I recommend reviewing deduction opportunities.`,
+      confidence: 87,
+      suggestions: ['Consider home office deduction', 'Track business meals']
+    });
+
+    if (onCompletion) {
+      onCompletion(completion, updatedData);
+    }
+  };
+
+  return (
+    <div className="fylr-card animate-slide-up">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>
+          Schedule C Form Builder
+        </h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+            Completion: <strong style={{ color: 'var(--fylr-orange)' }}>{completionPercentage}%</strong>
+          </span>
+          <div className="fylr-progress" style={{ width: '120px' }}>
+            <div 
+              className="fylr-progress-bar"
+              style={{ width: `${completionPercentage}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      {aiGuidance && (
+        <div style={{ 
+          background: 'rgba(255, 107, 0, 0.05)', 
+          border: '1px solid rgba(255, 107, 0, 0.2)', 
+          borderRadius: '12px', 
+          padding: '1rem', 
+          marginBottom: '1.5rem' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <i className="fas fa-robot" style={{ color: 'var(--fylr-orange)' }}></i>
+            <strong style={{ color: 'var(--text-primary)' }}>AI Guidance</strong>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{aiGuidance.message}</p>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gap: '1.5rem' }}>
+        <div>
+          <label style={{ display: 'block', color: 'var(--text-primary)', fontWeight: '500', marginBottom: '0.5rem' }}>
+            Business Name
+          </label>
+          <input
+            type="text"
+            placeholder="Enter your business name"
+            value={formData.business_name || ''}
+            onChange={(e) => updateField('business_name', e.target.value)}
+            className="fylr-input"
+          />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+          <div>
+            <label style={{ display: 'block', color: 'var(--text-primary)', fontWeight: '500', marginBottom: '0.5rem' }}>
+              Gross Receipts
+            </label>
+            <input
+              type="number"
+              placeholder="0.00"
+              value={formData.gross_receipts || ''}
+              onChange={(e) => updateField('gross_receipts', e.target.value)}
+              className="fylr-input"
+              step="0.01"
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', color: 'var(--text-primary)', fontWeight: '500', marginBottom: '0.5rem' }}>
+              Advertising Expenses
+            </label>
+            <input
+              type="number"
+              placeholder="0.00"
+              value={formData.advertising || ''}
+              onChange={(e) => updateField('advertising', e.target.value)}
+              className="fylr-input"
+              step="0.01"
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', color: 'var(--text-primary)', fontWeight: '500', marginBottom: '0.5rem' }}>
+              Office Expenses
+            </label>
+            <input
+              type="number"
+              placeholder="0.00"
+              value={formData.office_expenses || ''}
+              onChange={(e) => updateField('office_expenses', e.target.value)}
+              className="fylr-input"
+              step="0.01"
+            />
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <button className="fylr-button-primary animate-glow">
+            Continue to Next Section
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Upgrade Trigger Component
+const UpgradeTrigger = ({ currentTier = 'trial', estimatedSavings = 0, completionPercentage = 0, onUpgrade }) => {
+  const [trigger, setTrigger] = useState(null);
+
+  useEffect(() => {
+    // Simulate upgrade trigger logic
+    if (currentTier !== 'premium' && (estimatedSavings > 1000 || completionPercentage > 50)) {
+      setTrigger({
+        message: estimatedSavings > 1000 
+          ? `You've found $${estimatedSavings.toFixed(0)} in potential savings! Upgrade to unlock advanced tax strategies.`
+          : `You're ${completionPercentage}% complete! Upgrade for AI-guided completion and audit protection.`,
+        cta: 'Upgrade to Guided',
+        suggested_tier: 'guided'
+      });
+    }
+  }, [currentTier, estimatedSavings, completionPercentage]);
+
+  if (!trigger || currentTier === 'premium') return null;
+
+  return (
+    <div className="upgrade-trigger animate-pulse-subtle">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem' }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <i className="fas fa-star" style={{ color: 'var(--fylr-orange)' }}></i>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>
+              Unlock More Value
+            </h3>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+            {trigger.message}
+          </p>
+          
+          {estimatedSavings > 0 && (
+            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <i className="fas fa-dollar-sign"></i>
+                Potential Savings: ${estimatedSavings.toLocaleString()}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <i className="fas fa-check-circle"></i>
+                Form: {completionPercentage}% Complete
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <button
+          onClick={() => onUpgrade && onUpgrade(trigger.suggested_tier)}
+          className="fylr-button-primary"
+        >
+          {trigger.cta}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Main Dashboard Component
+const FylrDashboard = ({ userId = 'demo-user', userTier = 'trial' }) => {
+  const [totalSavings, setTotalSavings] = useState(0);
+  const [formCompletion, setFormCompletion] = useState(0);
+  const [activeTab, setActiveTab] = useState('ledger');
+
+  const handleSavingsUpdate = (newSavings) => {
+    setTotalSavings(prev => prev + newSavings);
+  };
+
+  const handleFormCompletion = (completion, formData) => {
+    setFormCompletion(completion);
+  };
+
+  const handleUpgrade = (targetTier) => {
+    alert(`Redirecting to upgrade to ${targetTier} plan...`);
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
+        <div style={{ marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+            .fylr Dashboard
+          </h1>
+          <p style={{ color: 'var(--text-muted)' }}>
+            AI-powered tax preparation with ${totalSavings.toFixed(2)} in discovered savings
+          </p>
+        </div>
+
+        <UpgradeTrigger
+          currentTier={userTier}
+          estimatedSavings={totalSavings}
+          completionPercentage={formCompletion}
+          onUpgrade={handleUpgrade}
+        />
+
+        <div className="tab-navigation">
+          <button
+            className={`tab-button ${activeTab === 'ledger' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ledger')}
+          >
+            Smart Ledger
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'forms' ? 'active' : ''}`}
+            onClick={() => setActiveTab('forms')}
+          >
+            Tax Forms
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'insights' ? 'active' : ''}`}
+            onClick={() => setActiveTab('insights')}
+          >
+            AI Insights
+          </button>
+        </div>
+
+        <div>
+          {activeTab === 'ledger' && (
+            <SmartLedger
+              userId={userId}
+              onSavingsUpdate={handleSavingsUpdate}
+            />
+          )}
+          
+          {activeTab === 'forms' && (
+            <TaxFormBuilder
+              formType="schedule_c"
+              userId={userId}
+              onCompletion={handleFormCompletion}
+            />
+          )}
+          
+          {activeTab === 'insights' && (
+            <div className="fylr-card animate-slide-up">
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '1rem' }}>
+                AI Tax Insights
+              </h2>
+              <div style={{ color: 'var(--text-muted)' }}>
+                Advanced insights available in Guided and Concierge plans.
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Render the dashboard
+const container = document.getElementById('react-dashboard');
+const root = ReactDOM.createRoot(container);
+root.render(<FylrDashboard />);
+</script>
+{% endraw %}
+{% endblock %}

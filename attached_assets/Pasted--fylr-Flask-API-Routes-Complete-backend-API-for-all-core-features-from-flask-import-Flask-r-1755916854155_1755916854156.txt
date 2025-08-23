@@ -1,0 +1,826 @@
+# .fylr Flask API Routes
+# Complete backend API for all core features
+
+from flask import Flask, request, jsonify, session
+from flask_cors import CORS
+from sqlalchemy.orm import sessionmaker
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+from datetime import datetime, timedelta
+import os
+import json
+
+# Import the core components we created earlier
+from core_components import (
+    User, TaxForm, SmartLedgerEntry, 
+    AITaxAssistant, SmartLedger, TaxFormGenerator, SubscriptionManager,
+    Base, create_engine
+)
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
+CORS(app)
+
+# Database setup
+engine = create_engine(os.getenv('DATABASE_URL', 'postgresql://user:pass@localhost/fylr'))
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+
+# Initialize components
+ai_assistant = AITaxAssistant(os.getenv('OPENAI_API_KEY'))
+form_generator = TaxFormGenerator()
+subscription_manager = SubscriptionManager(os.getenv('STRIPE_SECRET_KEY'))
+
+# =============================================================================
+# AUTHENTICATION ROUTES
+# =============================================================================
+
+@app.route('/api/auth/register', methods=['POST'])
+def register():
+    """Register new user"""
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({'error': 'Email and password required'}), 400
+    
+    db = Session()
+    try:
+        # Check if user exists
+        existing_user = db.query(User).filter_by(email=email).first()
+        if existing_user:
+            return jsonify({'error': 'User already exists'}), 400
+        
+        # Create new user
+        user = User(
+            email=email,
+            password_hash=generate_password_hash(password),
+            subscription_tier='trial'
+        )
+        db.add(user)
+        db.commit()
+        
+        # Generate JWT token
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.utcnow() + timedelta(days=30)
+        }, app.config['SECRET_KEY'], algorithm='HS256')
+        
+        return jsonify({
+            'token': token,
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'tier': user.subscription_tier
+            }
+        })
+        
+    except Exception as e:
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """User login"""
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    
+    db = Session()
+    try:
+        user = db.query(User).filter_by(email=email).first()
+        
+        if not user or not check_password_hash(user.password_hash, password):
+            return jsonify({'error': 'Invalid credentials'}), 401
+        
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.utcnow() + timedelta(days=30)
+        }, app.config['SECRET_KEY'], algorithm='HS256')
+        
+        return jsonify({
+            'token': token,
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'tier': user.subscription_tier
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# =============================================================================
+# TAX FORM ROUTES
+# =============================================================================
+
+@app.route('/api/forms/create/<form_type>', methods=['POST'])
+def create_form(form_type):
+    """Create or retrieve existing tax form"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    
+    if not user_id:
+        return jsonify({'error': 'User ID required'}), 400
+    
+    db = Session()
+    try:
+        # Check if form already exists
+        existing_form = db.query(TaxForm).filter_by(
+            user_id=user_id, 
+            form_type=form_type
+        ).first()
+        
+        if existing_form:
+            # Return existing form
+            form_template = form_generator.form_templates.get(form_type)
+            return jsonify({
+                'template': form_template,
+                'data': existing_form.form_data,
+                'completion_percentage': existing_form.completion_percentage,
+                'form_id': existing_form.id
+            })
+        
+        # Create new form
+        form_data = form_generator.create_form(form_type, user_id)
+        
+        # Save to database
+        tax_form = TaxForm(
+            user_id=user_id,
+            form_type=form_type,
+            form_data=form_data['data'],
+            completion_percentage=form_data['completion_percentage']
+        )
+        db.add(tax_form)
+        db.commit()
+        
+        return jsonify({
+            'template': form_data['template'],
+            'data': form_data['data'],
+            'completion_percentage': form_data['completion_percentage'],
+            'form_id': tax_form.id
+        })
+        
+    except Exception as e:
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/forms/update/<int:form_id>', methods=['PUT'])
+def update_form(form_id):
+    """Update form data"""
+    data = request.get_json()
+    form_data = data.get('form_data')
+    
+    db = Session()
+    try:
+        tax_form = db.query(TaxForm).get(form_id)
+        if not tax_form:
+            return jsonify({'error': 'Form not found'}), 404
+        
+        # Update form data
+        tax_form.form_data = form_data
+        tax_form.updated_at = datetime.utcnow()
+        
+        # Recalculate completion percentage
+        template = form_generator.form_templates.get(tax_form.form_type)
+        if template:
+            completion = form_generator._calculate_completion(form_data, template)
+            tax_form.completion_percentage = completion
+        
+        db.commit()
+        
+        return jsonify({
+            'success': True,
+            'completion_percentage': tax_form.completion_percentage
+        })
+        
+    except Exception as e:
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/forms/export/<int:form_id>', methods=['GET'])
+def export_form(form_id):
+    """Export form data (requires paid tier)"""
+    db = Session()
+    try:
+        tax_form = db.query(TaxForm).get(form_id)
+        if not tax_form:
+            return jsonify({'error': 'Form not found'}), 404
+        
+        user = db.query(User).get(tax_form.user_id)
+        
+        # Check subscription access
+        if user.subscription_tier == 'trial':
+            return jsonify({
+                'error': 'Export requires paid subscription',
+                'upgrade_required': True
+            }), 403
+        
+        # Return form data for export
+        return jsonify({
+            'form_type': tax_form.form_type,
+            'form_data': tax_form.form_data,
+            'completion_percentage': tax_form.completion_percentage,
+            'export_formats': ['pdf', 'json', 'html']
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# =============================================================================
+# AI GUIDANCE ROUTES
+# =============================================================================
+
+@app.route('/api/ai/guidance', methods=['POST'])
+def get_ai_guidance():
+    """Get AI guidance for tax form completion"""
+    data = request.get_json()
+    form_type = data.get('form_type')
+    form_data = data.get('form_data')
+    user_id = data.get('user_id')
+    
+    db = Session()
+    try:
+        # Get user profile
+        user = db.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_profile = user.business_profile or {}
+        
+        # Get AI guidance based on form type
+        if form_type == 'schedule_c':
+            guidance = ai_assistant.get_schedule_c_guidance(user_profile, form_data)
+        else:
+            guidance = {'message': 'AI guidance not available for this form type yet'}
+        
+        return jsonify(guidance)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/ai/find-deductions', methods=['POST'])
+def find_deductions():
+    """AI-powered deduction finder"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    
+    db = Session()
+    try:
+        # Get user's smart ledger entries
+        entries = db.query(SmartLedgerEntry).filter_by(user_id=user_id).all()
+        
+        # Convert to format for AI analysis
+        expenses = [
+            {
+                'description': entry.description,
+                'amount': entry.amount,
+                'category': entry.category,
+                'date': entry.date.isoformat()
+            }
+            for entry in entries
+        ]
+        
+        # Get user business info
+        user = db.query(User).get(user_id)
+        business_profile = user.business_profile or {}
+        
+        # Run AI deduction analysis
+        deductions = ai_assistant.find_deductions(
+            business_type=business_profile.get('entity_type', 'sole_proprietorship'),
+            industry=business_profile.get('industry', 'general'),
+            expenses=expenses
+        )
+        
+        return jsonify(deductions)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# =============================================================================
+# SMART LEDGER ROUTES
+# =============================================================================
+
+@app.route('/api/smart-ledger/add-expense', methods=['POST'])
+def add_expense():
+    """Add expense to smart ledger with AI categorization"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    amount = data.get('amount')
+    description = data.get('description')
+    date_str = data.get('date')
+    
+    if not all([user_id, amount, description]):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    db = Session()
+    try:
+        # Parse date
+        expense_date = datetime.fromisoformat(date_str.replace('Z', '+00:00')) if date_str else datetime.now()
+        
+        # Get user business type
+        user = db.query(User).get(user_id)
+        business_profile = user.business_profile or {}
+        business_type = business_profile.get('entity_type', 'sole_proprietorship')
+        
+        # Initialize smart ledger
+        smart_ledger = SmartLedger(db, ai_assistant)
+        
+        # Add expense with AI categorization
+        result = smart_ledger.add_expense(
+            user_id=user_id,
+            amount=float(amount),
+            description=description,
+            date=expense_date,
+            business_type=business_type
+        )
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/smart-ledger/expenses/<int:user_id>', methods=['GET'])
+def get_expenses(user_id):
+    """Get user's smart ledger expenses"""
+    db = Session()
+    try:
+        entries = db.query(SmartLedgerEntry).filter_by(user_id=user_id).order_by(
+            SmartLedgerEntry.date.desc()
+        ).limit(50).all()
+        
+        expenses = [
+            {
+                'id': entry.id,
+                'amount': entry.amount,
+                'description': entry.description,
+                'category': entry.category,
+                'tax_deductible': entry.tax_deductible,
+                'ai_confidence': entry.ai_confidence,
+                'date': entry.date.isoformat(),
+                'created_at': entry.created_at.isoformat()
+            }
+            for entry in entries
+        ]
+        
+        return jsonify({'expenses': expenses})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/smart-ledger/tax-readiness/<int:user_id>', methods=['GET'])
+def get_tax_readiness_score(user_id):
+    """Get user's tax readiness score"""
+    db = Session()
+    try:
+        smart_ledger = SmartLedger(db, ai_assistant)
+        score = smart_ledger.get_tax_readiness_score(user_id)
+        
+        return jsonify(score)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/smart-ledger/monthly-summary/<int:user_id>', methods=['GET'])
+def get_monthly_summary(user_id):
+    """Get monthly expense summary for Smart Ledger subscribers"""
+    db = Session()
+    try:
+        # Check if user has Smart Ledger access
+        user = db.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # For this example, assume all users have access, but you'd check subscription here
+        
+        # Get current month expenses
+        from sqlalchemy import extract, func
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        
+        monthly_expenses = db.query(
+            SmartLedgerEntry.category,
+            func.sum(SmartLedgerEntry.amount).label('total'),
+            func.count(SmartLedgerEntry.id).label('count')
+        ).filter(
+            SmartLedgerEntry.user_id == user_id,
+            extract('month', SmartLedgerEntry.date) == current_month,
+            extract('year', SmartLedgerEntry.date) == current_year
+        ).group_by(SmartLedgerEntry.category).all()
+        
+        # Calculate total deductible amount
+        total_deductible = db.query(func.sum(SmartLedgerEntry.amount)).filter(
+            SmartLedgerEntry.user_id == user_id,
+            SmartLedgerEntry.tax_deductible == True,
+            extract('month', SmartLedgerEntry.date) == current_month,
+            extract('year', SmartLedgerEntry.date) == current_year
+        ).scalar() or 0
+        
+        summary = {
+            'month': current_month,
+            'year': current_year,
+            'categories': [
+                {
+                    'category': exp.category or 'Uncategorized',
+                    'total': float(exp.total),
+                    'count': exp.count
+                }
+                for exp in monthly_expenses
+            ],
+            'total_deductible': float(total_deductible),
+            'estimated_tax_savings': float(total_deductible * 0.35)  # Assume 35% tax rate
+        }
+        
+        return jsonify(summary)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# =============================================================================
+# SUBSCRIPTION MANAGEMENT ROUTES
+# =============================================================================
+
+@app.route('/api/subscription/upgrade-trigger', methods=['POST'])
+def check_upgrade_trigger():
+    """Check if user should see upgrade prompt"""
+    data = request.get_json()
+    current_tier = data.get('current_tier')
+    estimated_savings = data.get('estimated_savings', 0)
+    completion_percentage = data.get('completion_percentage', 0)
+    
+    try:
+        trigger = subscription_manager.get_upgrade_trigger(
+            current_tier, estimated_savings, completion_percentage
+        )
+        
+        return jsonify({'trigger': trigger})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/subscription/create', methods=['POST'])
+def create_subscription():
+    """Create new Stripe subscription"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    tier = data.get('tier')
+    
+    db = Session()
+    try:
+        user = db.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Create Stripe subscription
+        result = subscription_manager.create_subscription(user.email, tier)
+        
+        if result['success']:
+            # Update user record
+            user.subscription_tier = tier
+            user.stripe_customer_id = result['customer_id']
+            db.commit()
+            
+            return jsonify({
+                'success': True,
+                'subscription_id': result['subscription_id'],
+                'customer_id': result['customer_id']
+            })
+        else:
+            return jsonify({'error': result['error']}), 400
+        
+    except Exception as e:
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/subscription/features/<tier>', methods=['GET'])
+def get_tier_features(tier):
+    """Get features available for subscription tier"""
+    try:
+        tier_info = subscription_manager.tiers.get(tier)
+        if not tier_info:
+            return jsonify({'error': 'Invalid tier'}), 400
+        
+        return jsonify(tier_info)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/subscription/check-access', methods=['POST'])
+def check_feature_access():
+    """Check if user has access to specific feature"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    feature = data.get('feature')
+    
+    db = Session()
+    try:
+        user = db.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        has_access = subscription_manager.check_feature_access(user.subscription_tier, feature)
+        
+        return jsonify({
+            'has_access': has_access,
+            'current_tier': user.subscription_tier
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# =============================================================================
+# USER PROFILE ROUTES
+# =============================================================================
+
+@app.route('/api/profile/<int:user_id>', methods=['GET'])
+def get_user_profile(user_id):
+    """Get user profile and business information"""
+    db = Session()
+    try:
+        user = db.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        profile = {
+            'id': user.id,
+            'email': user.email,
+            'subscription_tier': user.subscription_tier,
+            'business_profile': user.business_profile or {},
+            'created_at': user.created_at.isoformat()
+        }
+        
+        return jsonify(profile)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/profile/<int:user_id>', methods=['PUT'])
+def update_user_profile(user_id):
+    """Update user business profile"""
+    data = request.get_json()
+    business_profile = data.get('business_profile')
+    
+    db = Session()
+    try:
+        user = db.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user.business_profile = business_profile
+        db.commit()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# =============================================================================
+# DASHBOARD ANALYTICS ROUTES
+# =============================================================================
+
+@app.route('/api/dashboard/<int:user_id>', methods=['GET'])
+def get_dashboard_data(user_id):
+    """Get dashboard summary data"""
+    db = Session()
+    try:
+        user = db.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Get user's forms
+        forms = db.query(TaxForm).filter_by(user_id=user_id).all()
+        
+        # Get smart ledger summary
+        from sqlalchemy import func
+        total_expenses = db.query(func.sum(SmartLedgerEntry.amount)).filter_by(user_id=user_id).scalar() or 0
+        deductible_expenses = db.query(func.sum(SmartLedgerEntry.amount)).filter(
+            SmartLedgerEntry.user_id == user_id,
+            SmartLedgerEntry.tax_deductible == True
+        ).scalar() or 0
+        
+        # Calculate estimated savings
+        estimated_savings = float(deductible_expenses * 0.35)  # 35% combined tax rate
+        
+        # Get average completion across all forms
+        if forms:
+            avg_completion = sum(form.completion_percentage for form in forms) / len(forms)
+        else:
+            avg_completion = 0
+        
+        dashboard_data = {
+            'user': {
+                'email': user.email,
+                'tier': user.subscription_tier
+            },
+            'forms': [
+                {
+                    'id': form.id,
+                    'type': form.form_type,
+                    'completion_percentage': form.completion_percentage,
+                    'updated_at': form.updated_at.isoformat()
+                }
+                for form in forms
+            ],
+            'financial_summary': {
+                'total_expenses': float(total_expenses),
+                'deductible_expenses': float(deductible_expenses),
+                'estimated_tax_savings': estimated_savings
+            },
+            'progress': {
+                'average_form_completion': round(avg_completion, 1),
+                'forms_completed': len([f for f in forms if f.completion_percentage >= 100])
+            }
+        }
+        
+        return jsonify(dashboard_data)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# =============================================================================
+# 1099 MANAGEMENT ROUTES (Future micro-SaaS feature)
+# =============================================================================
+
+@app.route('/api/1099/contractors', methods=['POST'])
+def add_contractor():
+    """Add contractor for 1099 management"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    contractor_info = data.get('contractor_info')
+    
+    # This would integrate with the 1099 management micro-SaaS
+    # For now, return placeholder
+    return jsonify({
+        'message': '1099 management feature coming soon',
+        'contractor_id': 'placeholder'
+    })
+
+@app.route('/api/1099/file', methods=['POST'])
+def file_1099_forms():
+    """File 1099-NEC forms (future feature)"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    
+    # This would handle the actual 1099 filing
+    return jsonify({
+        'message': 'Automated 1099 filing coming soon',
+        'estimated_completion': '2026 Q2'
+    })
+
+# =============================================================================
+# UTILITY ROUTES
+# =============================================================================
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '1.0.0'
+    })
+
+@app.route('/api/tax-calendar', methods=['GET'])
+def get_tax_calendar():
+    """Get important tax dates for the year"""
+    tax_dates = [
+        {'date': '2025-03-15', 'description': 'S-Corp tax return due (Form 1120S)'},
+        {'date': '2025-04-15', 'description': 'Individual tax return due (Form 1040)'},
+        {'date': '2025-04-15', 'description': 'Q1 estimated tax payment due'},
+        {'date': '2025-06-16', 'description': 'Q2 estimated tax payment due'},
+        {'date': '2025-09-15', 'description': 'Q3 estimated tax payment due'},
+        {'date': '2025-10-15', 'description': 'Extended tax return deadline'},
+        {'date': '2026-01-15', 'description': 'Q4 estimated tax payment due'},
+        {'date': '2026-01-31', 'description': '1099 forms due to recipients'}
+    ]
+    
+    return jsonify({'tax_calendar': tax_dates})
+
+# =============================================================================
+# ERROR HANDLERS
+# =============================================================================
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'Endpoint not found'}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({'error': 'Internal server error'}), 500
+
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({'error': 'Unauthorized access'}), 401
+
+@app.errorhandler(403)
+def forbidden(error):
+    return jsonify({'error': 'Access forbidden'}), 403
+
+# =============================================================================
+# MIDDLEWARE FOR AUTHENTICATION
+# =============================================================================
+
+def require_auth(f):
+    """Decorator to require authentication"""
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'error': 'Token required'}), 401
+        
+        try:
+            token = token.replace('Bearer ', '')
+            payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            request.user_id = payload['user_id']
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), 401
+        
+        return f(*args, **kwargs)
+    
+    decorated.__name__ = f.__name__
+    return decorated
+
+# =============================================================================
+# MAIN APPLICATION RUNNER
+# =============================================================================
+
+if __name__ == '__main__':
+    # Development server
+    app.run(
+        host='0.0.0.0',
+        port=int(os.getenv('PORT', 5000)),
+        debug=os.getenv('FLASK_ENV') == 'development'
+    )
+
+# =============================================================================
+# PRODUCTION DEPLOYMENT CONFIGURATION
+# =============================================================================
+
+"""
+For production deployment, you'll need:
+
+1. Environment Variables:
+   - DATABASE_URL=postgresql://user:pass@host:port/database
+   - OPENAI_API_KEY=your-openai-api-key
+   - STRIPE_SECRET_KEY=your-stripe-secret-key
+   - SECRET_KEY=your-jwt-secret-key
+   - FLASK_ENV=production
+
+2. Database Setup:
+   - Run migrations to create tables
+   - Set up proper indexes for performance
+   - Configure backup strategy
+
+3. Security:
+   - Enable HTTPS
+   - Set up CORS properly for your domain
+   - Implement rate limiting
+   - Add request validation middleware
+
+4. Monitoring:
+   - Set up error tracking (Sentry, Rollbar)
+   - Implement logging
+   - Add performance monitoring
+
+5. Scaling:
+   - Use Gunicorn or similar WSGI server
+   - Set up load balancing if needed
+   - Implement caching (Redis)
+   - Consider database connection pooling
+"""

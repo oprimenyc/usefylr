@@ -75,6 +75,11 @@ def dashboard():
     """Premium dashboard"""
     return render_template('premium_dashboard.html')
 
+@app.route('/react-dashboard')
+def react_dashboard():
+    """React-powered dashboard with integrated components"""
+    return render_template('react_dashboard.html')
+
 @app.route('/pricing')
 def pricing():
     """Pricing page"""

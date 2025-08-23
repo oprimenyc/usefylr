@@ -1,0 +1,444 @@
+import React, { useState, useEffect } from 'react';
+import { AlertCircle, CheckCircle, DollarSign, FileText, Calculator, TrendingUp, Upload, Download } from 'lucide-react';
+
+// Smart Ledger Component - Monthly expense tracking with AI
+const SmartLedger = ({ userId, onSavingsUpdate }) => {
+  const [expenses, setExpenses] = useState([]);
+  const [newExpense, setNewExpense] = useState({ amount: '', description: '', date: '' });
+  const [taxReadinessScore, setTaxReadinessScore] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const addExpense = async () => {
+    if (!newExpense.amount || !newExpense.description) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/smart-ledger/add-expense', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          amount: parseFloat(newExpense.amount),
+          description: newExpense.description,
+          date: newExpense.date || new Date().toISOString()
+        })
+      });
+      
+      const result = await response.json();
+      setExpenses([...expenses, result]);
+      setNewExpense({ amount: '', description: '', date: '' });
+      
+      const scoreResponse = await fetch(`/api/smart-ledger/tax-readiness/${userId}`);
+      const scoreData = await scoreResponse.json();
+      setTaxReadinessScore(scoreData);
+      
+      if (onSavingsUpdate && result.tax_savings_estimate) {
+        onSavingsUpdate(result.tax_savings_estimate);
+      }
+      
+    } catch (error) {
+      console.error('Error adding expense:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Smart Ledger</h2>
+        {taxReadinessScore && (
+          <div className="flex items-center space-x-2">
+            <div className="text-sm font-medium text-gray-600">Tax Readiness:</div>
+            <div className={`text-lg font-bold ${
+              taxReadinessScore.score >= 80 ? 'text-green-600' : 
+              taxReadinessScore.score >= 60 ? 'text-orange-500' : 'text-red-500'
+            }`}>
+              {taxReadinessScore.score}%
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <div className="bg-gray-50 rounded-lg p-4 mb-6">
+        <h3 className="text-lg font-semibold mb-4">Add Business Expense</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input
+            type="number"
+            placeholder="Amount ($)"
+            value={newExpense.amount}
+            onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+          <input
+            type="text"
+            placeholder="Description"
+            value={newExpense.description}
+            onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+          <input
+            type="date"
+            value={newExpense.date}
+            onChange={(e) => setNewExpense({...newExpense, date: e.target.value})}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+        <button
+          onClick={addExpense}
+          disabled={loading || !newExpense.amount || !newExpense.description}
+          className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 disabled:opacity-50"
+        >
+          {loading ? 'Adding...' : 'Add Expense'}
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold">Recent Expenses</h3>
+        {expenses.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">No expenses tracked yet. Add your first business expense above!</p>
+        ) : (
+          expenses.map((expense, index) => (
+            <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+              <div className="flex-1">
+                <div className="font-medium">{expense.description}</div>
+                <div className="text-sm text-gray-500">
+                  {expense.ai_analysis?.category} • {expense.date}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-lg">${expense.amount}</div>
+                {expense.tax_savings_estimate > 0 && (
+                  <div className="text-sm text-green-600">
+                    ~${expense.tax_savings_estimate.toFixed(2)} tax savings
+                  </div>
+                )}
+              </div>
+              <div className={`ml-4 px-2 py-1 rounded-full text-xs ${
+                expense.ai_analysis?.confidence > 0.8 ? 'bg-green-100 text-green-800' :
+                expense.ai_analysis?.confidence > 0.6 ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {Math.round(expense.ai_analysis?.confidence * 100)}% confident
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Tax Form Builder Component
+const TaxFormBuilder = ({ formType, userId, onCompletion }) => {
+  const [formData, setFormData] = useState({});
+  const [formTemplate, setFormTemplate] = useState(null);
+  const [aiGuidance, setAiGuidance] = useState(null);
+  const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [currentSection, setCurrentSection] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadForm();
+  }, [formType, userId]);
+
+  const loadForm = async () => {
+    try {
+      const response = await fetch(`/api/forms/create/${formType}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+      });
+      
+      const result = await response.json();
+      setFormTemplate(result.template);
+      setFormData(result.data);
+      setCompletionPercentage(result.completion_percentage);
+      
+      await getAIGuidance(result.data);
+      
+    } catch (error) {
+      console.error('Error loading form:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getAIGuidance = async (currentData) => {
+    try {
+      const response = await fetch('/api/ai/guidance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_type: formType,
+          form_data: currentData,
+          user_id: userId
+        })
+      });
+      
+      const guidance = await response.json();
+      setAiGuidance(guidance);
+    } catch (error) {
+      console.error('Error getting AI guidance:', error);
+    }
+  };
+
+  const updateField = async (section, field, value) => {
+    const updatedData = {
+      ...formData,
+      [section]: {
+        ...formData[section],
+        [field]: value
+      }
+    };
+    
+    setFormData(updatedData);
+    
+    const completion = calculateCompletion(updatedData);
+    setCompletionPercentage(completion);
+    
+    await getAIGuidance(updatedData);
+    
+    if (onCompletion) {
+      onCompletion(completion, updatedData);
+    }
+  };
+
+  const calculateCompletion = (data) => {
+    if (!formTemplate) return 0;
+    
+    let totalRequired = 0;
+    let completed = 0;
+    
+    Object.entries(formTemplate.sections).forEach(([sectionName, section]) => {
+      Object.entries(section.fields).forEach(([fieldName, fieldConfig]) => {
+        if (fieldConfig.required) {
+          totalRequired++;
+          const value = data[sectionName]?.[fieldName];
+          if (value && String(value).trim()) {
+            completed++;
+          }
+        }
+      });
+    });
+    
+    return totalRequired > 0 ? Math.round((completed / totalRequired) * 100) : 0;
+  };
+
+  if (loading || !formTemplate) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
+
+  const sections = Object.entries(formTemplate.sections);
+  const currentSectionData = sections[currentSection];
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">{formTemplate.form_name}</h2>
+        <div className="flex items-center space-x-4">
+          <div className="text-sm text-gray-600">
+            Completion: <span className="font-bold text-orange-500">{completionPercentage}%</span>
+          </div>
+          <div className="w-32 bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${completionPercentage}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <h3 className="text-xl font-semibold text-gray-800">Tax Form Builder</h3>
+        <p className="text-gray-600">AI-powered form completion with real-time guidance</p>
+      </div>
+    </div>
+  );
+};
+
+// Upgrade Trigger Component
+const UpgradeTrigger = ({ currentTier, estimatedSavings, completionPercentage, onUpgrade }) => {
+  const [trigger, setTrigger] = useState(null);
+
+  useEffect(() => {
+    checkUpgradeTrigger();
+  }, [currentTier, estimatedSavings, completionPercentage]);
+
+  const checkUpgradeTrigger = async () => {
+    try {
+      const response = await fetch('/api/subscription/upgrade-trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          current_tier: currentTier,
+          estimated_savings: estimatedSavings,
+          completion_percentage: completionPercentage
+        })
+      });
+      
+      const result = await response.json();
+      setTrigger(result.trigger || null);
+    } catch (error) {
+      console.error('Error checking upgrade trigger:', error);
+    }
+  };
+
+  if (!trigger || currentTier === 'premium') return null;
+
+  return (
+    <div className="border-2 border-orange-200 bg-orange-50 rounded-lg p-4 mb-6">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center mb-2">
+            <TrendingUp className="w-5 h-5 mr-2 text-gray-600" />
+            <h3 className="text-lg font-semibold text-gray-800">Unlock More Value</h3>
+          </div>
+          <p className="text-gray-700 mb-4">{trigger.message}</p>
+          
+          {estimatedSavings > 0 && (
+            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+              <div className="flex items-center">
+                <DollarSign className="w-4 h-4 mr-1" />
+                Potential Savings: ${estimatedSavings.toLocaleString()}
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Form: {completionPercentage}% Complete
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <button
+          onClick={() => onUpgrade(trigger.suggested_tier || 'guided')}
+          className="px-6 py-2 text-white rounded-lg font-medium bg-orange-500 hover:bg-orange-600 transition-colors"
+        >
+          {trigger.cta}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Main Dashboard Component
+const FylrDashboard = ({ userId, userTier }) => {
+  const [totalSavings, setTotalSavings] = useState(0);
+  const [formCompletion, setFormCompletion] = useState(0);
+  const [activeTab, setActiveTab] = useState('forms');
+
+  const handleSavingsUpdate = (newSavings) => {
+    setTotalSavings(prev => prev + newSavings);
+  };
+
+  const handleFormCompletion = (completion, formData) => {
+    setFormCompletion(completion);
+  };
+
+  const handleUpgrade = (targetTier) => {
+    window.location.href = `/subscribe/${targetTier}`;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Welcome to .fylr
+          </h1>
+          <p className="text-gray-600">
+            AI-powered tax assistance for your business
+          </p>
+        </div>
+
+        <UpgradeTrigger
+          currentTier={userTier}
+          estimatedSavings={totalSavings}
+          completionPercentage={formCompletion}
+          onUpgrade={handleUpgrade}
+        />
+
+        <div className="flex space-x-1 mb-6">
+          {[
+            { id: 'forms', label: 'Tax Forms', icon: FileText },
+            { id: 'ledger', label: 'Smart Ledger', icon: Calculator },
+            { id: 'insights', label: 'Tax Insights', icon: TrendingUp }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center px-4 py-2 rounded-lg font-medium ${
+                  activeTab === tab.id
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Icon className="w-4 h-4 mr-2" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div>
+          {activeTab === 'forms' && (
+            <TaxFormBuilder
+              formType="schedule_c"
+              userId={userId}
+              onCompletion={handleFormCompletion}
+            />
+          )}
+          
+          {activeTab === 'ledger' && (
+            <SmartLedger
+              userId={userId}
+              onSavingsUpdate={handleSavingsUpdate}
+            />
+          )}
+          
+          {activeTab === 'insights' && (
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-bold mb-4">Tax Insights</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-green-800 mb-2">
+                    Estimated Savings
+                  </h3>
+                  <div className="text-3xl font-bold text-green-600">
+                    ${totalSavings.toLocaleString()}
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">
+                    Form Progress
+                  </h3>
+                  <div className="text-3xl font-bold text-blue-600">
+                    {formCompletion}%
+                  </div>
+                </div>
+                
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-orange-800 mb-2">
+                    Current Plan
+                  </h3>
+                  <div className="text-xl font-bold text-orange-600 capitalize">
+                    {userTier}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FylrDashboard;
