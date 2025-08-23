@@ -1,0 +1,286 @@
+# Flask API & Production Deployment Integration Prompt for .fylr
+
+## OBJECTIVE
+Integrate the complete Flask backend API and production deployment configuration into my .fylr project. This is production-ready code that needs to be implemented exactly as provided, with proper security, scalability, and deployment readiness for immediate launch.
+
+## BACKEND API INTEGRATION REQUIREMENTS
+
+### Core Flask Application Setup
+**Implement these components exactly as provided:**
+- Complete database models (User, TaxForm, SmartLedgerEntry)
+- AI Tax Assistant class with OpenAI integration
+- Smart Ledger system with expense categorization
+- Dynamic tax form generator with validation
+- Subscription management with Stripe integration
+- Authentication system with JWT tokens
+
+### API Routes to Implement
+**Authentication Routes:**
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login with JWT
+
+**Tax Form Routes:**
+- `POST /api/forms/create/<form_type>` - Create/retrieve tax forms
+- `PUT /api/forms/update/<form_id>` - Update form data
+- `GET /api/forms/export/<form_id>` - Export forms (paid tiers only)
+
+**Smart Ledger Routes:**
+- `POST /api/smart-ledger/add-expense` - Add expense with AI categorization
+- `GET /api/smart-ledger/expenses/<user_id>` - Get user expenses
+- `GET /api/smart-ledger/tax-readiness/<user_id>` - Tax readiness score
+- `GET /api/smart-ledger/monthly-summary/<user_id>` - Monthly summaries
+
+**AI & Subscription Routes:**
+- `POST /api/ai/guidance` - Get AI tax guidance
+- `POST /api/ai/find-deductions` - AI deduction finder
+- `POST /api/subscription/upgrade-trigger` - Check upgrade prompts
+- `POST /api/subscription/create` - Create Stripe subscriptions
+
+## PRODUCTION DEPLOYMENT SETUP
+
+### Environment Configuration Required
+```bash
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/fylr_db
+
+# API Keys (YOU MUST SET THESE)
+OPENAI_API_KEY=sk-your-openai-key-here
+STRIPE_SECRET_KEY=sk_live_your-stripe-key-here
+STRIPE_PUBLISHABLE_KEY=pk_live_your-publishable-key-here
+
+# Security
+SECRET_KEY=your-jwt-secret-32-characters-minimum
+FLASK_ENV=production
+
+# Optional Services
+REDIS_URL=redis://localhost:6379/0
+SENTRY_DSN=your-sentry-dsn-here
+```
+
+### Docker Configuration to Implement
+**Create these files exactly as provided:**
+1. **Dockerfile** - Python 3.9 with production dependencies
+2. **docker-compose.yml** - Development environment setup  
+3. **docker-compose.prod.yml** - Production environment
+4. **requirements.txt** - All Python dependencies
+
+### Database Setup
+**PostgreSQL Configuration:**
+- Set up production database with proper indexes
+- Implement Alembic migrations for schema management
+- Configure connection pooling and backup strategy
+- Set up database security and user permissions
+
+### Background Task Processing
+**Celery Integration:**
+- Redis broker for task queue
+- Background tasks for AI processing
+- Monthly report generation
+- Document processing pipeline
+- Email notification system
+
+## SECURITY IMPLEMENTATION
+
+### Required Security Measures
+- **JWT Authentication** with secure token management
+- **API Rate Limiting** to prevent abuse
+- **Input Validation** on all endpoints
+- **SQL Injection Protection** via SQLAlchemy ORM
+- **CORS Configuration** for production domains only
+- **SSL/TLS Encryption** for all API communications
+- **Environment Variable Security** (no hardcoded secrets)
+
+### Error Handling & Monitoring
+- **Comprehensive error handlers** for 404, 500, 401, 403
+- **Structured logging** for production debugging
+- **Health check endpoint** for monitoring
+- **Performance monitoring** integration
+- **Error tracking** with Sentry or similar
+
+## DEPLOYMENT INFRASTRUCTURE
+
+### Production Server Setup
+**Implement these components:**
+1. **Nginx Configuration** - Reverse proxy with SSL
+2. **Gunicorn WSGI Server** - Production Python server
+3. **Supervisor/Systemd** - Process management
+4. **Log Rotation** - Automated log management
+5. **Backup Strategy** - Database and file backups
+
+### Kubernetes Deployment (Optional)
+**For scalable deployment:**
+- Deployment manifests for web application
+- Service configuration for load balancing  
+- ConfigMap and Secret management
+- Horizontal Pod Autoscaling
+- Ingress configuration with SSL
+
+### Monitoring & Alerting
+**Production monitoring setup:**
+- Health check endpoints
+- Performance metrics collection
+- Error rate monitoring
+- Database performance tracking
+- Uptime monitoring and alerting
+
+## INTEGRATION TASKS
+
+### Phase 1: Core Backend Setup ⚡
+**Priority: Complete this first**
+- [ ] Set up Flask application structure
+- [ ] Implement database models and migrations
+- [ ] Configure OpenAI API integration
+- [ ] Set up Stripe payment processing
+- [ ] Implement JWT authentication system
+
+### Phase 2: API Routes Implementation ⚡
+**Priority: Essential for frontend integration**
+- [ ] Implement all authentication routes
+- [ ] Create tax form management endpoints
+- [ ] Build Smart Ledger API routes
+- [ ] Add AI guidance endpoints
+- [ ] Set up subscription management routes
+
+### Phase 3: Production Configuration ⚡
+**Priority: Required for deployment**
+- [ ] Create Docker configuration files
+- [ ] Set up database migrations
+- [ ] Configure Nginx reverse proxy
+- [ ] Implement security middleware
+- [ ] Add monitoring and logging
+
+### Phase 4: Deployment Automation ⚡
+**Priority: Launch readiness**
+- [ ] Create deployment scripts
+- [ ] Set up CI/CD pipeline (optional)
+- [ ] Configure backup procedures
+- [ ] Implement health checks
+- [ ] Test production deployment
+
+## DEPLOYMENT SCRIPTS TO IMPLEMENT
+
+### Quick Start Script (`quickstart.sh`)
+**For development setup:**
+- Docker environment validation
+- Environment file creation
+- Database initialization
+- Service startup and health checks
+- Development server launch
+
+### Production Deployment Script (`deploy.sh`)
+**For production deployment:**
+- Environment validation
+- Docker image building
+- Database migrations
+- Zero-downtime deployment
+- Health check verification
+- Rollback capability
+
+### Maintenance Scripts (`maintenance.sh`)
+**For ongoing operations:**
+- Database backup procedures
+- Log cleanup routines
+- Dependency update checks
+- Performance monitoring
+- Security audit automation
+
+## API TESTING & VALIDATION
+
+### Endpoints to Test
+**Verify these work correctly:**
+1. User registration and login flow
+2. Tax form creation and updates
+3. Smart Ledger expense tracking
+4. AI guidance generation
+5. Subscription upgrade triggers
+6. Payment processing integration
+
+### Performance Requirements
+- **API Response Time**: <500ms for all endpoints
+- **Database Query Time**: <100ms for typical operations
+- **AI Processing Time**: <5 seconds for guidance requests
+- **File Upload Limit**: 16MB maximum
+- **Concurrent Users**: Handle 100+ simultaneous users
+
+## PRODUCTION CHECKLIST
+
+### Pre-Launch Requirements ✅
+- [ ] All API endpoints functional and tested
+- [ ] Database configured with proper indexing
+- [ ] SSL certificates installed and configured
+- [ ] Environment variables secured
+- [ ] Payment processing tested (Stripe)
+- [ ] AI integration working (OpenAI)
+- [ ] Error handling and logging operational
+- [ ] Backup procedures tested
+- [ ] Monitoring and alerting configured
+- [ ] Load testing completed
+
+### Security Validation ✅  
+- [ ] JWT authentication secure
+- [ ] API rate limiting enabled
+- [ ] Input validation implemented
+- [ ] SQL injection protection verified
+- [ ] CORS configured for production
+- [ ] Secrets management secure
+- [ ] SSL/TLS encryption enabled
+- [ ] Security headers configured
+
+### Performance Optimization ✅
+- [ ] Database queries optimized
+- [ ] Connection pooling configured
+- [ ] Caching strategy implemented
+- [ ] Static file serving optimized
+- [ ] Background task processing functional
+- [ ] Resource usage monitoring active
+
+## EXPECTED OUTCOMES
+
+### Backend API Features
+✅ **Complete REST API** with all CRUD operations
+✅ **AI-powered tax assistance** with OpenAI integration
+✅ **Smart expense categorization** with confidence scoring
+✅ **Subscription management** with Stripe billing
+✅ **Real-time form guidance** and completion tracking
+✅ **Automated upgrade triggers** based on user behavior
+
+### Production Infrastructure
+✅ **Scalable deployment** with Docker containerization
+✅ **Production-ready security** with proper authentication
+✅ **Automated deployments** with health checks
+✅ **Monitoring and alerting** for system health
+✅ **Backup and recovery** procedures
+✅ **Performance optimization** for scale
+
+### Business Readiness
+✅ **Revenue generation** through Stripe subscriptions
+✅ **User onboarding** with smooth registration flow
+✅ **Customer support** with proper error handling
+✅ **Business intelligence** with usage analytics
+✅ **Competitive features** that justify premium pricing
+
+## INTEGRATION NOTES
+
+**File Organization:**
+- Place Flask app in `/backend/` directory
+- Store deployment configs in `/deploy/` directory
+- Keep environment files in project root
+- Organize API routes in logical modules
+
+**Development Workflow:**
+1. Set up development environment with Docker
+2. Test API endpoints with frontend integration
+3. Validate all business logic functions
+4. Perform security testing
+5. Deploy to staging environment
+6. Load test with realistic traffic
+7. Deploy to production with monitoring
+
+**Quality Assurance:**
+- All endpoints must handle errors gracefully
+- Database operations must be atomic
+- Authentication must be secure and scalable
+- Payment processing must be PCI compliant
+- AI integration must have fallback mechanisms
+
+**GOAL: Deploy a production-ready Flask API that can handle real customers, process payments, and scale to thousands of users from day one.**

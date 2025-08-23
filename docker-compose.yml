@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://fylr_user:fylr_password@db:5432/fylr_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    command: ["python", "main.py"]
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=fylr_db
+      - POSTGRES_USER=fylr_user
+      - POSTGRES_PASSWORD=fylr_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  worker:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://fylr_user:fylr_password@db:5432/fylr_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    command: ["celery", "-A", "tasks", "worker", "--loglevel=info"]
+
+volumes:
+  postgres_data:

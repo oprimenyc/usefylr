@@ -1,0 +1,430 @@
+# .fylr Production Deployment Configuration
+# Complete deployment package for rapid launch
+
+# =============================================================================
+# DOCKER CONFIGURATION
+# =============================================================================
+
+# Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production
+ENV PYTHONPATH=/app
+
+# Expose port
+EXPOSE 5000
+
+# Run application
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app:app"]
+
+---
+
+# requirements.txt
+Flask==2.3.3
+Flask-CORS==4.0.0
+SQLAlchemy==2.0.23
+psycopg2-binary==2.9.9
+openai==1.3.7
+stripe==7.8.0
+PyJWT==2.8.0
+Werkzeug==2.3.7
+gunicorn==21.2.0
+python-dotenv==1.0.0
+alembic==1.12.1
+celery==5.3.4
+redis==5.0.1
+boto3==1.34.0
+Pillow==10.1.0
+
+---
+
+# =============================================================================
+# DOCKER COMPOSE FOR DEVELOPMENT
+# =============================================================================
+
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://fylr_user:fylr_password@db:5432/fylr_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    command: ["python", "app.py"]
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=fylr_db
+      - POSTGRES_USER=fylr_user
+      - POSTGRES_PASSWORD=fylr_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  worker:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://fylr_user:fylr_password@db:5432/fylr_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    command: ["celery", "-A", "tasks", "worker", "--loglevel=info"]
+
+volumes:
+  postgres_data:
+
+---
+
+# =============================================================================
+# KUBERNETES DEPLOYMENT (Production)
+# =============================================================================
+
+# fylr-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fylr-web
+  labels:
+    app: fylr-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fylr-web
+  template:
+    metadata:
+      labels:
+        app: fylr-web
+    spec:
+      containers:
+      - name: fylr-web
+        image: fylr/web:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: fylr-secrets
+              key: database-url
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fylr-secrets
+              key: openai-api-key
+        - name: STRIPE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fylr-secrets
+              key: stripe-secret-key
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fylr-secrets
+              key: jwt-secret-key
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fylr-service
+spec:
+  selector:
+    app: fylr-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
+
+---
+
+# =============================================================================
+# DATABASE MIGRATIONS (Alembic)
+# =============================================================================
+
+# alembic.ini
+[alembic]
+script_location = migrations
+prepend_sys_path = .
+version_path_separator = os
+
+sqlalchemy.url = postgresql://fylr_user:fylr_password@localhost:5432/fylr_db
+
+[post_write_hooks]
+
+[loggers]
+keys = root,sqlalchemy,alembic
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = WARN
+handlers = console
+qualname =
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+
+[logger_alembic]
+level = INFO
+handlers =
+qualname = alembic
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
+
+---
+
+# =============================================================================
+# ENVIRONMENT CONFIGURATION
+# =============================================================================
+
+# .env.example
+# Copy to .env and fill in your values
+
+# Database
+DATABASE_URL=postgresql://fylr_user:fylr_password@localhost:5432/fylr_db
+
+# API Keys
+OPENAI_API_KEY=sk-your-openai-api-key-here
+STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key-here
+STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-publishable-key-here
+
+# Security
+SECRET_KEY=your-super-secret-jwt-key-here
+BCRYPT_LOG_ROUNDS=12
+
+# Email (for notifications)
+SENDGRID_API_KEY=your-sendgrid-api-key
+FROM_EMAIL=noreply@fylr.com
+
+# File Storage
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_BUCKET_NAME=fylr-documents
+AWS_REGION=us-east-1
+
+# Redis (for caching and background jobs)
+REDIS_URL=redis://localhost:6379/0
+
+# Monitoring
+SENTRY_DSN=your-sentry-dsn-here
+
+# Application
+FLASK_ENV=production
+MAX_CONTENT_LENGTH=16777216  # 16MB file upload limit
+
+---
+
+# =============================================================================
+# NGINX CONFIGURATION
+# =============================================================================
+
+# nginx.conf
+upstream fylr_backend {
+    server 127.0.0.1:5000;
+    server 127.0.0.1:5001;
+    server 127.0.0.1:5002;
+}
+
+server {
+    listen 80;
+    server_name fylr.com www.fylr.com;
+    
+    # Redirect HTTP to HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name fylr.com www.fylr.com;
+
+    # SSL Configuration
+    ssl_certificate /etc/ssl/certs/fylr.com.crt;
+    ssl_certificate_key /etc/ssl/private/fylr.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
+    ssl_prefer_server_ciphers off;
+
+    # Security Headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+
+    # File Upload Limits
+    client_max_body_size 16M;
+
+    # API Routes
+    location /api/ {
+        proxy_pass http://fylr_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # CORS Headers
+        add_header Access-Control-Allow-Origin "https://app.fylr.com";
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+        add_header Access-Control-Allow-Headers "Authorization, Content-Type";
+    }
+
+    # Static Files
+    location /static/ {
+        alias /var/www/fylr/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # React App
+    location / {
+        root /var/www/fylr/build;
+        try_files $uri $uri/ /index.html;
+        expires 1h;
+    }
+}
+
+---
+
+# =============================================================================
+# CELERY CONFIGURATION (Background Tasks)
+# =============================================================================
+
+# celery_app.py
+from celery import Celery
+import os
+
+celery_app = Celery('fylr')
+celery_app.conf.broker_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+celery_app.conf.result_backend = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+
+# Task imports
+celery_app.autodiscover_tasks(['tasks'])
+
+# Configuration
+celery_app.conf.update(
+    task_serializer='json',
+    accept_content=['json'],
+    result_serializer='json',
+    timezone='UTC',
+    enable_utc=True,
+    task_track_started=True,
+    task_time_limit=30 * 60,  # 30 minutes
+    worker_prefetch_multiplier=1,
+)
+
+---
+
+# tasks.py
+from celery_app import celery_app
+from sqlalchemy.orm import sessionmaker
+from core_components import AITaxAssistant, SmartLedger, User, TaxForm
+import openai
+import os
+
+# Initialize components
+ai_assistant = AITaxAssistant(os.getenv('OPENAI_API_KEY'))
+Session = sessionmaker()
+
+@celery_app.task
+def process_document_upload(user_id, file_path, file_type):
+    """Background task to process uploaded tax documents"""
+    try:
+        db = Session()
+        # OCR processing would go here
+        # For now, return success
+        return {"status": "success", "message": "Document processed"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        db.close()
+
+@celery_app.task
+def generate_ai_insights(user_id, form_id):
+    """Background task to generate comprehensive AI tax insights"""
+    try:
+        db = Session()
+        
+        # Get user and form data
+        user = db.query(User).get(user_id)
+        tax_form = db.query(TaxForm).get(form_id)
+        
+        if not user or not tax_form:
+            return {"status": "error", "message": "User or form not found"}
+        
+        # Generate insights
+        insights = ai_assistant.get_schedule_c_guidance(
+            user.business_profile or {}, 
+            tax_form.form_data
+        )
+        
+        # Save insights to form
+        tax_form.ai_recommendations = insights
+        db.commit()
+        
+        return {"status": "success", "insights": insights}
+        
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        db.close()
+
+@celery_app.task
+def send_monthly_ledger_summary(user_id):
+    """Send monthly Smart
