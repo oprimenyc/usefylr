@@ -46,34 +46,76 @@
             </div>
             <div class="col-lg-6">
                 <div class="position-relative">
-                    <!-- Hero Animation Container -->
-                    <div class="premium-card hover-lift" style="transform: rotate(-2deg);">
-                        <div class="mb-3">
-                            <h6 class="text-orange">AI Analysis Complete</h6>
-                            <p class="text-muted mb-0">Your tax savings potential: <span class="text-success counter">$3,247</span></p>
-                        </div>
-                        <div class="progress-container mb-3">
-                            <div class="progress-bar-orange" style="width: 87%;"></div>
-                        </div>
-                        <div class="d-flex justify-content-between text-muted">
-                            <small>23 deductions found</small>
-                            <small>87% confidence</small>
-                        </div>
-                    </div>
-                    
-                    <div class="premium-card hover-lift mt-4" style="transform: rotate(1deg); margin-left: 2rem;">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="feature-icon me-3" style="width: 2.5rem; height: 2.5rem; font-size: 1rem;">
-                                <i class="fas fa-receipt"></i>
+                    <!-- Hero Demo Container -->
+                    <div class="hero-demo-stack">
+                        <!-- Main Analysis Card -->
+                        <div class="demo-card primary-card">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="status-indicator success me-2"></div>
+                                    <h6 class="text-orange mb-0">AI Analysis Complete</h6>
+                                </div>
+                                <small class="text-muted">2 mins ago</small>
                             </div>
-                            <div>
-                                <h6 class="text-primary mb-0">Office Supplies - Amazon</h6>
-                                <small class="text-muted">100% deductible • $156.78</small>
+                            <div class="analysis-result">
+                                <div class="savings-amount mb-2">
+                                    <span class="counter text-success" data-target="3247">$0</span>
+                                    <small class="text-muted d-block">Tax Savings Potential</small>
+                                </div>
+                                <div class="confidence-display mb-3">
+                                    <div class="progress-container">
+                                        <div class="progress-bar-orange" style="width: 87%;"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-1">
+                                        <small class="text-muted">23 deductions found</small>
+                                        <small class="text-success">87% confidence</small>
+                                    </div>
+                                </div>
+                                <div class="quick-actions">
+                                    <button class="btn btn-orange btn-sm me-2">View Details</button>
+                                    <button class="btn btn-glass btn-sm">Export Report</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="ai-suggestion" style="margin: 0; padding: 0.5rem;">
-                            <i class="fas fa-robot ai-suggestion-icon"></i>
-                            <small>Categorized as business expense. Schedule C ready.</small>
+                        
+                        <!-- Transaction Card -->
+                        <div class="demo-card secondary-card">
+                            <div class="transaction-preview">
+                                <div class="d-flex align-items-start">
+                                    <div class="transaction-icon me-3">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="text-primary mb-1">Amazon Business</h6>
+                                                <p class="text-muted mb-2">Office supplies & equipment</p>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="amount-display">$156.78</div>
+                                                <small class="text-success">100% deductible</small>
+                                            </div>
+                                        </div>
+                                        <div class="ai-tag">
+                                            <i class="fas fa-robot me-1"></i>
+                                            <span>Auto-categorized as business expense</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Insight Card -->
+                        <div class="demo-card insight-card">
+                            <div class="insight-content">
+                                <div class="insight-icon">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-warning mb-1">Tax Tip</h6>
+                                    <small class="text-muted">Home office deduction could save you $2,400 annually</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -345,34 +387,41 @@ document.addEventListener('DOMContentLoaded', function() {
         counters.forEach(counter => observer.observe(counter));
     }
 
-    // Hero card animations
+    // Hero demo animations
     function initHeroAnimations() {
-        const heroCards = document.querySelectorAll('.hero-gradient .premium-card');
+        const demoCards = document.querySelectorAll('.demo-card');
         
-        heroCards.forEach((card, index) => {
-            // Add entrance animation
-            setTimeout(() => {
-                card.style.animation = 'slideUp 0.8s ease-out forwards';
-                card.style.opacity = '1';
-            }, index * 200);
-            
-            // Floating animation
-            setTimeout(() => {
-                card.style.animation = 'float 6s ease-in-out infinite';
-            }, 1000 + (index * 200));
+        // Set initial state
+        demoCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
         });
+        
+        // Animate on load
+        setTimeout(() => {
+            demoCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        }, 500);
     }
 
     // Smooth scroll for pricing anchor
-    const pricingLink = document.querySelector('a[href="#pricing"]');
-    if (pricingLink) {
-        pricingLink.addEventListener('click', function(e) {
+    const pricingLinks = document.querySelectorAll('a[href="#pricing"]');
+    pricingLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
             e.preventDefault();
-            document.querySelector('#pricing').scrollIntoView({
-                behavior: 'smooth'
-            });
+            const pricingSection = document.querySelector('#pricing');
+            if (pricingSection) {
+                pricingSection.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
         });
-    }
+    });
 
     // Feature card hover effects
     const featureCards = document.querySelectorAll('.feature-card');
@@ -405,16 +454,131 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add floating animation keyframes
+    // Add hero demo animation styles
     const style = document.createElement('style');
     style.textContent = `
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-10px) rotate(-1deg); }
+        .hero-demo-stack {
+            position: relative;
+            max-width: 400px;
+            margin-left: auto;
         }
         
-        .hero-gradient .premium-card:nth-child(2) {
-            animation-delay: 2s;
+        .demo-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--fylr-orange), transparent);
+            opacity: 0;
+            transition: opacity 0.3s var(--ease-smooth);
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--fylr-orange);
+        }
+        
+        .demo-card:hover::before {
+            opacity: 1;
+        }
+        
+        .primary-card {
+            z-index: 3;
+        }
+        
+        .secondary-card {
+            z-index: 2;
+            margin-left: 1rem;
+            margin-top: -0.5rem;
+        }
+        
+        .insight-card {
+            z-index: 1;
+            margin-left: 2rem;
+            margin-top: -0.5rem;
+            padding: 1rem;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-indicator.success {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        .savings-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .transaction-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(45deg, var(--fylr-orange), var(--fylr-orange-hover));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .amount-display {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .ai-tag {
+            background: rgba(255, 107, 0, 0.1);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--fylr-orange);
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .insight-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .insight-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(45deg, var(--warning), #fbbf24);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         @keyframes slideUp {
@@ -426,6 +590,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        
+        .demo-card:nth-child(1) {
+            animation: slideUp 0.6s ease-out 0.2s both;
+        }
+        
+        .demo-card:nth-child(2) {
+            animation: slideUp 0.6s ease-out 0.4s both;
+        }
+        
+        .demo-card:nth-child(3) {
+            animation: slideUp 0.6s ease-out 0.6s both;
         }
     `;
     document.head.appendChild(style);
