@@ -1,0 +1,654 @@
+{% extends "base_layout.html" %}
+
+{% block title %}Enhanced Smart Ledger - .fylr{% endblock %}
+
+{% block head %}
+<!-- React and required dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* Enhanced Premium Dark Theme for Smart Ledger */
+.enhanced-smart-ledger {
+  background: linear-gradient(135deg, #0A0A0B 0%, #1A1A1D 100%);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border: 1px solid rgba(255, 107, 0, 0.1);
+  position: relative;
+}
+
+.enhanced-smart-ledger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--fylr-orange), transparent);
+  animation: glow-flow 3s ease-in-out infinite alternate;
+}
+
+.ledger-header {
+  background: linear-gradient(135deg, #1A1A1D 0%, #2A2A2D 100%);
+  padding: 2rem;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.ledger-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 107, 0, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+}
+
+.tax-readiness-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(var(--fylr-orange) 0deg, var(--fylr-orange) var(--progress-angle, 0deg), rgba(255, 107, 0, 0.1) var(--progress-angle, 0deg));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: rotate-glow 4s ease-in-out infinite;
+}
+
+.tax-readiness-inner {
+  width: 90px;
+  height: 90px;
+  background: var(--bg-primary);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.expense-input-section {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.expense-input-section::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--fylr-orange), transparent, var(--fylr-orange));
+  border-radius: 20px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.expense-input-section:hover::before {
+  opacity: 0.3;
+}
+
+.enhanced-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.enhanced-input::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 0, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.enhanced-input:focus {
+  outline: none;
+  border-color: var(--fylr-orange);
+  box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.enhanced-input:focus::before {
+  left: 100%;
+}
+
+.ai-analyze-button {
+  background: linear-gradient(135deg, var(--fylr-orange) 0%, #FF8533 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(255, 107, 0, 0.3);
+}
+
+.ai-analyze-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(255, 107, 0, 0.4);
+}
+
+.ai-analyze-button:active {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.ai-analyze-button.processing {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+.projected-savings-card {
+  background: linear-gradient(135deg, rgba(0, 208, 132, 0.1) 0%, rgba(0, 150, 100, 0.1) 100%);
+  border: 1px solid rgba(0, 208, 132, 0.3);
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.projected-savings-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00D084, transparent);
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.expense-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.expense-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 0, 0.05), transparent);
+  transition: left 0.3s ease;
+}
+
+.expense-item:hover {
+  border-color: var(--fylr-orange);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.expense-item:hover::before {
+  left: 100%;
+}
+
+.risk-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.risk-low {
+  background: rgba(0, 208, 132, 0.2);
+  color: #00D084;
+  border: 1px solid rgba(0, 208, 132, 0.3);
+}
+
+.risk-medium {
+  background: rgba(245, 158, 11, 0.2);
+  color: #F59E0B;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.risk-high {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.category-badge {
+  background: rgba(255, 107, 0, 0.2);
+  color: var(--fylr-orange);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.irs-guidance-note {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.irs-guidance-note::before {
+  content: '💡';
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: var(--bg-primary);
+  padding: 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+@keyframes glow-flow {
+  0% { opacity: 0.3; transform: translateX(-100%); }
+  50% { opacity: 1; transform: translateX(0%); }
+  100% { opacity: 0.3; transform: translateX(100%); }
+}
+
+@keyframes rotate-glow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 107, 0, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(255, 107, 0, 0.6)); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 8px 32px rgba(255, 107, 0, 0.3); }
+  50% { box-shadow: 0 12px 40px rgba(255, 107, 0, 0.5); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.ai-processing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--fylr-orange);
+  font-size: 0.9rem;
+}
+
+.ai-processing-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 107, 0, 0.3);
+  border-top: 2px solid var(--fylr-orange);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.upgrade-prompt {
+  background: linear-gradient(135deg, rgba(255, 107, 0, 0.1) 0%, rgba(255, 107, 0, 0.05) 100%);
+  border: 2px solid var(--fylr-orange);
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: gentle-pulse 3s ease-in-out infinite;
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { border-color: var(--fylr-orange); }
+  50% { border-color: rgba(255, 107, 0, 0.7); }
+}
+
+.roi-indicator {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 208, 132, 0.2);
+  color: #00D084;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-left: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div id="enhanced-smart-ledger"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% raw %}
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const EnhancedSmartLedger = ({ userId = 'demo-user', userTier = 'trial' }) => {
+  const [expenses, setExpenses] = useState([]);
+  const [newExpense, setNewExpense] = useState({ amount: '', description: '', date: '' });
+  const [taxReadiness, setTaxReadiness] = useState(0);
+  const [projectedSavings, setProjectedSavings] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [totalDeductions, setTotalDeductions] = useState(0);
+
+  const addExpense = async () => {
+    if (!newExpense.amount || !newExpense.description) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // Call the enhanced API endpoint
+      const response = await fetch('/api/smart-ledger/add-expense', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          amount: parseFloat(newExpense.amount),
+          description: newExpense.description,
+          date: newExpense.date || new Date().toISOString().split('T')[0]
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      // Create enhanced expense entry
+      const enhancedExpense = {
+        id: result.entry_id,
+        amount: parseFloat(newExpense.amount),
+        description: newExpense.description,
+        date: newExpense.date || new Date().toISOString().split('T')[0],
+        category: result.ai_analysis.category,
+        deductible_percentage: result.ai_analysis.deductible_percentage,
+        deductible_amount: result.ai_analysis.deductible_amount,
+        tax_savings: result.tax_savings_estimate,
+        audit_risk: result.ai_analysis.audit_risk,
+        confidence: result.ai_analysis.confidence,
+        documentation_needed: result.ai_analysis.documentation_needed,
+        irs_guidance: result.ai_analysis.irs_guidance,
+        schedule_c_line: result.ai_analysis.schedule_c_line
+      };
+
+      setExpenses(prev => [enhancedExpense, ...prev]);
+      setNewExpense({ amount: '', description: '', date: '' });
+      
+      // Update totals
+      setTotalDeductions(prev => prev + enhancedExpense.deductible_amount);
+      setProjectedSavings(prev => prev + enhancedExpense.tax_savings);
+      
+      // Update tax readiness score
+      const newScore = Math.min(95, expenses.length * 8 + 35);
+      setTaxReadiness(newScore);
+      
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      alert('Error adding expense. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const roiMultiplier = projectedSavings > 0 ? Math.round(projectedSavings / 197) : 0;
+
+  return (
+    <div className="enhanced-smart-ledger">
+      {/* Premium Header */}
+      <div className="ledger-header">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+              Enhanced Smart Ledger
+            </h1>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
+              AI-powered expense tracking with advanced tax optimization
+            </p>
+            <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem' }}>
+              <div>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Tracked:</span>
+                <div style={{ color: 'var(--fylr-orange)', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  ${totalDeductions.toLocaleString()}
+                </div>
+              </div>
+              <div>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Entries:</span>
+                <div style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  {expenses.length}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Enhanced Tax Readiness Circle */}
+          <div className="tax-readiness-circle" style={{ '--progress-angle': `${(taxReadiness / 100) * 360}deg` }}>
+            <div className="tax-readiness-inner">
+              <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--fylr-orange)' }}>
+                {taxReadiness}%
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                Tax Ready
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Expense Input */}
+      <div className="expense-input-section">
+        <h3 style={{ fontSize: '1.3rem', fontWeight: '600', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+          Add Business Expense
+        </h3>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }}>
+              $
+            </div>
+            <input
+              type="number"
+              placeholder="0.00"
+              value={newExpense.amount}
+              onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
+              className="enhanced-input"
+              style={{ paddingLeft: '2.5rem', width: '100%' }}
+              step="0.01"
+            />
+          </div>
+          
+          <input
+            type="text"
+            placeholder="Expense description..."
+            value={newExpense.description}
+            onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
+            className="enhanced-input"
+            style={{ width: '100%' }}
+          />
+          
+          <input
+            type="date"
+            value={newExpense.date}
+            onChange={(e) => setNewExpense({...newExpense, date: e.target.value})}
+            className="enhanced-input"
+            style={{ width: '100%' }}
+          />
+        </div>
+        
+        <button
+          onClick={addExpense}
+          disabled={isProcessing || !newExpense.amount || !newExpense.description}
+          className={`ai-analyze-button ${isProcessing ? 'processing' : ''}`}
+          style={{ width: '100%' }}
+        >
+          {isProcessing ? (
+            <div className="ai-processing-indicator">
+              <div className="ai-processing-spinner"></div>
+              AI Analyzing Expense...
+            </div>
+          ) : (
+            'Analyze & Categorize with AI'
+          )}
+        </button>
+      </div>
+
+      {/* Projected Annual Savings */}
+      <div className="projected-savings-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: '600', color: '#00D084', marginBottom: '0.5rem' }}>
+              Projected Annual Tax Savings
+            </h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+              Based on your tracked expenses and current tax situation
+            </p>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00D084' }}>
+              ${projectedSavings.toLocaleString()}
+            </div>
+            {roiMultiplier > 0 && (
+              <div className="roi-indicator">
+                ROI: {roiMultiplier}x
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Upgrade Prompt for Trial Users */}
+      {userTier === 'trial' && projectedSavings > 1000 && (
+        <div className="upgrade-prompt">
+          <h3 style={{ color: 'var(--fylr-orange)', fontSize: '1.4rem', marginBottom: '1rem' }}>
+            🚀 Unlock ${(projectedSavings - 1000).toLocaleString()} More in Tax Savings!
+          </h3>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+            Upgrade to Guided for advanced AI strategies, audit protection, and unlimited exports.
+          </p>
+          <button style={{
+            background: 'linear-gradient(135deg, var(--fylr-orange) 0%, #FF8533 100%)',
+            border: 'none',
+            borderRadius: '12px',
+            padding: '1rem 2rem',
+            color: 'white',
+            fontWeight: '600',
+            fontSize: '1.1rem',
+            cursor: 'pointer'
+          }}>
+            Upgrade to Guided - $197/year
+          </button>
+        </div>
+      )}
+
+      {/* Enhanced Expense List */}
+      <div style={{ padding: '2rem' }}>
+        <h3 style={{ fontSize: '1.3rem', fontWeight: '600', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+          Recent Expenses ({expenses.length})
+        </h3>
+        
+        {expenses.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
+            <h4 style={{ marginBottom: '0.5rem' }}>No expenses tracked yet</h4>
+            <p>Add your first business expense above to start tracking your tax savings!</p>
+          </div>
+        ) : (
+          <div>
+            {expenses.map((expense) => (
+              <div key={expense.id} className="expense-item">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                      {expense.description}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <div className="category-badge">
+                        {expense.category}
+                      </div>
+                      <div className={`risk-badge risk-${expense.audit_risk}`}>
+                        {expense.audit_risk} risk
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', padding: '0.25rem 0.5rem' }}>
+                        {expense.deductible_percentage}% deductible
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      Schedule C Line: {expense.schedule_c_line} • {expense.date}
+                    </div>
+                  </div>
+                  
+                  <div style={{ textAlign: 'right', marginLeft: '1rem' }}>
+                    <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                      ${expense.amount.toFixed(2)}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: '#00D084', fontWeight: '500' }}>
+                      ${expense.tax_savings.toFixed(2)} tax savings
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      {Math.round(expense.confidence * 100)}% AI confidence
+                    </div>
+                  </div>
+                </div>
+                
+                {expense.irs_guidance && (
+                  <div className="irs-guidance-note">
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      <strong>IRS Guidance:</strong> {expense.irs_guidance}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                      Documentation needed: {expense.documentation_needed}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Render the enhanced smart ledger
+const container = document.getElementById('enhanced-smart-ledger');
+const root = ReactDOM.createRoot(container);
+root.render(<EnhancedSmartLedger />);
+</script>
+{% endraw %}
+{% endblock %}

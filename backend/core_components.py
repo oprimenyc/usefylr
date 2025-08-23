@@ -66,6 +66,8 @@ class AITaxAssistant:
         if openai_api_key:
             openai.api_key = openai_api_key
         self.prompts = self._load_prompts()
+        self.entity_specific_prompts = self._load_entity_prompts()
+        self.advanced_tax_categories = self._load_tax_categories()
     
     def _load_prompts(self) -> Dict:
         """Load AI prompts for different tax scenarios"""
@@ -120,6 +122,123 @@ class AITaxAssistant:
             """
         }
     
+    def _load_entity_prompts(self) -> Dict:
+        """Entity-specific tax intelligence prompts"""
+        return {
+            'sole_proprietorship': {
+                'guidance_prompt': """
+                You are analyzing a sole proprietorship Schedule C. This entity:
+                - Pays income tax + 15.3% self-employment tax
+                - Can deduct business expenses on Schedule C
+                - Must make quarterly estimated payments if owing >$1000
+                - Home office deduction available (simplified or actual method)
+                - Business meals 50% deductible in 2023-2024
+                
+                Based on this data: {form_data}
+                Revenue: {revenue}, Expenses: {expenses}
+                
+                Provide specific advice on:
+                1. Missed deductions (be specific with amounts)
+                2. Quarterly payment strategy 
+                3. Tax optimization opportunities
+                4. Audit risk assessment
+                
+                Calculate exact dollar savings for each recommendation.
+                """,
+                'risk_factors': ['hobby_loss_rule', 'excessive_home_office', 'round_numbers'],
+                'common_deductions': ['home_office', 'business_meals', 'equipment', 'professional_development']
+            },
+            's_corp': {
+                'guidance_prompt': """
+                You are analyzing an S-Corp return. This entity:
+                - Requires reasonable salary subject to payroll taxes
+                - Distributions above salary avoid SE tax
+                - Pass-through taxation to shareholders
+                - Basis limitations on losses and distributions
+                
+                Based on this data: {form_data}
+                Revenue: {revenue}, Officer Salary: {salary}
+                
+                Analyze:
+                1. Salary adequacy (IRS reasonable compensation test)
+                2. Salary vs distribution optimization
+                3. Basis tracking requirements
+                4. Tax savings vs sole prop/LLC
+                
+                Provide dollar amounts for salary adjustments and tax impact.
+                """,
+                'risk_factors': ['unreasonable_compensation', 'basis_tracking', 'built_in_gains'],
+                'optimization_strategies': ['salary_optimization', 'distribution_timing', 'fringe_benefits']
+            },
+            'llc': {
+                'guidance_prompt': """
+                You are analyzing an LLC tax return. This entity:
+                - Default single-member LLC = sole prop tax treatment
+                - Multi-member LLC = partnership taxation
+                - Can elect S-Corp or C-Corp taxation
+                - Self-employment tax applies unless S-Corp election
+                
+                Based on this data: {form_data}
+                Revenue: {revenue}, Members: {members}
+                
+                Analyze:
+                1. Current tax election optimization
+                2. SE tax minimization strategies
+                3. Entity election recommendations
+                4. Member allocation considerations
+                
+                Calculate tax impact of different elections.
+                """,
+                'risk_factors': ['se_tax_exposure', 'allocation_disputes', 'basis_tracking'],
+                'optimization_strategies': ['s_corp_election', 'guaranteed_payments', 'distributions']
+            }
+        }
+    
+    def _load_tax_categories(self) -> Dict:
+        """Advanced tax categorization with current tax law"""
+        return {
+            'business_meals': {
+                'deductible_percentage': 50,  # 100% for 2021-2022, 50% for 2023+
+                'schedule_c_line': '24b',
+                'documentation': 'receipt + business purpose + attendees',
+                'audit_risk': 'medium',
+                'irs_guidance': 'Must be ordinary and necessary, not lavish',
+                'common_errors': ['personal meals', 'entertainment disguised as meals']
+            },
+            'home_office': {
+                'calculation_methods': {
+                    'simplified': '$5 per sq ft, max 300 sq ft = $1,500',
+                    'actual': 'percentage of home expenses'
+                },
+                'deductible_percentage': 100,
+                'audit_risk': 'high',
+                'requirements': ['exclusive business use', 'regular business use'],
+                'red_flags': ['too high percentage', 'inconsistent use']
+            },
+            'equipment': {
+                'section_179_eligible': True,
+                'section_179_limit_2024': 1160000,
+                'bonus_depreciation': '80% in 2023, 60% in 2024',
+                'regular_depreciation': 'MACRS over useful life',
+                'strategy': 'Compare Section 179 vs bonus depreciation vs regular',
+                'deductible_percentage': 100
+            },
+            'software': {
+                'deductible_percentage': 100,
+                'schedule_c_line': '18',
+                'audit_risk': 'low',
+                'special_rules': 'Software >$2,500 may need to be depreciated',
+                'common_deductions': ['SaaS subscriptions', 'business software licenses']
+            },
+            'travel': {
+                'deductible_percentage': 100,
+                'requirements': ['business purpose', 'overnight away from home'],
+                'mileage_rate_2024': 0.67,
+                'audit_risk': 'medium',
+                'red_flags': ['excessive travel', 'luxury accommodations']
+            }
+        }
+    
     def get_schedule_c_guidance(self, user_profile: Dict, form_data: Dict) -> Dict:
         """Generate AI guidance for Schedule C completion"""
         # Mock response for demo (replace with actual OpenAI when API key is configured)
@@ -153,29 +272,143 @@ class AITaxAssistant:
         }
     
     def categorize_expense(self, description: str, amount: float, business_type: str) -> Dict:
-        """AI categorization for Smart Ledger entries"""
-        # Simple keyword-based categorization for demo
+        """Enhanced AI categorization with tax law knowledge"""
         description_lower = description.lower()
         
-        if any(word in description_lower for word in ['office', 'supply', 'staples']):
-            category = 'Office Supplies'
-            confidence = 0.92
-        elif any(word in description_lower for word in ['software', 'subscription', 'saas']):
-            category = 'Software & Subscriptions'
-            confidence = 0.89
-        elif any(word in description_lower for word in ['travel', 'hotel', 'airline']):
-            category = 'Travel'
-            confidence = 0.85
-        else:
-            category = 'Business Expense'
-            confidence = 0.75
-            
+        # Enhanced keyword matching with tax categories
+        category_mappings = {
+            'business_meals': ['restaurant', 'lunch', 'dinner', 'meal', 'coffee', 'food'],
+            'home_office': ['home office', 'utilities', 'internet', 'phone'],
+            'equipment': ['computer', 'laptop', 'printer', 'equipment', 'machinery'],
+            'software': ['software', 'subscription', 'saas', 'license', 'app'],
+            'travel': ['travel', 'hotel', 'airline', 'flight', 'uber', 'gas', 'mileage'],
+            'office_supplies': ['office', 'supply', 'staples', 'paper', 'pens'],
+            'professional_development': ['course', 'training', 'conference', 'education', 'seminar']
+        }
+        
+        detected_category = 'general_business'
+        confidence = 0.75
+        
+        for category, keywords in category_mappings.items():
+            if any(keyword in description_lower for keyword in keywords):
+                detected_category = category
+                confidence = 0.90
+                break
+        
+        # Get tax treatment information
+        tax_treatment = self.advanced_tax_categories.get(detected_category, {
+            'deductible_percentage': 100,
+            'audit_risk': 'low',
+            'documentation': 'receipt'
+        })
+        
+        # Calculate actual tax savings
+        deductible_amount = amount * (tax_treatment.get('deductible_percentage', 100) / 100)
+        tax_savings = self.calculate_tax_savings_for_expense(deductible_amount, business_type)
+        
         return {
-            "category": category,
-            "deductible_percentage": 100,
-            "tax_form_line": "Schedule C, Line 18",
+            "category": detected_category.replace('_', ' ').title(),
+            "deductible_percentage": tax_treatment.get('deductible_percentage', 100),
+            "deductible_amount": deductible_amount,
+            "tax_savings_estimate": tax_savings,
+            "audit_risk": tax_treatment.get('audit_risk', 'low'),
+            "documentation_needed": tax_treatment.get('documentation', 'receipt'),
+            "schedule_c_line": tax_treatment.get('schedule_c_line', '18'),
+            "irs_guidance": tax_treatment.get('irs_guidance', ''),
             "confidence": confidence,
-            "notes": f"Categorized as {category} based on description analysis"
+            "notes": f"Categorized as {detected_category} with {confidence*100:.0f}% confidence"
+        }
+    
+    def calculate_tax_savings_for_expense(self, deductible_amount: float, business_type: str) -> float:
+        """Calculate actual tax savings using current tax law"""
+        # 2024 tax assumptions (would be more sophisticated in production)
+        tax_rates = {
+            'sole_proprietorship': {
+                'income_tax': 0.22,  # Marginal rate assumption
+                'self_employment': 0.153,
+                'state': 0.05  # Average state rate
+            },
+            's_corp': {
+                'income_tax': 0.22,
+                'self_employment': 0,  # No SE tax on distributions
+                'state': 0.05
+            },
+            'llc': {
+                'income_tax': 0.22,
+                'self_employment': 0.153,
+                'state': 0.05
+            }
+        }
+        
+        rates = tax_rates.get(business_type, tax_rates['sole_proprietorship'])
+        
+        # Calculate total tax savings
+        federal_savings = deductible_amount * rates['income_tax']
+        se_savings = deductible_amount * rates['self_employment'] * 0.9235  # SE tax calculation
+        state_savings = deductible_amount * rates['state']
+        
+        return federal_savings + se_savings + state_savings
+    
+    def get_entity_specific_guidance(self, entity_type: str, form_data: Dict, user_profile: Dict) -> Dict:
+        """Get entity-specific tax guidance"""
+        entity_config = self.entity_specific_prompts.get(entity_type, {})
+        
+        if not entity_config:
+            return {"error": f"Entity type {entity_type} not supported"}
+        
+        # Extract key financial data
+        revenue = form_data.get('income', {}).get('gross_receipts', 0)
+        expenses = sum(form_data.get('expenses', {}).values()) if form_data.get('expenses') else 0
+        
+        # Generate entity-specific insights
+        insights = {
+            'entity_type': entity_type,
+            'revenue': revenue,
+            'expenses': expenses,
+            'net_profit': revenue - expenses,
+            'risk_factors': entity_config.get('risk_factors', []),
+            'optimization_strategies': entity_config.get('optimization_strategies', []),
+            'recommended_deductions': entity_config.get('common_deductions', [])
+        }
+        
+        # Calculate specific recommendations based on entity type
+        if entity_type == 'sole_proprietorship':
+            insights.update(self._sole_prop_analysis(revenue, expenses))
+        elif entity_type == 's_corp':
+            insights.update(self._s_corp_analysis(revenue, expenses, form_data))
+        
+        return insights
+    
+    def _sole_prop_analysis(self, revenue: float, expenses: float) -> Dict:
+        """Specific analysis for sole proprietorships"""
+        net_profit = revenue - expenses
+        se_tax = net_profit * 0.153 * 0.9235  # SE tax calculation
+        
+        return {
+            'self_employment_tax': se_tax,
+            'quarterly_payment_required': net_profit > 1000,
+            'estimated_quarterly_payment': (net_profit * 0.25) / 4,  # Rough estimate
+            'home_office_opportunity': min(1500, 300 * 5),  # Simplified method
+            'retirement_contribution_limit': min(61000, net_profit * 0.25)  # SEP-IRA limit
+        }
+    
+    def _s_corp_analysis(self, revenue: float, expenses: float, form_data: Dict) -> Dict:
+        """Specific analysis for S-Corps"""
+        net_profit = revenue - expenses
+        officer_salary = form_data.get('officer_compensation', 0)
+        
+        # Reasonable compensation analysis
+        industry_salary_benchmark = net_profit * 0.4  # Rough benchmark
+        
+        return {
+            'officer_salary': officer_salary,
+            'recommended_salary_range': {
+                'minimum': min(net_profit * 0.3, 60000),
+                'maximum': min(net_profit * 0.6, 160000)
+            },
+            'salary_optimization_savings': max(0, (officer_salary - industry_salary_benchmark) * 0.153),
+            'distribution_opportunity': max(0, net_profit - industry_salary_benchmark),
+            'payroll_tax_exposure': officer_salary * 0.153
         }
 
 # =============================================================================
