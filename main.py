@@ -104,6 +104,11 @@ def clean_ai_chat():
     """Clean AI Chat with fixed UX and readability issues"""
     return render_template('clean_ai_chat.html')
 
+@app.route('/fullwidth-ai-chat')
+def fullwidth_ai_chat():
+    """Full-Width AI Chat with no dead space or margins"""
+    return render_template('fullwidth_ai_chat.html')
+
 # =============================================================================
 # BACKEND API INTEGRATION
 # =============================================================================

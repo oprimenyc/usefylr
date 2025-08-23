@@ -1,0 +1,1112 @@
+{% extends "beautiful_base.html" %}
+
+{% block title %}Full-Width AI Chat - .fylr{% endblock %}
+
+{% block head %}
+<!-- React and required dependencies -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* FULL-WIDTH CHAT INTERFACE - NO DEAD SPACE */
+.fullwidth-container {
+  height: 100vh;
+  width: 100vw;
+  background: #0A0A0B;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* FULL-WIDTH HEADER - EDGE TO EDGE */
+.fullwidth-header {
+  background: #111111;
+  border-bottom: 1px solid #2A2A2D;
+  height: 64px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
+}
+
+.header-full-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.fullwidth-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.fullwidth-nav {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .fullwidth-nav {
+    display: flex;
+  }
+}
+
+.fullwidth-nav-link {
+  color: #B4B4B8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.fullwidth-nav-link:hover {
+  color: white;
+}
+
+.fullwidth-nav-link.active {
+  color: #FF6B00;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-user-info {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+}
+
+@media (min-width: 768px) {
+  .header-user-info {
+    display: flex;
+  }
+}
+
+.trial-info {
+  color: #B4B4B8;
+}
+
+.user-email {
+  color: #6B6B6F;
+}
+
+.header-upgrade-btn {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header-upgrade-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+
+/* MAIN CONTENT - FULL WIDTH, NO MARGINS */
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* SIDEBAR - FIXED WIDTH, FULL HEIGHT */
+.chat-sidebar {
+  width: 320px;
+  background: #111111;
+  border-right: 1px solid #2A2A2D;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .chat-sidebar {
+    display: none;
+  }
+}
+
+.sidebar-section {
+  padding: 1.5rem;
+}
+
+.sidebar-section.bordered {
+  border-bottom: 1px solid #2A2A2D;
+}
+
+.sidebar-title {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #1A1A1D;
+  border: 1px solid #2A2A2D;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.action-btn:hover {
+  background: #2A2A2D;
+  border-color: #FF6B00;
+  transform: translateY(-1px);
+}
+
+.action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.action-text {
+  color: white;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.action-btn:hover .action-text {
+  color: #FF6B00;
+}
+
+.stats-card {
+  background: linear-gradient(135deg, rgba(255,107,0,0.1) 0%, rgba(255,133,51,0.05) 100%);
+  border: 1px solid rgba(255,107,0,0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.stats-title {
+  color: #FF6B00;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.stats-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.stats-label {
+  color: rgba(255,133,51,0.8);
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.stats-progress {
+  width: 100%;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.stats-progress-bar {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  height: 100%;
+  width: 75%;
+  border-radius: 4px;
+}
+
+.stats-meta {
+  font-size: 0.7rem;
+  color: #6B6B6F;
+  margin-top: 0.5rem;
+}
+
+.chat-history {
+  flex: 1;
+}
+
+.history-title {
+  color: #6B6B6F;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.history-item {
+  color: #B4B4B8;
+  font-size: 0.8rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  background: #1A1A1D;
+  color: #FF6B00;
+}
+
+/* CHAT AREA - USES ALL REMAINING WIDTH */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-area-header {
+  background: #111111;
+  border-bottom: 1px solid #2A2A2D;
+  padding: 1.5rem;
+  flex-shrink: 0;
+}
+
+.chat-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-area-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.chat-area-subtitle {
+  color: #B4B4B8;
+  font-size: 0.9rem;
+}
+
+.ai-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+}
+
+.ai-status-dot {
+  width: 8px;
+  height: 8px;
+  background: #10B981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.ai-status-text {
+  color: #10B981;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* MESSAGES AREA - FULL WIDTH, NO CONSTRAINTS */
+.messages-area {
+  flex: 1;
+  overflow-y: auto;
+  background: #0A0A0B;
+  padding: 1.5rem;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-height: 100%;
+}
+
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+.message-row.user {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.ai-avatar {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+}
+
+.user-avatar {
+  background: #2A2A2D;
+  color: #B4B4B8;
+}
+
+/* MESSAGE CONTENT - NO MAX-WIDTH, USES AVAILABLE SPACE */
+.message-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user .message-content {
+  align-items: flex-end;
+  max-width: 600px;
+}
+
+.message-bubble {
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  width: 100%;
+}
+
+.ai-message .message-bubble {
+  background: #1A1A1D;
+  border: 1px solid #2A2A2D;
+  border-top-left-radius: 6px;
+}
+
+.user-message .message-bubble {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+  border-top-right-radius: 6px;
+}
+
+.message-timestamp {
+  font-size: 0.7rem;
+  color: #6B6B6F;
+  margin-top: 0.5rem;
+}
+
+.user .message-timestamp {
+  text-align: right;
+}
+
+/* AI RESPONSE FORMATTING - FULL WIDTH UTILIZATION */
+.ai-welcome-header {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ai-welcome-text {
+  color: #B4B4B8;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.suggestion-btn {
+  padding: 0.75rem;
+  background: #2A2A2D;
+  border: 1px solid #2A2A2D;
+  border-radius: 12px;
+  color: #B4B4B8;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-center;
+}
+
+.suggestion-btn:hover {
+  background: #FF6B00;
+  border-color: #FF6B00;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.ai-response-section {
+  margin-bottom: 1.5rem;
+}
+
+.ai-section-header {
+  color: #FF6B00;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.ai-subsection-title {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.ai-bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ai-bullet-list li {
+  color: #B4B4B8;
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.ai-bullet-list li::before {
+  content: '•';
+  color: #FF6B00;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.info-box {
+  background: rgba(255, 107, 0, 0.1);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.info-box-title {
+  color: #FF6B00;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.info-box-content {
+  color: #B4B4B8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* TYPING INDICATOR */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #B4B4B8;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: #FF6B00;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
+
+/* INPUT AREA - FULL WIDTH EDGE TO EDGE */
+.input-area {
+  background: #111111;
+  border-top: 1px solid #2A2A2D;
+  padding: 1.5rem;
+  flex-shrink: 0;
+}
+
+.input-container {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.input-field {
+  flex: 1;
+  background: #1A1A1D;
+  border: 2px solid #2A2A2D;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: white;
+  font-size: 1rem;
+  resize: none;
+  min-height: 50px;
+  max-height: 120px;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #FF6B00;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+.input-field::placeholder {
+  color: #6B6B6F;
+}
+
+.send-btn {
+  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+
+.send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ANIMATIONS */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  30% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* MOBILE RESPONSIVE - STACK VERTICALLY */
+@media (max-width: 768px) {
+  .fullwidth-header {
+    padding: 0 1rem;
+  }
+  
+  .header-left {
+    gap: 1rem;
+  }
+  
+  .messages-area {
+    padding: 1rem;
+  }
+  
+  .message-row {
+    gap: 0.75rem;
+  }
+  
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .message-bubble {
+    padding: 1rem;
+  }
+  
+  .input-area {
+    padding: 1rem;
+  }
+  
+  .input-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .send-btn {
+    width: 100%;
+  }
+  
+  .suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="fullwidth-ai-chat"></div>
+{% endblock %}
+
+{% block scripts %}
+{% raw %}
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const FullWidthAIChat = () => {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'ai',
+      content: 'welcome',
+      timestamp: new Date()
+    }
+  ]);
+  
+  const [currentMessage, setCurrentMessage] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const quickActions = [
+    { 
+      icon: '📊', 
+      text: 'Calculate Tax Savings', 
+      gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)'
+    },
+    { 
+      icon: '🏢', 
+      text: 'Entity Optimization', 
+      gradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)'
+    },
+    { 
+      icon: '⚠️', 
+      text: 'Audit Risk Check', 
+      gradient: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)'
+    },
+    { 
+      icon: '📋', 
+      text: 'Form Guidance', 
+      gradient: 'linear-gradient(135deg, #10B981 0%, #14B8A6 100%)'
+    }
+  ];
+
+  const suggestionButtons = [
+    "Business meal deductions",
+    "Home office limits", 
+    "S-Corp election analysis",
+    "Audit risk factors",
+    "Quarterly tax payments",
+    "Equipment depreciation"
+  ];
+
+  const chatHistory = [
+    'Business meal deductions',
+    'S-Corp salary optimization', 
+    'Home office calculation',
+    'Quarterly payment strategy'
+  ];
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const sendMessage = async (messageText = currentMessage) => {
+    if (!messageText.trim()) return;
+
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      content: messageText,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentMessage('');
+    setIsThinking(true);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const aiResponse = await getAIResponse(messageText);
+      
+      const aiMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: aiResponse,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: `I apologize, but I encountered an error. Please try again.\n\nError: ${error.message}`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
+  const getAIResponse = async (question) => {
+    const response = await fetch('/api/ai/tax-guidance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: question,
+        user_context: {
+          entity_type: 'sole_proprietorship',
+          annual_revenue: 75000,
+          business_type: 'consulting'
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get AI response');
+    }
+
+    const data = await response.json();
+    return data.response;
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const autoResize = (e) => {
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+  };
+
+  // WELCOME MESSAGE - USES FULL WIDTH
+  const renderWelcomeMessage = () => (
+    <div>
+      <h3 className="ai-welcome-header">
+        Welcome to .fylr's AI Tax Intelligence! 
+        <span>🎯</span>
+      </h3>
+      <p className="ai-welcome-text">
+        I'm your advanced tax AI, trained on entity-specific tax law. I provide real calculations, 
+        audit-safe strategies, and personalized optimization advice.
+      </p>
+      
+      <div className="suggestion-grid">
+        {suggestionButtons.map((suggestion, i) => (
+          <button 
+            key={i}
+            className="suggestion-btn"
+            onClick={() => sendMessage(suggestion)}
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // FORMAT AI RESPONSES - FULL WIDTH UTILIZATION
+  const formatAIResponse = (content) => {
+    if (content === 'welcome') {
+      return renderWelcomeMessage();
+    }
+    
+    const sections = content.split('\n\n');
+    return (
+      <div>
+        {sections.map((section, sectionIndex) => {
+          const lines = section.split('\n');
+          
+          return (
+            <div key={sectionIndex} className="ai-response-section">
+              {lines.map((line, lineIndex) => {
+                if (line.startsWith('**') && line.endsWith('**')) {
+                  return (
+                    <h4 key={lineIndex} className="ai-section-header">
+                      {line.slice(2, -2)}
+                    </h4>
+                  );
+                }
+                
+                if (line.includes(':') && !line.startsWith('•')) {
+                  return (
+                    <h5 key={lineIndex} className="ai-subsection-title">
+                      {line}
+                    </h5>
+                  );
+                }
+                
+                if (line.startsWith('• ')) {
+                  return (
+                    <ul key={lineIndex} className="ai-bullet-list">
+                      <li>{line.slice(2)}</li>
+                    </ul>
+                  );
+                }
+                
+                if (line.includes('Documentation') || line.includes('Requirements')) {
+                  return (
+                    <div key={lineIndex} className="info-box">
+                      <div className="info-box-title">{line.split(':')[0]}:</div>
+                      <div className="info-box-content">{line.split(':').slice(1).join(':')}</div>
+                    </div>
+                  );
+                }
+                
+                return (
+                  <p key={lineIndex} style={{ color: '#B4B4B8', marginBottom: '0.5rem', lineHeight: 1.6 }}>
+                    {line}
+                  </p>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className="fullwidth-container">
+      {/* FULL-WIDTH HEADER - EDGE TO EDGE */}
+      <header className="fullwidth-header">
+        <div className="header-full-content">
+          <div className="header-left">
+            <div className="fullwidth-logo">.fylr</div>
+            <nav className="fullwidth-nav">
+              <a href="#" className="fullwidth-nav-link">Dashboard</a>
+              <a href="#" className="fullwidth-nav-link">Forms</a>
+              <a href="#" className="fullwidth-nav-link">Smart Ledger</a>
+              <a href="#" className="fullwidth-nav-link active">AI Assistant</a>
+              <a href="#" className="fullwidth-nav-link">Tools</a>
+            </nav>
+          </div>
+          
+          <div className="header-right">
+            <div className="header-user-info">
+              <span className="trial-info">Trial - 14 days left</span>
+              <span className="user-email">john@example.com</span>
+            </div>
+            <button className="header-upgrade-btn">Upgrade Now</button>
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN CONTENT - FULL WIDTH, NO MARGINS */}
+      <div className="main-content">
+        {/* SIDEBAR - FIXED WIDTH, FULL HEIGHT */}
+        <div className="chat-sidebar">
+          <div className="sidebar-section bordered">
+            <h2 className="sidebar-title">Quick Actions</h2>
+            <div className="action-buttons">
+              {quickActions.map((action, i) => (
+                <button
+                  key={i}
+                  className="action-btn"
+                  onClick={() => sendMessage(action.text)}
+                >
+                  <div className="action-icon" style={{ background: action.gradient }}>
+                    {action.icon}
+                  </div>
+                  <span className="action-text">{action.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="sidebar-section bordered">
+            <div className="stats-card">
+              <h3 className="stats-title">Your Tax Intelligence</h3>
+              <div className="stats-amount">$12,847</div>
+              <div className="stats-label">Potential Savings Found</div>
+              <div className="stats-progress">
+                <div className="stats-progress-bar"></div>
+              </div>
+              <div className="stats-meta">Based on 47 analyzed transactions</div>
+            </div>
+          </div>
+          
+          <div className="sidebar-section chat-history">
+            <h3 className="history-title">Recent Conversations</h3>
+            <div className="history-list">
+              {chatHistory.map((topic, i) => (
+                <div key={i} className="history-item" onClick={() => sendMessage(topic)}>
+                  {topic}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* CHAT AREA - USES ALL REMAINING WIDTH */}
+        <div className="chat-area">
+          <div className="chat-area-header">
+            <div className="chat-header-content">
+              <div>
+                <h1 className="chat-area-title">AI Tax Assistant</h1>
+                <p className="chat-area-subtitle">Entity-aware tax intelligence powered by advanced AI</p>
+              </div>
+              <div className="ai-status-badge">
+                <div className="ai-status-dot"></div>
+                <span className="ai-status-text">AI Online</span>
+              </div>
+            </div>
+          </div>
+
+          {/* MESSAGES AREA - FULL WIDTH, NO CONSTRAINTS */}
+          <div className="messages-area">
+            <div className="messages-list">
+              {messages.map((message) => (
+                <div key={message.id} className={`message-row ${message.type === 'user' ? 'user' : 'ai'}`}>
+                  <div className={`message-avatar ${message.type === 'ai' ? 'ai-avatar' : 'user-avatar'}`}>
+                    {message.type === 'ai' ? 'AI' : 'You'}
+                  </div>
+                  
+                  <div className="message-content">
+                    <div className={`message-bubble ${message.type}-message`}>
+                      {message.type === 'ai' ? 
+                        formatAIResponse(message.content) : 
+                        <div style={{ color: message.type === 'user' ? 'white' : '#B4B4B8' }}>
+                          {message.content}
+                        </div>
+                      }
+                    </div>
+                    <div className="message-timestamp">
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {isThinking && (
+                <div className="message-row ai">
+                  <div className="message-avatar ai-avatar">AI</div>
+                  <div className="message-content">
+                    <div className="message-bubble ai-message">
+                      <div className="typing-indicator">
+                        <span>AI is analyzing your tax question</span>
+                        <div className="typing-dots">
+                          <div className="typing-dot"></div>
+                          <div className="typing-dot"></div>
+                          <div className="typing-dot"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* INPUT AREA - FULL WIDTH EDGE TO EDGE */}
+      <div className="input-area">
+        <div className="input-container">
+          <textarea
+            className="input-field"
+            value={currentMessage}
+            onChange={(e) => setCurrentMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            onInput={autoResize}
+            placeholder="Ask about tax strategies, deductions, entity optimization..."
+            disabled={isThinking}
+            rows={1}
+          />
+          <button
+            className="send-btn"
+            onClick={() => sendMessage()}
+            disabled={isThinking || !currentMessage.trim()}
+          >
+            {isThinking ? (
+              <div className="typing-dots">
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+                <div className="typing-dot"></div>
+              </div>
+            ) : (
+              'Send'
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Render the full-width AI chat
+const container = document.getElementById('fullwidth-ai-chat');
+const root = ReactDOM.createRoot(container);
+root.render(<FullWidthAIChat />);
+</script>
+{% endraw %}
+{% endblock %}
