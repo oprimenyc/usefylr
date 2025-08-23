@@ -1,0 +1,424 @@
+{% extends "base_layout.html" %}
+
+{% block title %}Dashboard - .fylr{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary mb-1">Welcome back, Alex</h2>
+            <p class="text-muted mb-0">Your tax preparation is 67% complete</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-glass">
+                <i class="fas fa-download me-2"></i>Export
+            </button>
+            <button class="btn btn-orange">
+                <i class="fas fa-plus me-2"></i>New Form
+            </button>
+        </div>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="premium-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h5 class="text-orange mb-3">2024 Tax Preparation Progress</h5>
+                <div class="progress-container mb-2">
+                    <div class="progress-bar-orange" style="width: 67%;"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted">
+                    <small>3 of 5 sections complete</small>
+                    <small>67% complete</small>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="counter text-orange" data-target="2340" style="font-size: 2rem;">$0</div>
+                <div class="text-muted">Estimated Refund</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="summary-stats mb-4">
+        <div class="stat-card hover-lift">
+            <span class="stat-value counter" data-target="12">0</span>
+            <div class="stat-label">Forms Complete</div>
+        </div>
+        <div class="stat-card hover-lift">
+            <span class="stat-value counter text-success" data-target="4200">$0</span>
+            <div class="stat-label">Deductions Found</div>
+        </div>
+        <div class="stat-card hover-lift">
+            <span class="stat-value counter" data-target="156">0</span>
+            <div class="stat-label">Transactions Categorized</div>
+        </div>
+        <div class="stat-card hover-lift">
+            <span class="stat-value counter text-warning" data-target="3">0</span>
+            <div class="stat-label">Action Items</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Quick Actions -->
+            <div class="premium-card mb-4">
+                <h5 class="text-primary mb-3">Quick Actions</h5>
+                <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <a href="{{ url_for('smart_ledger') }}" class="feature-card hover-lift text-decoration-none">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h6 class="text-primary">Smart Ledger</h6>
+                        <p class="text-muted mb-0">Categorize transactions</p>
+                    </a>
+                    
+                    <a href="{{ url_for('tax_form_builder') }}" class="feature-card hover-lift text-decoration-none">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <h6 class="text-primary">Form Builder</h6>
+                        <p class="text-muted mb-0">Complete Schedule C</p>
+                    </a>
+                    
+                    <div class="feature-card hover-lift" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h6 class="text-primary">Upload Docs</h6>
+                        <p class="text-muted mb-0">Add receipts & statements</p>
+                    </div>
+                    
+                    <div class="feature-card hover-lift" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h6 class="text-primary">Tax Strategies</h6>
+                        <p class="text-muted mb-0">Find more savings</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="premium-card mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-primary">Recent Activity</h5>
+                    <button class="btn btn-glass btn-sm">View All</button>
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item bg-transparent border-color-dark d-flex align-items-center">
+                        <div class="feature-icon me-3" style="width: 2.5rem; height: 2.5rem; font-size: 1rem;">
+                            <i class="fas fa-robot text-orange"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary mb-1">AI discovered 3 new deductions</h6>
+                            <small class="text-muted">Office supplies, travel, and software subscriptions</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">2 hours ago</small>
+                            <div class="text-success">+$340</div>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item bg-transparent border-color-dark d-flex align-items-center">
+                        <div class="feature-icon me-3" style="width: 2.5rem; height: 2.5rem; font-size: 1rem;">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary mb-1">Schedule C completed</h6>
+                            <small class="text-muted">Business income and expenses finalized</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Yesterday</small>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item bg-transparent border-color-dark d-flex align-items-center">
+                        <div class="feature-icon me-3" style="width: 2.5rem; height: 2.5rem; font-size: 1rem;">
+                            <i class="fas fa-upload text-info"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary mb-1">Bank statements uploaded</h6>
+                            <small class="text-muted">Q4 2024 statements processed successfully</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">2 days ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forms in Progress -->
+            <div class="premium-card">
+                <h5 class="text-primary mb-3">Forms in Progress</h5>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="glass-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="text-primary mb-0">Schedule C</h6>
+                                <span class="badge bg-success">Complete</span>
+                            </div>
+                            <p class="text-muted mb-2">Profit or Loss From Business</p>
+                            <div class="progress-container mb-2">
+                                <div class="progress-bar-orange" style="width: 100%;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Last updated: Yesterday</small>
+                                <button class="btn btn-glass btn-sm">View</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="glass-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="text-primary mb-0">Schedule SE</h6>
+                                <span class="badge" style="background: var(--warning);">In Progress</span>
+                            </div>
+                            <p class="text-muted mb-2">Self-Employment Tax</p>
+                            <div class="progress-container mb-2">
+                                <div class="progress-bar-orange" style="width: 60%;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">60% complete</small>
+                                <button class="btn btn-orange btn-sm">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- AI Insights -->
+            <div class="premium-card mb-4">
+                <h5 class="text-orange mb-3">
+                    <i class="fas fa-robot me-2"></i>AI Insights
+                </h5>
+                
+                <div class="ai-suggestion mb-3">
+                    <div class="suggestion-text">
+                        <strong>💡 Tax Tip:</strong> You're missing receipts for $234 in business meals. Upload them to claim 50% deduction.
+                    </div>
+                    <div class="suggestion-confidence mt-2">
+                        <span class="confidence-label">Potential Savings:</span>
+                        <span class="confidence-label text-success ms-auto">$29</span>
+                    </div>
+                </div>
+                
+                <div class="ai-suggestion mb-3">
+                    <div class="suggestion-text">
+                        <strong>🏠 Home Office:</strong> Based on your business use, you may qualify for $2,400 annual deduction.
+                    </div>
+                    <div class="suggestion-confidence mt-2">
+                        <span class="confidence-label">Confidence:</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 87%;"></div>
+                        </div>
+                        <span class="confidence-label">87%</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn btn-orange btn-sm">View All Insights</button>
+                </div>
+            </div>
+
+            <!-- Tax Calendar -->
+            <div class="premium-card mb-4">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-calendar me-2"></i>Tax Calendar
+                </h5>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item bg-transparent border-color-dark px-0">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="text-warning mb-1">Q4 Estimated Taxes</h6>
+                                <small class="text-muted">Due: Jan 15, 2025</small>
+                            </div>
+                            <div class="text-end">
+                                <small class="badge bg-warning">5 days</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group-item bg-transparent border-color-dark px-0">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="text-primary mb-1">File 2024 Return</h6>
+                                <small class="text-muted">Due: Apr 15, 2025</small>
+                            </div>
+                            <div class="text-end">
+                                <small class="badge bg-info">94 days</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upgrade Prompt -->
+            <div class="premium-card" style="border-color: var(--fylr-orange); background: rgba(255, 107, 0, 0.05);">
+                <h6 class="text-orange">
+                    <i class="fas fa-star me-2"></i>Upgrade to Concierge
+                </h6>
+                <p class="text-muted mb-3">Unlock advanced tax strategies and personal advisor support.</p>
+                <ul class="list-unstyled mb-3">
+                    <li><i class="fas fa-check text-success me-2"></i>Personal tax advisor</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Multi-state filing</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Advanced strategies</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Audit protection included</li>
+                </ul>
+                <button class="btn btn-orange btn-sm">Upgrade Now</button>
+                <div class="text-center mt-2">
+                    <small class="text-muted">Save $1,200+ annually</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Counter animations
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const step = target / (duration / 16);
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            
+            if (counter.textContent.includes('$')) {
+                counter.textContent = '$' + Math.floor(current).toLocaleString();
+            } else {
+                counter.textContent = Math.floor(current).toLocaleString();
+            }
+        }, 16);
+    });
+
+    // Quick action clicks
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!this.href) {
+                e.preventDefault();
+                const title = this.querySelector('h6').textContent;
+                
+                if (title.includes('Upload')) {
+                    // Simulate file upload
+                    alert('File upload functionality coming soon!');
+                } else if (title.includes('Strategies')) {
+                    // Navigate to strategies
+                    alert('Tax strategies page coming soon!');
+                }
+            }
+        });
+    });
+
+    // Activity item animations
+    const activityItems = document.querySelectorAll('.list-group-item');
+    activityItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            item.style.transition = 'all 0.4s ease-out';
+            item.style.opacity = '1';
+            item.style.transform = 'translateX(0)';
+        }, index * 100);
+    });
+
+    // Progress bar animations
+    const progressBars = document.querySelectorAll('.progress-bar-orange');
+    const observerOptions = {
+        threshold: 0.1
+    };
+
+    const progressObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const bar = entry.target;
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                
+                setTimeout(() => {
+                    bar.style.transition = 'width 1s ease-out';
+                    bar.style.width = width;
+                }, 100);
+                
+                progressObserver.unobserve(bar);
+            }
+        });
+    }, observerOptions);
+
+    progressBars.forEach(bar => progressObserver.observe(bar));
+
+    // Form cards hover effects
+    document.querySelectorAll('.glass-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+            this.style.transition = 'all 0.2s ease-out';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // AI insights interactions
+    document.querySelectorAll('.ai-suggestion').forEach(suggestion => {
+        suggestion.addEventListener('click', function() {
+            this.style.background = 'rgba(255, 107, 0, 0.1)';
+            setTimeout(() => {
+                this.style.background = 'var(--bg-glass)';
+            }, 200);
+        });
+    });
+
+    // Simulate real-time updates
+    setTimeout(() => {
+        const newActivity = document.createElement('div');
+        newActivity.className = 'list-group-item bg-transparent border-color-dark d-flex align-items-center';
+        newActivity.innerHTML = `
+            <div class="feature-icon me-3" style="width: 2.5rem; height: 2.5rem; font-size: 1rem;">
+                <i class="fas fa-sync-alt text-info"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="text-primary mb-1">New transaction detected</h6>
+                <small class="text-muted">Amazon Business - Office supplies categorized</small>
+            </div>
+            <div class="text-end">
+                <small class="text-muted">Just now</small>
+                <div class="text-success">+$23</div>
+            </div>
+        `;
+        
+        const activityList = document.querySelector('.list-group');
+        activityList.insertBefore(newActivity, activityList.firstChild);
+        
+        // Animate new item
+        newActivity.style.opacity = '0';
+        newActivity.style.transform = 'translateY(-20px)';
+        
+        setTimeout(() => {
+            newActivity.style.transition = 'all 0.4s ease-out';
+            newActivity.style.opacity = '1';
+            newActivity.style.transform = 'translateY(0)';
+        }, 100);
+    }, 5000);
+});
+</script>
+{% endblock %}

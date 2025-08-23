@@ -1,0 +1,574 @@
+{% extends "base_layout.html" %}
+
+{% block title %}Smart Ledger - AI Tax Categorization{% endblock %}
+
+{% block head %}
+<style>
+.ledger-container {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.transaction-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s var(--ease-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.transaction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--fylr-orange);
+}
+
+.transaction-amount {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.transaction-amount.expense {
+    color: var(--error);
+}
+
+.transaction-amount.income {
+    color: var(--success);
+}
+
+.category-badge {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-block;
+    margin: 0.25rem 0.25rem 0 0;
+}
+
+.category-badge.business-expense {
+    border-color: var(--fylr-orange);
+    background: rgba(255, 107, 0, 0.1);
+    color: var(--fylr-orange);
+}
+
+.category-badge.office-supplies {
+    border-color: var(--success);
+    background: rgba(0, 208, 132, 0.1);
+    color: var(--success);
+}
+
+.category-badge.travel {
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.ai-suggestion {
+    background: rgba(255, 107, 0, 0.05);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.ai-suggestion-icon {
+    color: var(--fylr-orange);
+    margin-right: 0.5rem;
+}
+
+.confidence-meter {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--fylr-orange), var(--fylr-orange-hover));
+    transition: width 0.6s var(--ease-smooth);
+}
+
+.upload-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.2s var(--ease-smooth);
+    cursor: pointer;
+    background: var(--bg-secondary);
+}
+
+.upload-zone:hover {
+    border-color: var(--fylr-orange);
+    background: rgba(255, 107, 0, 0.05);
+}
+
+.upload-zone.dragover {
+    border-color: var(--fylr-orange);
+    background: rgba(255, 107, 0, 0.1);
+    transform: scale(1.02);
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s var(--ease-smooth);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--fylr-orange);
+    display: block;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.filter-bar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.ai-processing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--fylr-orange), transparent);
+    animation: aiProcessing 2s ease-in-out infinite;
+}
+
+@keyframes aiProcessing {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ledger-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-primary mb-3">Smart Ledger</h1>
+            <p class="lead text-muted">AI-powered transaction categorization for maximum tax deductions</p>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="summary-stats">
+            <div class="stat-card hover-lift">
+                <span class="stat-value counter" data-target="1247">$0</span>
+                <div class="stat-label">Total Expenses</div>
+            </div>
+            <div class="stat-card hover-lift">
+                <span class="stat-value counter text-success" data-target="89">0%</span>
+                <div class="stat-label">Categorization Accuracy</div>
+            </div>
+            <div class="stat-card hover-lift">
+                <span class="stat-value counter" data-target="23">0</span>
+                <div class="stat-label">Tax Deductions Found</div>
+            </div>
+            <div class="stat-card hover-lift">
+                <span class="stat-value counter text-warning" data-target="340">$0</span>
+                <div class="stat-label">Potential Savings</div>
+            </div>
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="glass-card mb-4">
+            <div class="upload-zone" id="uploadZone">
+                <i class="fas fa-cloud-upload-alt fa-3x text-orange mb-3"></i>
+                <h5 class="text-primary">Drop receipts or bank statements here</h5>
+                <p class="text-muted">Or click to browse files. AI will automatically categorize and extract data.</p>
+                <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.csv" style="display: none;">
+                <div class="mt-3">
+                    <button class="btn btn-orange" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-plus me-2"></i>Upload Files
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <label class="text-muted me-2">Filter by:</label>
+            <select class="filter-select">
+                <option>All Categories</option>
+                <option>Business Expenses</option>
+                <option>Office Supplies</option>
+                <option>Travel & Meals</option>
+                <option>Professional Services</option>
+                <option>Marketing</option>
+            </select>
+            <select class="filter-select">
+                <option>All Time</option>
+                <option>This Month</option>
+                <option>Last Month</option>
+                <option>This Quarter</option>
+                <option>This Year</option>
+            </select>
+            <select class="filter-select">
+                <option>All Amounts</option>
+                <option>Under $100</option>
+                <option>$100 - $500</option>
+                <option>Over $500</option>
+            </select>
+            <div class="ms-auto">
+                <button class="btn btn-glass btn-sm">
+                    <i class="fas fa-download me-1"></i>Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Transactions List -->
+        <div class="row">
+            <div class="col-lg-8">
+                <h5 class="text-primary mb-3">Recent Transactions</h5>
+                
+                <!-- Transaction 1 -->
+                <div class="transaction-card">
+                    <div class="ai-processing" style="display: none;"></div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary mb-1">Office Depot - Supplies</h6>
+                            <p class="text-muted mb-2">Dec 15, 2024 • Card ending in 4532</p>
+                            <div class="mb-2">
+                                <span class="category-badge office-supplies">Office Supplies</span>
+                                <span class="category-badge business-expense">Business Expense</span>
+                            </div>
+                            <div class="ai-suggestion">
+                                <i class="fas fa-robot ai-suggestion-icon"></i>
+                                <strong>AI Analysis:</strong> 100% deductible business expense. Categorized as office supplies for Schedule C.
+                                <div class="confidence-meter">
+                                    <div class="confidence-fill" style="width: 95%;"></div>
+                                </div>
+                                <small class="text-muted">95% confidence</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="transaction-amount expense">-$89.47</div>
+                            <button class="btn btn-glass btn-sm mt-2">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction 2 -->
+                <div class="transaction-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary mb-1">Delta Airlines - Business Travel</h6>
+                            <p class="text-muted mb-2">Dec 12, 2024 • Card ending in 4532</p>
+                            <div class="mb-2">
+                                <span class="category-badge travel">Travel Expense</span>
+                                <span class="category-badge business-expense">Business Expense</span>
+                            </div>
+                            <div class="ai-suggestion">
+                                <i class="fas fa-robot ai-suggestion-icon"></i>
+                                <strong>AI Analysis:</strong> Business travel expense. Fully deductible if for business purposes.
+                                <div class="confidence-meter">
+                                    <div class="confidence-fill" style="width: 87%;"></div>
+                                </div>
+                                <small class="text-muted">87% confidence</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="transaction-amount expense">-$432.89</div>
+                            <button class="btn btn-glass btn-sm mt-2">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction 3 -->
+                <div class="transaction-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary mb-1">Client Payment - ABC Corp</h6>
+                            <p class="text-muted mb-2">Dec 10, 2024 • Bank transfer</p>
+                            <div class="mb-2">
+                                <span class="category-badge" style="border-color: var(--success); background: rgba(0, 208, 132, 0.1); color: var(--success);">Business Income</span>
+                            </div>
+                            <div class="ai-suggestion">
+                                <i class="fas fa-robot ai-suggestion-icon"></i>
+                                <strong>AI Analysis:</strong> Business income from services. Include in Schedule C revenue.
+                                <div class="confidence-meter">
+                                    <div class="confidence-fill" style="width: 98%;"></div>
+                                </div>
+                                <small class="text-muted">98% confidence</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="transaction-amount income">+$2,500.00</div>
+                            <button class="btn btn-glass btn-sm mt-2">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-glass">
+                        <i class="fas fa-chevron-down me-2"></i>Load More Transactions
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Insights Sidebar -->
+            <div class="col-lg-4">
+                <div class="premium-card">
+                    <h5 class="text-orange mb-3">
+                        <i class="fas fa-lightbulb me-2"></i>AI Tax Insights
+                    </h5>
+                    
+                    <div class="mb-4">
+                        <h6 class="text-primary">Deduction Opportunities</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <small>Home office expenses: $340/month potential</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <small>Business meals: 50% deductible</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                <small>Missing receipt for $89 expense</small>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-primary">Category Breakdown</h6>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between">
+                                <small>Office Supplies</small>
+                                <small>$234</small>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar-orange" style="width: 35%;"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between">
+                                <small>Travel Expenses</small>
+                                <small>$567</small>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar-orange" style="width: 60%;"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between">
+                                <small>Professional Services</small>
+                                <small>$123</small>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar-orange" style="width: 20%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-orange">
+                            <i class="fas fa-chart-bar me-2"></i>View Full Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upgrade Prompt -->
+                <div class="premium-card mt-3" style="border-color: var(--fylr-orange); background: rgba(255, 107, 0, 0.05);">
+                    <h6 class="text-orange">
+                        <i class="fas fa-star me-2"></i>Upgrade to Guided
+                    </h6>
+                    <p class="text-muted mb-3">Get advanced AI insights and automated form filling.</p>
+                    <ul class="list-unstyled mb-3">
+                        <li><i class="fas fa-check text-success me-2"></i>Automatic form population</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Advanced tax strategies</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Audit protection</li>
+                    </ul>
+                    <button class="btn btn-orange btn-sm">Upgrade Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Counter animation
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const step = target / (duration / 16);
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            
+            if (counter.parentElement.querySelector('.stat-label').textContent.includes('%')) {
+                counter.textContent = Math.floor(current) + '%';
+            } else if (counter.parentElement.querySelector('.stat-label').textContent.includes('$')) {
+                counter.textContent = '$' + Math.floor(current);
+            } else {
+                counter.textContent = Math.floor(current);
+            }
+        }, 16);
+    });
+
+    // File upload handling
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+    });
+
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(this.files);
+    });
+
+    function handleFiles(files) {
+        for (let file of files) {
+            // Simulate AI processing
+            simulateAIProcessing();
+        }
+    }
+
+    function simulateAIProcessing() {
+        const newTransaction = document.createElement('div');
+        newTransaction.className = 'transaction-card';
+        newTransaction.innerHTML = `
+            <div class="ai-processing"></div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h6 class="text-primary mb-1">Processing...</h6>
+                    <p class="text-muted mb-2">AI analyzing document...</p>
+                    <div class="loading-skeleton" style="width: 200px; height: 20px; margin-bottom: 10px;"></div>
+                    <div class="loading-skeleton" style="width: 150px; height: 15px;"></div>
+                </div>
+                <div class="text-end">
+                    <div class="loading-skeleton" style="width: 80px; height: 25px;"></div>
+                </div>
+            </div>
+        `;
+
+        const transactionsList = document.querySelector('.col-lg-8');
+        transactionsList.insertBefore(newTransaction, transactionsList.children[1]);
+
+        // Simulate completion after 3 seconds
+        setTimeout(() => {
+            newTransaction.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h6 class="text-primary mb-1">Amazon Business - Office Supplies</h6>
+                        <p class="text-muted mb-2">Just now • Uploaded receipt</p>
+                        <div class="mb-2">
+                            <span class="category-badge office-supplies">Office Supplies</span>
+                            <span class="category-badge business-expense">Business Expense</span>
+                        </div>
+                        <div class="ai-suggestion">
+                            <i class="fas fa-robot ai-suggestion-icon"></i>
+                            <strong>AI Analysis:</strong> Office supplies purchase. 100% deductible business expense.
+                            <div class="confidence-meter">
+                                <div class="confidence-fill" style="width: 92%;"></div>
+                            </div>
+                            <small class="text-muted">92% confidence</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="transaction-amount expense">-$156.78</div>
+                        <button class="btn btn-glass btn-sm mt-2">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </button>
+                    </div>
+                </div>
+            `;
+            newTransaction.style.animation = 'slideUp 0.5s ease-out';
+        }, 3000);
+    }
+
+    // Add hover effects to transaction cards
+    document.querySelectorAll('.transaction-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

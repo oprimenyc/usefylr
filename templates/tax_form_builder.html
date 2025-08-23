@@ -1,0 +1,802 @@
+{% extends "base_layout.html" %}
+
+{% block title %}Tax Form Builder - AI-Guided Schedule C{% endblock %}
+
+{% block head %}
+<style>
+.form-builder-container {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.form-sidebar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.form-main {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.section-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.field-label {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.field-help {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.field-input {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    width: 100%;
+    transition: all 0.2s var(--ease-smooth);
+}
+
+.field-input:focus {
+    outline: none;
+    border-color: var(--fylr-orange);
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+    background: var(--bg-secondary);
+}
+
+.field-input.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.field-error {
+    color: var(--error);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.ai-guidance-panel {
+    background: rgba(255, 107, 0, 0.05);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ai-guidance-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.ai-guidance-icon {
+    color: var(--fylr-orange);
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+}
+
+.ai-guidance-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.ai-suggestion {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s var(--ease-smooth);
+}
+
+.ai-suggestion:hover {
+    border-color: var(--fylr-orange);
+    background: rgba(255, 107, 0, 0.05);
+}
+
+.suggestion-text {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.suggestion-confidence {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+}
+
+.confidence-label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.confidence-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    margin: 0 1rem;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--fylr-orange), var(--fylr-orange-hover));
+    transition: width 0.6s var(--ease-smooth);
+}
+
+.form-navigation {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.completion-indicator {
+    background: var(--bg-tertiary);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.completion-percentage {
+    color: var(--fylr-orange);
+    font-weight: 600;
+}
+
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.currency-input {
+    position: relative;
+}
+
+.currency-symbol {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.currency-input .field-input {
+    padding-left: 2rem;
+}
+
+.percentage-input {
+    position: relative;
+}
+
+.percentage-symbol {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.percentage-input .field-input {
+    padding-right: 2rem;
+}
+
+.ein-input .field-input {
+    font-family: monospace;
+    letter-spacing: 0.1em;
+}
+
+.auto-save-indicator {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.save-icon {
+    margin-right: 0.5rem;
+    color: var(--success);
+}
+
+.form-preview {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+}
+
+.preview-line {
+    display: flex;
+    justify-content: between;
+    padding: 0.25rem 0;
+    border-bottom: 1px dotted var(--border-color);
+}
+
+.preview-line:last-child {
+    border-bottom: none;
+}
+
+.calculated-field {
+    background: rgba(0, 208, 132, 0.1);
+    border: 1px solid var(--success);
+    color: var(--success);
+    font-weight: 600;
+}
+
+.required-field .field-label::after {
+    content: '*';
+    color: var(--error);
+    margin-left: 0.25rem;
+}
+
+.field-validation {
+    margin-top: 0.5rem;
+}
+
+.validation-check {
+    display: flex;
+    align-items: center;
+    color: var(--success);
+    font-size: 0.875rem;
+}
+
+.validation-check i {
+    margin-right: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-builder-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-primary mb-3">Schedule C - AI Tax Form Builder</h1>
+            <p class="lead text-muted">Profit or Loss From Business (Sole Proprietorship)</p>
+            
+            <!-- Progress Indicator -->
+            <div class="form-progress mt-4">
+                <div class="progress-step completed">
+                    <div class="progress-circle">1</div>
+                    <div class="progress-label">Business Info</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="progress-circle">2</div>
+                    <div class="progress-label">Income</div>
+                </div>
+                <div class="progress-step">
+                    <div class="progress-circle">3</div>
+                    <div class="progress-label">Expenses</div>
+                </div>
+                <div class="progress-step">
+                    <div class="progress-circle">4</div>
+                    <div class="progress-label">Review</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Main Form -->
+            <div class="col-lg-8">
+                <div class="form-main">
+                    <!-- AI Guidance Panel -->
+                    <div class="ai-guidance-panel">
+                        <div class="ai-guidance-header">
+                            <i class="fas fa-robot ai-guidance-icon"></i>
+                            <div class="ai-guidance-title">AI Tax Assistant</div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <div class="suggestion-text">
+                                Based on your business type (Sole Proprietorship), I recommend focusing on the following deductible expense categories: office supplies, travel expenses, and professional services.
+                            </div>
+                            <div class="suggestion-confidence">
+                                <span class="confidence-label">Confidence:</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 94%;"></div>
+                                </div>
+                                <span class="confidence-label">94%</span>
+                            </div>
+                        </div>
+
+                        <div class="ai-suggestion">
+                            <div class="suggestion-text">
+                                💡 <strong>Tax Tip:</strong> If you use your home for business, you may qualify for the home office deduction. This could save you $200-400 annually.
+                            </div>
+                            <div class="suggestion-confidence">
+                                <span class="confidence-label">Potential Savings:</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 78%;"></div>
+                                </div>
+                                <span class="confidence-label text-success">$340</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Section: Business Income -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div>
+                                <h3 class="section-title">Business Income</h3>
+                                <p class="section-description">Report all income from your business activities</p>
+                            </div>
+                        </div>
+
+                        <div class="field-grid">
+                            <div class="form-field required-field">
+                                <label class="field-label">Gross Receipts or Sales</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="gross-receipts">
+                                </div>
+                                <div class="field-help">Enter total income before any deductions</div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="field-label">Returns and Allowances</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="returns-allowances">
+                                </div>
+                                <div class="field-help">Refunds, returns, or sales adjustments</div>
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label">Net Income (Calculated)</label>
+                            <input type="number" class="field-input calculated-field" readonly placeholder="$0.00" id="net-income">
+                            <div class="field-validation">
+                                <div class="validation-check" style="display: none;" id="income-validation">
+                                    <i class="fas fa-check-circle"></i>
+                                    Income calculations verified
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Section: Business Expenses -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div>
+                                <h3 class="section-title">Business Expenses</h3>
+                                <p class="section-description">Deductible business expenses reduce your taxable income</p>
+                            </div>
+                        </div>
+
+                        <div class="field-grid">
+                            <div class="form-field">
+                                <label class="field-label">Advertising</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="advertising">
+                                </div>
+                                <div class="field-help">Marketing and promotional expenses</div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="field-label">Office Expenses</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="office-expenses">
+                                </div>
+                                <div class="field-help">Office supplies, postage, etc.</div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="field-label">Travel Expenses</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="travel">
+                                </div>
+                                <div class="field-help">Business travel (not commuting)</div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="field-label">Meals (Business)</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="meals">
+                                </div>
+                                <div class="field-help">50% deductible business meals</div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="field-label">Professional Services</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="professional">
+                                </div>
+                                <div class="field-help">Legal, accounting, consulting fees</div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="field-label">Utilities</label>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" class="field-input" placeholder="0.00" step="0.01" id="utilities">
+                                </div>
+                                <div class="field-help">Business portion of utilities</div>
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label">Total Expenses (Calculated)</label>
+                            <input type="number" class="field-input calculated-field" readonly placeholder="$0.00" id="total-expenses">
+                            <div class="field-validation">
+                                <div class="validation-check" style="display: none;" id="expense-validation">
+                                    <i class="fas fa-check-circle"></i>
+                                    Expense calculations verified
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Section: Net Profit/Loss -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div>
+                                <h3 class="section-title">Net Profit or Loss</h3>
+                                <p class="section-description">Your business profit or loss for tax purposes</p>
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label">Net Profit (Loss)</label>
+                            <input type="number" class="field-input calculated-field" readonly placeholder="$0.00" id="net-profit">
+                            <div class="field-help">This amount will be reported on your Form 1040</div>
+                        </div>
+
+                        <!-- Form Preview -->
+                        <div class="form-preview">
+                            <h6 class="text-orange mb-3">Schedule C Preview</h6>
+                            <div class="preview-line">
+                                <span>Line 1 - Gross receipts or sales</span>
+                                <span id="preview-gross">$0.00</span>
+                            </div>
+                            <div class="preview-line">
+                                <span>Line 2 - Returns and allowances</span>
+                                <span id="preview-returns">$0.00</span>
+                            </div>
+                            <div class="preview-line">
+                                <span>Line 3 - Subtotal</span>
+                                <span id="preview-subtotal">$0.00</span>
+                            </div>
+                            <div class="preview-line">
+                                <span>Line 28 - Total expenses</span>
+                                <span id="preview-total-expenses">$0.00</span>
+                            </div>
+                            <div class="preview-line" style="border-bottom: 2px solid var(--fylr-orange);">
+                                <span><strong>Line 31 - Net profit or (loss)</strong></span>
+                                <span id="preview-net-profit"><strong>$0.00</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Navigation -->
+                    <div class="form-navigation">
+                        <div class="completion-indicator">
+                            <span class="completion-percentage">67%</span> Complete
+                        </div>
+                        
+                        <div class="nav-buttons">
+                            <button class="btn btn-glass">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <button class="btn btn-orange">
+                                Continue <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Auto-save Indicator -->
+                    <div class="auto-save-indicator mt-3">
+                        <i class="fas fa-check-circle save-icon"></i>
+                        Auto-saved 2 minutes ago
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="form-sidebar">
+                    <h5 class="text-orange mb-3">
+                        <i class="fas fa-calculator me-2"></i>Tax Calculator
+                    </h5>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Gross Income:</span>
+                            <span class="text-primary" id="calc-gross">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Total Deductions:</span>
+                            <span class="text-success" id="calc-deductions">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Net Business Income:</span>
+                            <span class="text-primary" id="calc-net">$0.00</span>
+                        </div>
+                        <hr style="border-color: var(--border-color);">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-orange"><strong>Estimated Tax Savings:</strong></span>
+                            <span class="text-orange"><strong id="calc-savings">$0.00</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-primary">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-glass btn-sm">
+                                <i class="fas fa-upload me-2"></i>Import from Ledger
+                            </button>
+                            <button class="btn btn-glass btn-sm">
+                                <i class="fas fa-save me-2"></i>Save Draft
+                            </button>
+                            <button class="btn btn-glass btn-sm">
+                                <i class="fas fa-download me-2"></i>Export PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="alert-success-dark">
+                        <strong>AI Validation:</strong> Your form data looks complete and accurate. Ready for the next section.
+                    </div>
+
+                    <!-- Upgrade Prompt -->
+                    <div class="premium-card mt-3" style="border-color: var(--fylr-orange); background: rgba(255, 107, 0, 0.05);">
+                        <h6 class="text-orange">
+                            <i class="fas fa-star me-2"></i>Unlock Advanced Features
+                        </h6>
+                        <p class="text-muted mb-3">Get automated form filling and advanced tax strategies.</p>
+                        <ul class="list-unstyled mb-3">
+                            <li><i class="fas fa-check text-success me-2"></i>Auto-populate from bank data</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Advanced deduction finder</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Multi-state filing</li>
+                        </ul>
+                        <button class="btn btn-orange btn-sm">Upgrade to Guided</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form calculation logic
+    const grossReceipts = document.getElementById('gross-receipts');
+    const returnsAllowances = document.getElementById('returns-allowances');
+    const netIncome = document.getElementById('net-income');
+    
+    const expenseFields = [
+        'advertising', 'office-expenses', 'travel', 
+        'meals', 'professional', 'utilities'
+    ];
+    
+    const totalExpenses = document.getElementById('total-expenses');
+    const netProfit = document.getElementById('net-profit');
+
+    function calculateTotals() {
+        const gross = parseFloat(grossReceipts.value) || 0;
+        const returns = parseFloat(returnsAllowances.value) || 0;
+        const income = gross - returns;
+        
+        let expenses = 0;
+        expenseFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            let value = parseFloat(field.value) || 0;
+            
+            // Apply meal deduction limit (50%)
+            if (fieldId === 'meals') {
+                value = value * 0.5;
+            }
+            
+            expenses += value;
+        });
+        
+        const profit = income - expenses;
+        
+        // Update calculated fields
+        netIncome.value = income.toFixed(2);
+        totalExpenses.value = expenses.toFixed(2);
+        netProfit.value = profit.toFixed(2);
+        
+        // Update preview
+        document.getElementById('preview-gross').textContent = '$' + gross.toFixed(2);
+        document.getElementById('preview-returns').textContent = '$' + returns.toFixed(2);
+        document.getElementById('preview-subtotal').textContent = '$' + income.toFixed(2);
+        document.getElementById('preview-total-expenses').textContent = '$' + expenses.toFixed(2);
+        document.getElementById('preview-net-profit').textContent = '$' + profit.toFixed(2);
+        
+        // Update sidebar calculator
+        document.getElementById('calc-gross').textContent = '$' + income.toFixed(2);
+        document.getElementById('calc-deductions').textContent = '$' + expenses.toFixed(2);
+        document.getElementById('calc-net').textContent = '$' + profit.toFixed(2);
+        
+        // Calculate estimated tax savings (25% effective rate)
+        const taxSavings = expenses * 0.25;
+        document.getElementById('calc-savings').textContent = '$' + taxSavings.toFixed(2);
+        
+        // Show validation checks
+        if (income > 0) {
+            document.getElementById('income-validation').style.display = 'flex';
+        }
+        if (expenses > 0) {
+            document.getElementById('expense-validation').style.display = 'flex';
+        }
+        
+        // Auto-save simulation
+        updateAutoSaveIndicator();
+    }
+    
+    function updateAutoSaveIndicator() {
+        const indicator = document.querySelector('.auto-save-indicator');
+        const icon = indicator.querySelector('.save-icon');
+        const text = indicator.querySelector('text');
+        
+        // Show saving state
+        icon.className = 'fas fa-sync-alt save-icon';
+        icon.style.animation = 'spin 1s linear infinite';
+        
+        setTimeout(() => {
+            icon.className = 'fas fa-check-circle save-icon';
+            icon.style.animation = 'none';
+            const now = new Date();
+            indicator.innerHTML = `<i class="fas fa-check-circle save-icon"></i>Auto-saved just now`;
+        }, 1000);
+    }
+
+    // Add event listeners to all input fields
+    [grossReceipts, returnsAllowances, ...expenseFields.map(id => document.getElementById(id))]
+        .forEach(field => {
+            if (field) {
+                field.addEventListener('input', calculateTotals);
+                field.addEventListener('blur', calculateTotals);
+            }
+        });
+
+    // Form validation
+    function validateField(field) {
+        const value = parseFloat(field.value);
+        if (field.hasAttribute('required') && (!value || value <= 0)) {
+            field.classList.add('error');
+            return false;
+        } else {
+            field.classList.remove('error');
+            return true;
+        }
+    }
+
+    // EIN formatting
+    const einField = document.querySelector('#ein');
+    if (einField) {
+        einField.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '-' + value.substring(2, 9);
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Smooth scrolling for form navigation
+    document.querySelectorAll('.nav-buttons .btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (this.textContent.includes('Continue')) {
+                e.preventDefault();
+                // Scroll to next section or show completion message
+                const currentSection = document.querySelector('.form-section:last-child');
+                if (currentSection) {
+                    currentSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    });
+
+    // Progress animation
+    const progressSteps = document.querySelectorAll('.progress-step');
+    let currentStep = 1;
+
+    function updateProgress() {
+        progressSteps.forEach((step, index) => {
+            if (index < currentStep) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (index === currentStep) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+    }
+
+    // Simulate progress updates based on form completion
+    function checkFormCompletion() {
+        const requiredFields = document.querySelectorAll('.required-field input');
+        const completedFields = Array.from(requiredFields).filter(field => field.value.trim() !== '');
+        const completionPercentage = Math.round((completedFields.length / requiredFields.length) * 100);
+        
+        document.querySelector('.completion-percentage').textContent = completionPercentage + '%';
+        
+        if (completionPercentage >= 50) {
+            currentStep = Math.min(2, progressSteps.length - 1);
+            updateProgress();
+        }
+    }
+
+    // Monitor form completion
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', checkFormCompletion);
+    });
+
+    // Initialize
+    calculateTotals();
+    updateProgress();
+});
+</script>
+{% endblock %}
