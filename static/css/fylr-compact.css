@@ -51,6 +51,9 @@ header,
   min-height: var(--nav-height) !important;
   height: var(--nav-height) !important;
   margin-bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .navbar-brand,
@@ -58,8 +61,12 @@ header,
 [class*="brand"] {
   font-size: var(--text-lg) !important;
   padding: var(--space-xs) 0 !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
   color: #ff6b00 !important;
+  text-align: center !important;
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
 }
 
 .nav-link,
@@ -74,6 +81,20 @@ header,
 .nav-link:hover,
 .navbar-nav .nav-link:hover {
   color: #ff6b00 !important;
+}
+
+/* Header button fixes */
+.navbar .btn,
+nav .btn,
+header .btn,
+[class*="nav"] .btn {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  min-height: 32px !important;
+  border-radius: 4px !important;
+  margin-left: auto !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
 }
 
 /* Fix navbar collapse on mobile */
@@ -98,7 +119,7 @@ section:first-of-type {
 
 /* Fix main content top margin to account for smaller nav */
 main {
-  margin-top: var(--nav-height) !important;
+  margin-top: 0 !important;
   padding-top: 0 !important;
 }
 
@@ -112,36 +133,39 @@ main {
   display: none !important;
 }
 
-/* Hero typography - compact but readable */
+/* Hero typography - centered and slightly larger */
 .hero h1,
 h1[class*="text-"],
 h1[class*="hero"],
 [class*="hero"] h1,
 .display-3 {
-  font-size: var(--text-4xl) !important;
-  line-height: 1.1 !important;
-  margin-bottom: var(--space-sm) !important;
+  font-size: 2.5rem !important; /* Slightly larger than var(--text-4xl) */
+  line-height: 1.2 !important;
+  margin-bottom: var(--space-md) !important;
   margin-top: 0 !important;
   color: #ffffff !important;
+  text-align: center !important;
 }
 
 .hero h2,
 h2[class*="text-"],
 [class*="hero"] h2 {
   font-size: var(--text-xl) !important;
-  line-height: 1.2 !important;
-  margin-bottom: var(--space-sm) !important;
+  line-height: 1.3 !important;
+  margin-bottom: var(--space-md) !important;
   color: #e5e5e5 !important;
+  text-align: center !important;
 }
 
 .hero p,
 .hero-subtitle,
 [class*="hero"] p,
 .lead {
-  font-size: var(--text-base) !important;
-  line-height: 1.4 !important;
+  font-size: 1.1rem !important; /* Slightly larger than var(--text-base) */
+  line-height: 1.5 !important;
   margin-bottom: var(--space-md) !important;
   color: #d1d5db !important;
+  text-align: center !important;
 }
 
 /* ===== HERO ROW AND COLUMNS - FIX LAYOUT ===== */
@@ -206,28 +230,57 @@ h2[class*="text-"],
   color: #e5e5e5 !important;
 }
 
-/* ===== BUTTONS - COMPACT ===== */
+/* ===== BUTTONS - SLEEK TECH STYLE ===== */
 .btn,
 button,
 [role="button"] {
-  padding: var(--space-sm) var(--space-md) !important;
-  font-size: var(--text-sm) !important;
-  min-height: var(--btn-height) !important;
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+  min-height: 34px !important;
   border-radius: 6px !important;
-  margin: var(--space-xs) !important;
+  margin: 2px !important;
+  font-weight: 500 !important;
+  border: 1px solid transparent !important;
+  text-transform: none !important;
+  transition: all 0.15s ease !important;
 }
 
 .btn-lg,
 [class*="btn-lg"] {
-  padding: var(--space-md) var(--space-lg) !important;
-  font-size: var(--text-base) !important;
-  min-height: 42px !important;
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  min-height: 38px !important;
+  border-radius: 8px !important;
 }
 
 .btn-orange,
 .btn-primary {
   background: #ff6b00 !important;
   border-color: #ff6b00 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(255, 107, 0, 0.2) !important;
+}
+
+.btn-orange:hover,
+.btn-primary:hover {
+  background: #e55a00 !important;
+  border-color: #e55a00 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(255, 107, 0, 0.3) !important;
+}
+
+/* Secondary buttons */
+.btn-secondary,
+.btn-outline-primary {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #d1d5db !important;
+}
+
+.btn-secondary:hover,
+.btn-outline-primary:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
   color: #ffffff !important;
 }
 
