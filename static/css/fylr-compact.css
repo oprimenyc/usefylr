@@ -489,6 +489,23 @@ footer .text-orange:contains(".fylr") {
   font-weight: 600 !important;
 }
 
+/* Footer text - change grey to white */
+footer,
+footer p,
+footer span,
+footer div,
+footer li,
+footer a,
+footer .text-muted,
+footer .text-white-50,
+footer small {
+  color: #ffffff !important;
+}
+
+footer .text-muted {
+  color: #ffffff !important;
+}
+
 /* ===== ACCESSIBILITY MAINTAINED ===== */
 *:focus,
 *:focus-visible {
