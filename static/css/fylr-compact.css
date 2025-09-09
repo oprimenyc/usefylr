@@ -132,13 +132,13 @@ main {
   display: none !important;
 }
 
-/* Hero typography - centered and slightly larger */
+/* Hero typography - centered and larger */
 .hero h1,
 h1[class*="text-"],
 h1[class*="hero"],
 [class*="hero"] h1,
 .display-3 {
-  font-size: 2.5rem !important; /* Slightly larger than var(--text-4xl) */
+  font-size: 3rem !important; /* Increased from 2.5rem */
   line-height: 1.2 !important;
   margin-bottom: var(--space-md) !important;
   margin-top: 0 !important;
