@@ -61,12 +61,9 @@ header,
 [class*="brand"] {
   font-size: var(--text-lg) !important;
   padding: var(--space-xs) 0 !important;
-  margin: 0 auto !important;
+  margin: 0 !important;
   color: #ff6b00 !important;
-  text-align: center !important;
-  position: absolute !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  text-align: left !important;
 }
 
 .nav-link,
@@ -97,10 +94,12 @@ header .btn,
   text-transform: none !important;
 }
 
-/* Fix navbar collapse on mobile */
-.navbar-toggler {
-  padding: var(--space-xs) !important;
-  border: none !important;
+/* Hide unnecessary hamburger menu */
+.navbar-toggler,
+.navbar-toggle,
+[class*="hamburger"],
+[class*="menu-toggle"] {
+  display: none !important;
 }
 
 /* ===== HERO SECTION - DRAMATIC REDUCTION FOR LAYOUT FIX ===== */
