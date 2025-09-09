@@ -1,69 +1,74 @@
 /* ===========================================
-   .FYLR BALANCED COMPACT STYLING
-   More conservative approach with better readability
+   .FYLR AGGRESSIVE COMPACT STYLING
+   Fixes hero layout, navigation, and spacing issues
    =========================================== */
 
-/* ===== ROOT VARIABLES (More Conservative) ===== */
+/* ===== ROOT VARIABLES (More Aggressive) ===== */
 :root {
-  /* Balanced spacing scale */
-  --space-xs: 0.375rem;   /* 6px */
-  --space-sm: 0.625rem;   /* 10px */
-  --space-md: 0.875rem;   /* 14px */
-  --space-lg: 1.125rem;   /* 18px */
-  --space-xl: 1.375rem;   /* 22px */
+  /* Tighter spacing scale */
+  --space-xs: 0.25rem;    /* 4px */
+  --space-sm: 0.5rem;     /* 8px */
+  --space-md: 0.75rem;    /* 12px */
+  --space-lg: 1rem;       /* 16px */
+  --space-xl: 1.25rem;    /* 20px */
   
-  /* More readable typography scale */
-  --text-xs: 0.8rem;      /* 12.8px */
-  --text-sm: 0.875rem;    /* 14px */
-  --text-base: 0.95rem;   /* 15.2px */
-  --text-lg: 1.125rem;    /* 18px */
-  --text-xl: 1.375rem;    /* 22px */
-  --text-2xl: 1.75rem;    /* 28px */
-  --text-3xl: 2.25rem;    /* 36px */
-  --text-4xl: 2.75rem;    /* 44px */
+  /* Compact typography scale */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.85rem;     /* 13.6px */
+  --text-base: 0.9rem;    /* 14.4px */
+  --text-lg: 1.05rem;     /* 16.8px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
   
   /* Component heights */
-  --nav-height: 56px;     /* Slightly bigger than before */
-  --btn-height: 40px;     /* More comfortable */
-  --input-height: 40px;
+  --nav-height: 52px;
+  --btn-height: 38px;
+  --input-height: 38px;
 }
 
-/* ===== GLOBAL ADJUSTMENTS ===== */
+/* ===== GLOBAL RESET - MORE AGGRESSIVE ===== */
 html {
-  font-size: 15px !important; /* Less aggressive reduction */
+  font-size: 14px !important;
 }
 
 body {
   font-size: var(--text-base) !important;
-  line-height: 1.5 !important; /* Better readability */
-  color: #e5e5e5 !important; /* Ensure text is visible on dark backgrounds */
+  line-height: 1.4 !important;
+  color: #e5e5e5 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* ===== NAVIGATION MODERATE COMPACT ===== */
+/* ===== NAVIGATION FIXES ===== */
 .navbar,
 nav,
 header,
 [class*="nav"],
 [class*="header"] {
-  padding: var(--space-sm) var(--space-lg) !important;
+  padding: var(--space-xs) var(--space-md) !important;
   min-height: var(--nav-height) !important;
   height: var(--nav-height) !important;
+  margin-bottom: 0 !important;
 }
 
 .navbar-brand,
 .nav-brand,
 [class*="brand"] {
-  font-size: var(--text-xl) !important;
-  padding: var(--space-sm) 0 !important;
-  color: #ff6b00 !important; /* Ensure brand is visible */
+  font-size: var(--text-lg) !important;
+  padding: var(--space-xs) 0 !important;
+  margin: 0 !important;
+  color: #ff6b00 !important;
 }
 
 .nav-link,
 .navbar-nav .nav-link,
 [class*="nav-link"] {
-  padding: var(--space-sm) var(--space-md) !important;
-  font-size: var(--text-base) !important;
-  color: #d1d5db !important; /* Better contrast */
+  padding: var(--space-xs) var(--space-sm) !important;
+  font-size: var(--text-sm) !important;
+  margin: 0 var(--space-xs) !important;
+  color: #d1d5db !important;
 }
 
 .nav-link:hover,
@@ -71,150 +76,165 @@ header,
   color: #ff6b00 !important;
 }
 
-/* ===== HERO SECTION TARGETED REDUCTION ===== */
+/* Fix navbar collapse on mobile */
+.navbar-toggler {
+  padding: var(--space-xs) !important;
+  border: none !important;
+}
+
+/* ===== HERO SECTION - DRAMATIC REDUCTION FOR LAYOUT FIX ===== */
 .hero,
 .hero-section,
 [class*="hero"],
 .jumbotron,
 .banner,
-.main-banner {
-  padding: var(--space-lg) var(--space-lg) !important; /* Much more targeted reduction */
+.main-banner,
+section:first-of-type {
+  padding: var(--space-md) var(--space-md) !important;
   margin: 0 !important;
-  background: transparent !important; /* Remove any background bars */
+  background: transparent !important;
+  min-height: auto !important;
 }
 
-/* Remove black separation bars */
+/* Fix main content top margin to account for smaller nav */
+main {
+  margin-top: var(--nav-height) !important;
+  padding-top: 0 !important;
+}
+
+/* Remove any hero pseudo-elements causing layout issues */
 .hero::before,
 .hero::after,
 [class*="hero"]::before,
-[class*="hero"]::after {
+[class*="hero"]::after,
+.hero-gradient::before,
+.hero-gradient::after {
   display: none !important;
 }
 
-/* Hero typography - more reasonable sizing */
+/* Hero typography - compact but readable */
 .hero h1,
 h1[class*="text-"],
 h1[class*="hero"],
-[class*="hero"] h1 {
+[class*="hero"] h1,
+.display-3 {
   font-size: var(--text-4xl) !important;
-  line-height: 1.2 !important;
-  margin-bottom: var(--space-md) !important;
+  line-height: 1.1 !important;
+  margin-bottom: var(--space-sm) !important;
   margin-top: 0 !important;
-  color: #ffffff !important; /* Ensure visibility */
+  color: #ffffff !important;
 }
 
 .hero h2,
 h2[class*="text-"],
 [class*="hero"] h2 {
-  font-size: var(--text-2xl) !important;
-  line-height: 1.3 !important;
-  margin-bottom: var(--space-md) !important;
+  font-size: var(--text-xl) !important;
+  line-height: 1.2 !important;
+  margin-bottom: var(--space-sm) !important;
   color: #e5e5e5 !important;
 }
 
 .hero p,
 .hero-subtitle,
-[class*="hero"] p {
-  font-size: var(--text-lg) !important;
-  line-height: 1.5 !important;
-  margin-bottom: var(--space-lg) !important;
+[class*="hero"] p,
+.lead {
+  font-size: var(--text-base) !important;
+  line-height: 1.4 !important;
+  margin-bottom: var(--space-md) !important;
   color: #d1d5db !important;
 }
 
-/* ===== REMOVE SPACE-WASTING ELEMENTS ===== */
-/* Remove any separator bars or dividers taking up space */
-hr,
-.divider,
-[class*="separator"],
-[class*="divider"] {
-  margin: var(--space-sm) 0 !important;
-  height: 1px !important;
-  border: none !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+/* ===== HERO ROW AND COLUMNS - FIX LAYOUT ===== */
+.hero .row,
+[class*="hero"] .row {
+  margin-left: calc(var(--space-xs) * -1) !important;
+  margin-right: calc(var(--space-xs) * -1) !important;
+  align-items: center !important;
 }
 
-/* Hide empty spacer elements */
-.spacer,
-[class*="spacer"],
-.gap,
-[class*="gap"] {
-  height: var(--space-md) !important;
+.hero .col,
+.hero [class*="col-"],
+[class*="hero"] .col,
+[class*="hero"] [class*="col-"] {
+  padding-left: var(--space-xs) !important;
+  padding-right: var(--space-xs) !important;
+}
+
+/* Fix hero demo card container */
+.hero-demo-stack,
+[class*="hero-demo"],
+.demo-card-container {
+  max-width: 100% !important;
   margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* ===== CONTAINERS - MODERATE ADJUSTMENTS ===== */
+/* ===== CONTAINERS - TIGHTER ===== */
 .container,
 .container-fluid {
-  padding-left: var(--space-lg) !important;
-  padding-right: var(--space-lg) !important;
+  padding-left: var(--space-md) !important;
+  padding-right: var(--space-md) !important;
+  max-width: 100% !important;
 }
 
 .row {
-  margin-left: calc(var(--space-md) * -1) !important;
-  margin-right: calc(var(--space-md) * -1) !important;
+  margin-left: calc(var(--space-sm) * -1) !important;
+  margin-right: calc(var(--space-sm) * -1) !important;
 }
 
 .col,
 [class*="col-"] {
-  padding-left: var(--space-md) !important;
-  padding-right: var(--space-md) !important;
+  padding-left: var(--space-sm) !important;
+  padding-right: var(--space-sm) !important;
 }
 
-/* ===== CARDS - MODERATE COMPACT ===== */
+/* ===== CARDS - COMPACT ===== */
 .card,
 [class*="card"],
-.panel,
-[class*="panel"] {
-  padding: var(--space-lg) !important;
-  margin-bottom: var(--space-lg) !important;
-  border-radius: 12px !important;
-  background: rgba(25, 25, 25, 0.9) !important; /* Ensure dark background */
+.demo-card,
+.primary-card {
+  padding: var(--space-md) !important;
+  margin-bottom: var(--space-md) !important;
+  border-radius: 8px !important;
+  background: rgba(25, 25, 25, 0.9) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .card-body,
 [class*="card-body"] {
-  padding: var(--space-lg) !important;
+  padding: var(--space-md) !important;
   color: #e5e5e5 !important;
 }
 
-.card h3,
-.card h4,
-[class*="card"] h3,
-[class*="card"] h4 {
-  font-size: var(--text-xl) !important;
-  margin-bottom: var(--space-md) !important;
-  color: #ffffff !important;
-}
-
-/* ===== BUTTONS - COMFORTABLE SIZING ===== */
+/* ===== BUTTONS - COMPACT ===== */
 .btn,
 button,
 [role="button"] {
-  padding: var(--space-md) var(--space-lg) !important;
-  font-size: var(--text-base) !important;
+  padding: var(--space-sm) var(--space-md) !important;
+  font-size: var(--text-sm) !important;
   min-height: var(--btn-height) !important;
-  border-radius: 8px !important;
-  font-weight: 500 !important;
+  border-radius: 6px !important;
+  margin: var(--space-xs) !important;
 }
 
-.btn-primary,
-[class*="btn-primary"] {
+.btn-lg,
+[class*="btn-lg"] {
+  padding: var(--space-md) var(--space-lg) !important;
+  font-size: var(--text-base) !important;
+  min-height: 42px !important;
+}
+
+.btn-orange,
+.btn-primary {
   background: #ff6b00 !important;
   border-color: #ff6b00 !important;
   color: #ffffff !important;
 }
 
-.btn-primary:hover {
-  background: #e55a00 !important;
-  border-color: #e55a00 !important;
-}
-
-/* ===== IMPROVED TEXT CONTRAST ===== */
-/* Ensure all text is readable on dark backgrounds */
+/* ===== TEXT CONTRAST FIXES ===== */
 p, span, div, li {
   color: #d1d5db !important;
-  line-height: 1.5 !important;
+  line-height: 1.4 !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -230,28 +250,84 @@ a:hover {
   color: #ff6b00 !important;
 }
 
-/* ===== SPECIFIC ADJUSTMENTS FOR VISIBLE ELEMENTS ===== */
-/* AI Analysis card improvements */
-.card .badge,
-.badge {
-  background: rgba(255, 107, 0, 0.2) !important;
-  color: #ff6b00 !important;
-  padding: var(--space-xs) var(--space-sm) !important;
-  border-radius: 6px !important;
-}
+/* ===== UTILITY SPACING OVERRIDES ===== */
+.py-5 { padding-top: var(--space-lg) !important; padding-bottom: var(--space-lg) !important; }
+.py-4 { padding-top: var(--space-md) !important; padding-bottom: var(--space-md) !important; }
+.py-3 { padding-top: var(--space-sm) !important; padding-bottom: var(--space-sm) !important; }
 
-/* Progress bars */
-.progress {
-  height: 8px !important;
+.my-5 { margin-top: var(--space-lg) !important; margin-bottom: var(--space-lg) !important; }
+.my-4 { margin-top: var(--space-md) !important; margin-bottom: var(--space-md) !important; }
+.my-3 { margin-top: var(--space-sm) !important; margin-bottom: var(--space-sm) !important; }
+
+.px-5 { padding-left: var(--space-lg) !important; padding-right: var(--space-lg) !important; }
+.px-4 { padding-left: var(--space-md) !important; padding-right: var(--space-md) !important; }
+.px-3 { padding-left: var(--space-sm) !important; padding-right: var(--space-sm) !important; }
+
+.mb-5 { margin-bottom: var(--space-lg) !important; }
+.mb-4 { margin-bottom: var(--space-md) !important; }
+.mb-3 { margin-bottom: var(--space-sm) !important; }
+
+.mt-5 { margin-top: var(--space-lg) !important; }
+.mt-4 { margin-top: var(--space-md) !important; }
+.mt-3 { margin-top: var(--space-sm) !important; }
+
+/* ===== REMOVE SPACE WASTERS ===== */
+hr,
+.divider,
+[class*="separator"] {
+  margin: var(--space-xs) 0 !important;
+  height: 1px !important;
+  border: none !important;
   background: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 4px !important;
 }
 
-.progress-bar {
-  background: #ff6b00 !important;
+/* ===== SPECIFIC HERO FIXES ===== */
+/* Fix hero button spacing */
+.hero .d-flex,
+[class*="hero"] .d-flex {
+  gap: var(--space-sm) !important;
+  margin-bottom: var(--space-md) !important;
 }
 
-/* Form elements with better contrast */
+/* Fix trust indicators spacing */
+.hero .d-flex.align-items-center {
+  gap: var(--space-md) !important;
+  margin-top: var(--space-md) !important;
+}
+
+/* Fix hero demo positioning */
+.hero .position-relative,
+[class*="hero"] .position-relative {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ===== DEMO CARD SPECIFIC FIXES ===== */
+.demo-card,
+.primary-card {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: var(--space-md) !important;
+}
+
+.savings-amount {
+  font-size: var(--text-2xl) !important;
+  margin-bottom: var(--space-sm) !important;
+}
+
+.analysis-result {
+  margin-bottom: var(--space-sm) !important;
+}
+
+.progress-container {
+  margin-bottom: var(--space-xs) !important;
+}
+
+.quick-actions {
+  margin-top: var(--space-sm) !important;
+}
+
+/* ===== FORMS COMPACT ===== */
 .form-control,
 input,
 textarea,
@@ -259,59 +335,46 @@ select {
   background: rgba(30, 30, 30, 0.9) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: #ffffff !important;
-  padding: var(--space-md) !important;
+  padding: var(--space-sm) !important;
   height: var(--input-height) !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
 }
 
-.form-control:focus,
-input:focus,
-textarea:focus {
-  border-color: #ff6b00 !important;
-  box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2) !important;
-}
-
-/* ===== UTILITY OVERRIDES - MODERATE ===== */
-.py-5 { padding-top: var(--space-lg) !important; padding-bottom: var(--space-lg) !important; }
-.py-4 { padding-top: var(--space-lg) !important; padding-bottom: var(--space-lg) !important; }
-.py-3 { padding-top: var(--space-md) !important; padding-bottom: var(--space-md) !important; }
-
-.my-5 { margin-top: var(--space-lg) !important; margin-bottom: var(--space-lg) !important; }
-.my-4 { margin-top: var(--space-lg) !important; margin-bottom: var(--space-lg) !important; }
-.my-3 { margin-top: var(--space-md) !important; margin-bottom: var(--space-md) !important; }
-
-.px-5 { padding-left: var(--space-xl) !important; padding-right: var(--space-xl) !important; }
-.px-4 { padding-left: var(--space-lg) !important; padding-right: var(--space-lg) !important; }
-.px-3 { padding-left: var(--space-md) !important; padding-right: var(--space-md) !important; }
-
-/* ===== RESPONSIVE - LESS AGGRESSIVE ===== */
+/* ===== RESPONSIVE FIXES ===== */
 @media (max-width: 768px) {
   html {
-    font-size: 14px !important; /* More conservative mobile scaling */
+    font-size: 13px !important;
   }
   
   .hero {
-    padding: var(--space-md) !important;
+    padding: var(--space-sm) !important;
   }
   
-  .hero h1 {
+  .hero h1,
+  .display-3 {
     font-size: var(--text-3xl) !important;
   }
   
   .container,
   .container-fluid {
-    padding-left: var(--space-md) !important;
-    padding-right: var(--space-md) !important;
+    padding-left: var(--space-sm) !important;
+    padding-right: var(--space-sm) !important;
   }
 }
 
 @media (max-width: 576px) {
-  .hero h1 {
+  .hero h1,
+  .display-3 {
     font-size: var(--text-2xl) !important;
   }
   
   .navbar {
-    padding: var(--space-sm) !important;
+    padding: var(--space-xs) !important;
+  }
+  
+  .hero .d-flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
   }
 }
 
@@ -319,7 +382,7 @@ textarea:focus {
 *:focus,
 *:focus-visible {
   outline: 2px solid #ff6b00 !important;
-  outline-offset: 2px !important;
+  outline-offset: 1px !important;
 }
 
 /* ===== PERFORMANCE ===== */
@@ -328,22 +391,33 @@ textarea:focus {
 }
 
 /* ===== DARK THEME ENHANCEMENTS ===== */
-/* Ensure proper background hierarchy */
 body {
   background: #0a0a0b !important;
 }
 
-.bg-dark,
-[class*="bg-dark"] {
-  background: rgba(15, 15, 16, 0.95) !important;
-}
-
-/* Subtle shadows for depth */
 .card,
 [class*="card"] {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
-.card:hover {
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4) !important;
+/* ===== PROGRESS BARS ===== */
+.progress {
+  height: 6px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+}
+
+.progress-bar,
+.progress-bar-orange {
+  background: #ff6b00 !important;
+}
+
+/* ===== BADGES AND STATUS ===== */
+.badge,
+.status-indicator {
+  background: rgba(255, 107, 0, 0.2) !important;
+  color: #ff6b00 !important;
+  padding: var(--space-xs) var(--space-sm) !important;
+  border-radius: 4px !important;
+  font-size: var(--text-xs) !important;
 }
