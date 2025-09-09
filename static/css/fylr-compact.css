@@ -430,6 +430,65 @@ select {
   }
 }
 
+/* ===== LOGO CONSISTENCY ACROSS SITE ===== */
+/* Ensure all .fylr logos match header style */
+.logo-text,
+.navbar-brand,
+.nav-brand,
+[class*="brand"],
+h5:contains(".fylr"),
+h5.text-orange,
+footer h5,
+.footer .logo,
+.footer .brand {
+  font-size: var(--text-lg) !important;
+  color: #ff6b00 !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+
+/* Footer logo consistency */
+footer .text-orange,
+footer h5,
+.footer-brand {
+  color: #ff6b00 !important;
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+}
+
+/* Beautiful base logo styling */
+.logo-text {
+  font-size: var(--text-lg) !important;
+  color: #ff6b00 !important;
+  font-weight: 600 !important;
+  background: none !important;
+  background-clip: initial !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #ff6b00 !important;
+}
+
+/* Layout template logo with icon */
+.navbar-brand .text-white.fs-4,
+.navbar-brand span.fw-bold {
+  color: #ff6b00 !important;
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+}
+
+/* Remove any subtitle text to keep logos clean */
+.navbar-brand .text-white-50,
+.navbar-brand .small {
+  display: none !important;
+}
+
+/* Footer .fylr branding consistency */
+footer h5:contains(".fylr"),
+footer .text-orange:contains(".fylr") {
+  color: #ff6b00 !important;
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+}
+
 /* ===== ACCESSIBILITY MAINTAINED ===== */
 *:focus,
 *:focus-visible {
