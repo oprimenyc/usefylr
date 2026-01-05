@@ -74,7 +74,72 @@ class User(UserMixin, db.Model):
     business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)
     tax_forms = db.relationship('TaxForm', backref='user')
     tax_strategies = db.relationship('TaxStrategy', backref='user')
-    
+    subscriptions = db.relationship('Subscription', backref='user', lazy='dynamic')
+
+    def has_paid(self) -> bool:
+        """
+        Check if user has an active paid subscription.
+
+        Returns:
+            bool: True if user has active subscription, False otherwise
+        """
+        active_subscription = self.subscriptions.filter_by(status='active').first()
+        return active_subscription is not None
+
+    def has_feature(self, feature_name: str) -> bool:
+        """
+        Check if user's subscription includes a specific feature.
+
+        Feature access by subscription type:
+        - SELF_SERVICE: basic features only
+        - GUIDED: includes AI assistance, export forms
+        - CONCIERGE: includes all features plus audit protection
+
+        Args:
+            feature_name: Feature to check (e.g., 'export_forms', 'smart_ledger_ai', 'audit_protection')
+
+        Returns:
+            bool: True if user has access to the feature, False otherwise
+        """
+        active_subscription = self.subscriptions.filter_by(status='active').first()
+
+        if not active_subscription:
+            return False
+
+        # Feature matrix by subscription type
+        feature_map = {
+            SubscriptionType.SELF_SERVICE: [
+                'basic_forms',
+                'tax_calculator',
+            ],
+            SubscriptionType.GUIDED: [
+                'basic_forms',
+                'tax_calculator',
+                'export_forms',
+                'smart_ledger_ai',
+                'tax_optimization',
+            ],
+            SubscriptionType.CONCIERGE: [
+                'basic_forms',
+                'tax_calculator',
+                'export_forms',
+                'smart_ledger_ai',
+                'tax_optimization',
+                'audit_protection',
+                'priority_support',
+                'tax_strategy_consultation',
+            ],
+            SubscriptionType.TRIAL: [
+                'basic_forms',
+                'tax_calculator',
+                'export_forms',
+                'smart_ledger_ai',
+            ],
+        }
+
+        allowed_features = feature_map.get(active_subscription.subscription_type, [])
+        return feature_name in allowed_features
+
     def __repr__(self):
         return f'<User {self.username}>'
 
