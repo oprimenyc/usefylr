@@ -329,7 +329,7 @@ class Subscription(db.Model):
     payments = db.relationship('Payment', backref='subscription', lazy='dynamic')
 
     # Extended data storage
-    metadata = db.Column(JSONB)  # Additional subscription metadata from Stripe
+    stripe_metadata = db.Column(JSONB)  # Additional subscription metadata from Stripe
 
     def __repr__(self):
         return f'<Subscription {self.subscription_type.value} - {self.status}>'
@@ -358,7 +358,7 @@ class Payment(db.Model):
     subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'))
 
     # Extended data storage
-    metadata = db.Column(JSONB)  # Additional payment metadata from Stripe
+    stripe_metadata = db.Column(JSONB)  # Additional payment metadata from Stripe
 
     def __repr__(self):
         return f'<Payment {self.stripe_payment_id} ${self.amount}>'
