@@ -42,6 +42,14 @@ class TaxFormType(enum.Enum):
     FORM_1099MISC = "1099misc"
     FORM_1096 = "1096"
 
+class SubscriptionType(enum.Enum):
+    """Subscription plan types for Stripe integration"""
+    SELF_SERVICE = "self_service"
+    GUIDED = "guided"
+    CONCIERGE = "concierge"
+    TRIAL = "trial"
+    CANCELLED = "cancelled"
+
 class User(UserMixin, db.Model):
     """User model"""
     id = db.Column(db.Integer, primary_key=True)
@@ -212,13 +220,108 @@ class QuestionnaireResponse(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
-    
+
     # Questionnaire metadata
     tax_year = db.Column(db.Integer, default=datetime.utcnow().year - 1)
     questionnaire_type = db.Column(db.String(64))  # e.g., business_info, deductions, etc.
-    
+
     # Response data
     responses = db.Column(JSONB)  # JSON object containing question IDs and responses
-    
+
     def __repr__(self):
         return f'<QuestionnaireResponse {self.questionnaire_type} {self.tax_year}>'
+
+class Subscription(db.Model):
+    """Model for storing user subscriptions"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    # Stripe subscription information
+    stripe_subscription_id = db.Column(db.String(128), unique=True, nullable=False)
+    stripe_customer_id = db.Column(db.String(128), nullable=False)
+    stripe_price_id = db.Column(db.String(128))
+
+    # Subscription details
+    subscription_type = db.Column(db.Enum(SubscriptionType), nullable=False)
+    status = db.Column(db.String(20), nullable=False)  # active, cancelled, past_due, trialing
+
+    # Billing cycle
+    current_period_start = db.Column(db.DateTime)
+    current_period_end = db.Column(db.DateTime)
+    cancel_at_period_end = db.Column(db.Boolean, default=False)
+    cancelled_at = db.Column(db.DateTime)
+
+    # Trial information
+    trial_start = db.Column(db.DateTime)
+    trial_end = db.Column(db.DateTime)
+
+    # Features
+    has_audit_protection = db.Column(db.Boolean, default=False)
+
+    # Relationships
+    payments = db.relationship('Payment', backref='subscription', lazy='dynamic')
+
+    # Extended data storage
+    metadata = db.Column(JSONB)  # Additional subscription metadata from Stripe
+
+    def __repr__(self):
+        return f'<Subscription {self.subscription_type.value} - {self.status}>'
+
+class Payment(db.Model):
+    """Model for storing payment transactions"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Stripe payment information
+    stripe_payment_id = db.Column(db.String(128), unique=True, nullable=False)
+    stripe_payment_intent_id = db.Column(db.String(128))
+    stripe_charge_id = db.Column(db.String(128))
+
+    # Payment details
+    amount = db.Column(db.Float, nullable=False)  # Amount in dollars
+    currency = db.Column(db.String(3), default='usd')
+    status = db.Column(db.String(20), nullable=False)  # succeeded, failed, pending, refunded
+
+    # Payment metadata
+    description = db.Column(db.String(256))
+    receipt_url = db.Column(db.String(512))
+
+    # Subscription link (if payment is for a subscription)
+    subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'))
+
+    # Extended data storage
+    metadata = db.Column(JSONB)  # Additional payment metadata from Stripe
+
+    def __repr__(self):
+        return f'<Payment {self.stripe_payment_id} ${self.amount}>'
+
+class AuditLog(db.Model):
+    """Model for storing audit trail of critical actions"""
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    # User information
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    username = db.Column(db.String(64))  # Denormalized for audit integrity
+
+    # Action details
+    action = db.Column(db.String(64), nullable=False, index=True)  # e.g., "user.login", "payment.created"
+    resource_type = db.Column(db.String(64))  # e.g., "User", "Payment", "Subscription"
+    resource_id = db.Column(db.Integer)
+
+    # Request metadata
+    ip_address = db.Column(db.String(45))  # IPv6 compatible
+    user_agent = db.Column(db.String(256))
+
+    # Status and result
+    status = db.Column(db.String(20), nullable=False)  # success, failure, error
+    error_message = db.Column(db.Text)
+
+    # Extended data storage
+    details = db.Column(JSONB)  # Additional context about the action
+
+    def __repr__(self):
+        return f'<AuditLog {self.action} by {self.username} - {self.status}>'
