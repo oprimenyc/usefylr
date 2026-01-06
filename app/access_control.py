@@ -56,10 +56,10 @@ def requires_access_level(access_level):
                 required_tier = "Basic"
                 upgrade_price = "$0"
                 
-                if access_level in ['save_progress', 'smart_form_logic', 'enhanced_ai_support', 
+                if access_level in ['save_progress', 'smart_form_logic', 'enhanced_ai_support',
                                   'dynamic_checklist', 'export_forms', 'plus', 'fylr_plus']:
                     required_tier = ".fylr+"
-                    upgrade_price = "$47"
+                    upgrade_price = "$197"
                 elif access_level in ['ai_deduction_detection', 'ai_sorted_uploads', 
                                     'filing_export_support', 'audit_protection', 
                                     'enhanced_audit_protection', 'priority_support', 
@@ -141,7 +141,7 @@ def unlock_tool(user, tool_name):
     
     if tool_name in plus_features:
         required_tier = ".fylr+"
-        upgrade_price = "$47"
+        upgrade_price = "$197"
     elif tool_name in pro_features:
         required_tier = ".fylr Pro"
         upgrade_price = "$97-$197"

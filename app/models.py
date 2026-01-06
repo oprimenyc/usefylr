@@ -13,8 +13,8 @@ import enum
 class UserPlan(enum.Enum):
     """User subscription plan levels"""
     SELF_SERVICE = "self_service"
-    GUIDED = "guided" 
-    CONCIERGE = "concierge"
+    GUIDED = "guided"
+    PREMIUM = "premium"
 
 class BusinessType(enum.Enum):
     """Business entity types"""
@@ -46,7 +46,7 @@ class SubscriptionType(enum.Enum):
     """Subscription plan types for Stripe integration"""
     SELF_SERVICE = "self_service"
     GUIDED = "guided"
-    CONCIERGE = "concierge"
+    PREMIUM = "premium"
     TRIAL = "trial"
     CANCELLED = "cancelled"
 
@@ -93,7 +93,7 @@ class User(UserMixin, db.Model):
         Feature access by subscription type:
         - SELF_SERVICE: basic features only
         - GUIDED: includes AI assistance, export forms
-        - CONCIERGE: includes all features plus audit protection
+        - PREMIUM: includes all features plus audit protection
 
         Args:
             feature_name: Feature to check (e.g., 'export_forms', 'smart_ledger_ai', 'audit_protection')
@@ -119,7 +119,7 @@ class User(UserMixin, db.Model):
                 'smart_ledger_ai',
                 'tax_optimization',
             ],
-            SubscriptionType.CONCIERGE: [
+            SubscriptionType.PREMIUM: [
                 'basic_forms',
                 'tax_calculator',
                 'export_forms',
