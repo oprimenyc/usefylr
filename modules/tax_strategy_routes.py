@@ -118,6 +118,7 @@ def entity_optimization():
 
 @tax_strategy_bp.route('/export/<int:strategy_id>')
 @login_required
+@requires_access_level('export_forms')
 def export_strategy(strategy_id):
     """Export a tax strategy in the specified format"""
     # Get the requested strategy
