@@ -51,7 +51,7 @@ def requires_access_level(access_level):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # If user doesn't have required access, show appropriate message
-            if not current_user.has_paid(access_level):
+            if not current_user.has_feature(access_level):
                 # Determine required tier
                 required_tier = "Basic"
                 upgrade_price = "$0"
@@ -96,7 +96,7 @@ def unlock_tool(user, tool_name):
         }
     """
     # Check if user has access first
-    has_access = user.has_paid(tool_name)
+    has_access = user.has_feature(tool_name)
     
     # Default values
     required_tier = "Basic"
