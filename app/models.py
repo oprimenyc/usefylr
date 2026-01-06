@@ -6,7 +6,7 @@ This module defines the database models for the .fylr tax platform.
 
 from app import db
 from flask_login import UserMixin
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import JSON
 from datetime import datetime
 import enum
 
@@ -167,7 +167,7 @@ class BusinessProfile(db.Model):
     has_employees = db.Column(db.Boolean, default=False)
     employee_count = db.Column(db.Integer, default=0)
     contractor_count = db.Column(db.Integer, default=0)
-    operating_states = db.Column(JSONB)  # Stored as JSON array of state codes
+    operating_states = db.Column(JSON)  # Stored as JSON array of state codes
     
     # Deduction-relevant fields
     has_home_office = db.Column(db.Boolean, default=False)
@@ -183,7 +183,7 @@ class BusinessProfile(db.Model):
     
     # Optimization opportunities
     expense_ratio = db.Column(db.Float)  # Expenses / Revenue
-    potential_deductions = db.Column(JSONB)  # JSON array of potential deduction categories
+    potential_deductions = db.Column(JSON)  # JSON array of potential deduction categories
     
     # Additional financial data
     has_capital_gains = db.Column(db.Boolean, default=False)
@@ -194,7 +194,7 @@ class BusinessProfile(db.Model):
     incomplete_records = db.Column(db.Boolean, default=False)
     
     # Extended data storage
-    data = db.Column(JSONB)  # For extensibility without schema changes
+    data = db.Column(JSON)  # For extensibility without schema changes
     
     def __repr__(self):
         return f'<BusinessProfile {self.business_name}>'
@@ -212,10 +212,10 @@ class TaxForm(db.Model):
     status = db.Column(db.String(20), default='draft')  # draft, complete, filed, etc.
     
     # Form data
-    data = db.Column(JSONB)  # Stores the actual form data as JSON
+    data = db.Column(JSON)  # Stores the actual form data as JSON
     
     # Validation results
-    validation_results = db.Column(JSONB)  # JSON object containing validation results
+    validation_results = db.Column(JSON)  # JSON object containing validation results
     
     def __repr__(self):
         return f'<TaxForm {self.form_type.name} {self.tax_year}>'
@@ -230,15 +230,15 @@ class TaxStrategy(db.Model):
     strategy_name = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text)
     estimated_savings = db.Column(db.String(64))  # Could be a range or "Varies"
-    implementation_steps = db.Column(JSONB)  # JSON array of implementation steps
-    qualifications = db.Column(JSONB)  # JSON array of qualifications or limitations
+    implementation_steps = db.Column(JSON)  # JSON array of implementation steps
+    qualifications = db.Column(JSON)  # JSON array of qualifications or limitations
     
     # Metadata
     tax_year = db.Column(db.Integer, default=datetime.utcnow().year - 1)
     tier = db.Column(db.String(20), default='basic')  # Which subscription tier this strategy is for
     
     # Extended data storage
-    data = db.Column(JSONB)  # For storing additional contextual data
+    data = db.Column(JSON)  # For storing additional contextual data
     
     def __repr__(self):
         return f'<TaxStrategy {self.strategy_name}>'
@@ -253,10 +253,10 @@ class AccountingConnection(db.Model):
     status = db.Column(db.String(20), default='active')
     
     # Connection credentials (encrypted in production)
-    credentials = db.Column(JSONB)
+    credentials = db.Column(JSON)
     
     # Metadata
-    data = db.Column(JSONB)  # Additional metadata about the connection
+    data = db.Column(JSON)  # Additional metadata about the connection
     
     def __repr__(self):
         return f'<AccountingConnection {self.platform}>'
@@ -273,8 +273,8 @@ class DataImport(db.Model):
     records_count = db.Column(db.Integer)
     
     # Import results and data
-    results = db.Column(JSONB)
-    data = db.Column(JSONB)  # The actual imported data
+    results = db.Column(JSON)
+    data = db.Column(JSON)  # The actual imported data
     
     def __repr__(self):
         return f'<DataImport {self.platform} {self.data_type} {self.tax_year}>'
@@ -291,7 +291,7 @@ class QuestionnaireResponse(db.Model):
     questionnaire_type = db.Column(db.String(64))  # e.g., business_info, deductions, etc.
 
     # Response data
-    responses = db.Column(JSONB)  # JSON object containing question IDs and responses
+    responses = db.Column(JSON)  # JSON object containing question IDs and responses
 
     def __repr__(self):
         return f'<QuestionnaireResponse {self.questionnaire_type} {self.tax_year}>'
@@ -329,7 +329,7 @@ class Subscription(db.Model):
     payments = db.relationship('Payment', backref='subscription', lazy='dynamic')
 
     # Extended data storage
-    stripe_metadata = db.Column(JSONB)  # Additional subscription metadata from Stripe
+    stripe_metadata = db.Column(JSON)  # Additional subscription metadata from Stripe
 
     def __repr__(self):
         return f'<Subscription {self.subscription_type.value} - {self.status}>'
@@ -358,7 +358,7 @@ class Payment(db.Model):
     subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'))
 
     # Extended data storage
-    stripe_metadata = db.Column(JSONB)  # Additional payment metadata from Stripe
+    stripe_metadata = db.Column(JSON)  # Additional payment metadata from Stripe
 
     def __repr__(self):
         return f'<Payment {self.stripe_payment_id} ${self.amount}>'
@@ -386,7 +386,7 @@ class AuditLog(db.Model):
     error_message = db.Column(db.Text)
 
     # Extended data storage
-    details = db.Column(JSONB)  # Additional context about the action
+    details = db.Column(JSON)  # Additional context about the action
 
     def __repr__(self):
         return f'<AuditLog {self.action} by {self.username} - {self.status}>'

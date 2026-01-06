@@ -7,6 +7,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 # Create SQLAlchemy base class
 class Base(DeclarativeBase):
@@ -15,6 +16,7 @@ class Base(DeclarativeBase):
 # Initialize extensions
 db = SQLAlchemy(model_class=Base)
 login_manager = LoginManager()
+migrate = Migrate()
 
 def create_app():
     """Create and configure the Flask application"""
@@ -32,6 +34,7 @@ def create_app():
     # Initialize extensions with the app
     db.init_app(app)
     login_manager.init_app(app)
+    migrate.init_app(app, db)
     
     from app.models import User
     
@@ -65,9 +68,8 @@ def create_app():
         app.register_blueprint(form_builder_bp)
     except ImportError:
         pass
-    
-    # Create database tables
-    with app.app_context():
-        db.create_all()
-    
+
+    # Database tables are managed by Flask-Migrate
+    # Use 'flask db upgrade' to create/update tables
+
     return app
