@@ -14,9 +14,11 @@ from typing import List, Dict, Optional, Tuple
 import uuid
 
 from flask import Blueprint, render_template, request, jsonify, current_app, session
+from flask_login import current_user
 from werkzeug.utils import secure_filename
 
 # from ai.openai_interface import get_openai_response
+from app.models import User
 
 class SmartLedger:
     """AI-powered transaction categorization and tax optimization engine"""
@@ -333,17 +335,42 @@ def smart_ledger():
 
 @smart_ledger_bp.route('/api/analyze-transaction', methods=['POST'])
 def analyze_transaction():
-    """API endpoint for transaction analysis"""
+    """API endpoint for transaction analysis with subscription check"""
     try:
+        # CHECK FOR SMART LEDGER SUBSCRIPTION
+        if not current_user or not current_user.is_authenticated:
+            return jsonify({
+                'error': 'AUTHENTICATION_REQUIRED',
+                'message': 'Please log in to use Smart Ledger AI'
+            }), 401
+
+        if not current_user.has_feature('smart_ledger_ai'):
+            return jsonify({
+                'error': 'UPGRADE_REQUIRED',
+                'message': 'AI expense categorization requires Smart Ledger add-on',
+                'pricing': {
+                    'monthly': 12.97,
+                    'annual': 147,
+                    'features': [
+                        'AI-powered transaction categorization',
+                        'Tax-readiness score',
+                        'Automatic deduction finder',
+                        'Real-time expense tracking'
+                    ]
+                },
+                'upgrade_url': '/pricing#smart-ledger'
+            }), 403
+
+        # User has access - proceed with AI categorization
         ledger = SmartLedger()
         transaction_data = request.get_json()
-        
+
         if not transaction_data:
             return jsonify({'error': 'No transaction data provided'}), 400
-        
+
         analysis = ledger.analyze_transaction(transaction_data)
         return jsonify(analysis)
-        
+
     except Exception as e:
         logging.error(f"Transaction analysis error: {str(e)}")
         return jsonify({'error': 'Analysis failed'}), 500
