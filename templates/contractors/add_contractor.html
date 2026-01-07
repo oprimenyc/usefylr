@@ -1,0 +1,55 @@
+{% extends "layout_unified.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Add Contractor</h2>
+
+    <form method="POST" action="{{ url_for('contractors.add_contractor') }}">
+        <div class="mb-3">
+            <label class="form-label">Name *</label>
+            <input type="text" class="form-control" name="name" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Business Name</label>
+            <input type="text" class="form-control" name="business_name">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">EIN or SSN *</label>
+            <input type="text" class="form-control" name="ein" required>
+            <small class="text-muted">For 1099 filing</small>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label class="form-label">Address</label>
+                <input type="text" class="form-control" name="address_line1">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">City</label>
+                <input type="text" class="form-control" name="city">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">State</label>
+                <input type="text" class="form-control" name="state" maxlength="2">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">ZIP Code</label>
+                <input type="text" class="form-control" name="zip_code">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Contractor</button>
+        <a href="{{ url_for('contractors.dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
