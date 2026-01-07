@@ -118,6 +118,7 @@ class User(UserMixin, db.Model):
                 'export_forms',
                 'smart_ledger_ai',
                 'tax_optimization',
+                'contractor_management_addon',  # $19/month add-on
             ],
             SubscriptionType.PREMIUM: [
                 'basic_forms',
@@ -125,6 +126,8 @@ class User(UserMixin, db.Model):
                 'export_forms',
                 'smart_ledger_ai',
                 'tax_optimization',
+                'contractor_management',  # Included free
+                'business_credit_reporting',  # Net-30 reporting
                 'audit_protection',
                 'priority_support',
                 'tax_strategy_consultation',
@@ -390,3 +393,84 @@ class AuditLog(db.Model):
 
     def __repr__(self):
         return f'<AuditLog {self.action} by {self.username} - {self.status}>'
+
+class Contractor(db.Model):
+    """Model for 1099 contractors"""
+    __tablename__ = 'contractors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Contractor info
+    name = db.Column(db.String(255), nullable=False)
+    business_name = db.Column(db.String(255))
+    email = db.Column(db.String(255))
+    phone = db.Column(db.String(50))
+
+    # Tax info
+    ein = db.Column(db.String(20))  # EIN or SSN (encrypted in production)
+    address_line1 = db.Column(db.String(255))
+    address_line2 = db.Column(db.String(255))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(2))
+    zip_code = db.Column(db.String(10))
+
+    # Payment tracking
+    total_paid_ytd = db.Column(db.Numeric(10, 2), default=0)
+    needs_1099 = db.Column(db.Boolean, default=False)  # True if >$600
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    # Relationships
+    payments = db.relationship('ContractorPayment', backref='contractor', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<Contractor {self.name}>'
+
+
+class ContractorPayment(db.Model):
+    """Track payments to contractors for 1099 calculation"""
+    __tablename__ = 'contractor_payments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    contractor_id = db.Column(db.Integer, db.ForeignKey('contractors.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Payment details
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
+    payment_date = db.Column(db.Date, nullable=False)
+    description = db.Column(db.Text)
+    category = db.Column(db.String(100))
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ContractorPayment ${self.amount} to Contractor {self.contractor_id}>'
+
+
+class Form1099(db.Model):
+    """Generated 1099-NEC forms"""
+    __tablename__ = 'forms_1099'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    contractor_id = db.Column(db.Integer, db.ForeignKey('contractors.id'), nullable=False)
+
+    # Form details
+    tax_year = db.Column(db.Integer, nullable=False)
+    total_amount = db.Column(db.Numeric(10, 2), nullable=False)
+    form_data = db.Column(JSON)
+
+    # Status
+    status = db.Column(db.String(50), default='draft')  # draft, ready, filed
+    filed_date = db.Column(db.DateTime)
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Form1099 {self.tax_year} - Contractor {self.contractor_id}>'

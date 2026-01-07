@@ -69,6 +69,12 @@ def create_app():
     except ImportError:
         pass
 
+    try:
+        from modules.contractor_routes import contractor_bp
+        app.register_blueprint(contractor_bp)
+    except ImportError:
+        pass
+
     # Database tables are managed by Flask-Migrate
     # Use 'flask db upgrade' to create/update tables
 
