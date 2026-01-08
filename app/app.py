@@ -53,7 +53,7 @@ with app.app_context():
         return User.query.get(int(user_id))
     
     # Create tables
-    db.create_all()
+    # db.create_all()  # DISABLED - Using Flask-Migrate instead
     
     # Import and register blueprints
     from app.routes import main_bp

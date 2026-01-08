@@ -3,11 +3,15 @@ Flask application initialization
 """
 
 import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager
 from flask_migrate import Migrate
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Create SQLAlchemy base class
 class Base(DeclarativeBase):
