@@ -14,7 +14,8 @@ from ai.openai_interface import get_openai_response
 from app.models import BusinessProfile
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+log_level = logging.DEBUG if os.environ.get("FLASK_ENV") == "development" else logging.WARNING
+logging.basicConfig(level=log_level)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "fylr_dev_secret_key")
@@ -770,4 +771,6 @@ def validate_form():
         return jsonify({'error': 'Validation failed'}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Debug mode controlled by environment variable
+    debug_mode = os.environ.get("FLASK_ENV") == "development"
+    app.run(host="0.0.0.0", port=5000, debug=debug_mode)

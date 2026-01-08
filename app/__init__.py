@@ -29,6 +29,7 @@ def create_app():
     
     # Configure the app
     app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "development_key")
+    app.config["DEBUG"] = os.environ.get("FLASK_ENV") == "development"
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
         "pool_recycle": 300,

@@ -60,3 +60,12 @@ def legal_disclaimer():
 def export():
     """Export tax documents page"""
     return render_template("export.html")
+
+# Error handlers
+def page_not_found(e):
+    """Handle 404 errors"""
+    return render_template("404.html"), 404
+
+def server_error(e):
+    """Handle 500 errors - no stack trace exposed"""
+    return render_template("500.html"), 500
