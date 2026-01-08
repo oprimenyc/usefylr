@@ -57,3 +57,4 @@ htmlcov/
 
 # Claude Code
 .claude/
+.auto-claude/
