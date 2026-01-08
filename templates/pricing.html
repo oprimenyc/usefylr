@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends "layout_unified.html" %}
 
 {% block title %}.fylr | Pricing Plans{% endblock %}
 
@@ -80,21 +80,21 @@
             </div>
         </div>
         
-        <!-- Concierge Tier -->
+        <!-- Premium Tier -->
         <div class="col mb-4">
             <div class="card h-100 pricing-card">
                 <div class="card-header text-center bg-dark text-white py-3">
-                    <h3 class="card-title">Concierge</h3>
+                    <h3 class="card-title">Premium</h3>
                     <div class="badge bg-warning">Premium</div>
                 </div>
                 <div class="card-body d-flex flex-column">
                     <div class="text-center mb-4">
-                        <span class="display-5 fw-bold" style="color: #FF6B00;">${{ tiers.concierge.price }}</span>
+                        <span class="display-5 fw-bold" style="color: #FF6B00;">${{ tiers.premium.price }}</span>
                         <span class="text-muted">/year</span>
                     </div>
-                    <p class="text-center text-muted mb-4">{{ tiers.concierge.description }}</p>
+                    <p class="text-center text-muted mb-4">{{ tiers.premium.description }}</p>
                     <ul class="list-unstyled mb-4">
-                        {% for feature in tiers.concierge.features %}
+                        {% for feature in tiers.premium.features %}
                         <li class="pricing-feature mb-2">
                             <i class="fas fa-check-circle"></i>
                             <span>{{ feature }}</span>
@@ -121,7 +121,7 @@
                     <th>Business Type</th>
                     <th class="text-center">Self-Service</th>
                     <th class="text-center">Guided</th>
-                    <th class="text-center">Concierge</th>
+                    <th class="text-center">Premium</th>
                 </tr>
             </thead>
             <tbody>
@@ -143,7 +143,7 @@
                         {% endif %}
                     </td>
                     <td class="text-center">
-                        {% if 'concierge' in type_info.eligible_tiers %}
+                        {% if 'premium' in type_info.eligible_tiers %}
                         <i class="fas fa-check tier-feature-check"></i>
                         {% else %}
                         <i class="fas fa-times tier-feature-times"></i>
@@ -205,7 +205,7 @@
                     <ul class="list-unstyled">
                         <li class="pricing-feature mb-2">
                             <i class="fas fa-check-circle"></i>
-                            <span>Included with Concierge tier</span>
+                            <span>Included with Premium tier</span>
                         </li>
                         <li class="pricing-feature mb-2">
                             <i class="fas fa-check-circle"></i>
@@ -248,7 +248,7 @@
                     <ul>
                         <li><strong>Self-Service (${{ tiers.self_service.price }}):</strong> Best for sole proprietors and simple LLCs with straightforward tax situations.</li>
                         <li><strong>Guided (${{ tiers.guided.price }}):</strong> Ideal for growing businesses, LLCs with multiple members, and S Corporations that need more strategic tax guidance.</li>
-                        <li><strong>Concierge (${{ tiers.concierge.price }}):</strong> Perfect for complex businesses, C Corporations, and those wanting comprehensive support with audit protection included.</li>
+                        <li><strong>Premium (${{ tiers.premium.price }}):</strong> Perfect for complex businesses, C Corporations, and those wanting comprehensive support with audit protection included.</li>
                     </ul>
                 </div>
             </div>
@@ -292,7 +292,7 @@
                         <li>AI-powered document verification</li>
                         <li>Guidance on how to respond to audit requests</li>
                     </ul>
-                    <p>This protection is included with the Concierge tier and available as a ${{ audit_protection.optional_add_on_price }} add-on for other tiers.</p>
+                    <p>This protection is included with the Premium tier and available as a ${{ audit_protection.optional_add_on_price }} add-on for other tiers.</p>
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask_login import current_user
 import json
 import os
 import logging
@@ -9,7 +10,8 @@ load_dotenv()
 
 # Import custom modules
 from modules.smart_ledger import init_smart_ledger
-# from ai.openai_interface import get_openai_response
+from ai.openai_interface import get_openai_response
+from app.models import BusinessProfile
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -676,36 +678,71 @@ def legal_disclaimer():
 # API Routes
 @app.route('/api/ai-guidance', methods=['POST'])
 def ai_guidance():
-    """AI guidance for form fields"""
+    """AI guidance for form fields with personalized context"""
     try:
         data = request.get_json()
         field_context = data.get('context', '')
         user_input = data.get('input', '')
-        
-        prompt = f"""
-        Provide helpful tax guidance for this field:
-        Field Context: {field_context}
-        User Input: {user_input}
-        
-        Provide:
-        1. Brief explanation of this field
-        2. Tax implications
-        3. Common mistakes to avoid
-        4. Confidence level (0-100%)
-        
-        Keep response concise and actionable.
-        """
-        
-        # Mock AI response for demo (replace with actual OpenAI when API key is configured)
-        response = {
-            'explanation': f'For {field_context}: This field is used to report your business income/expenses. Ensure accuracy as this affects your tax liability.',
-            'tax_implications': 'This amount will be included in your Schedule C calculations.',
-            'common_mistakes': 'Common mistakes include double-counting expenses or mixing personal and business items.',
-            'confidence': 88
-        }
-        
-        return jsonify(response or {'error': 'AI guidance unavailable'})
-        
+
+        # Get BusinessProfile context for personalized advice
+        profile = None
+        business_context = ""
+
+        if current_user and current_user.is_authenticated:
+            profile = BusinessProfile.query.filter_by(user_id=current_user.id).first()
+
+            if profile:
+                business_context = f"""
+User Business Context:
+- Entity Type: {profile.business_type.value if profile.business_type else 'Unknown'}
+- Industry: {profile.industry or 'Unknown'}
+- Annual Revenue: ${profile.annual_revenue:,.2f if profile.annual_revenue else 0}
+- State: {profile.operating_states or 'Unknown'}
+
+Provide personalized tax advice for this {profile.business_type.value if profile.business_type else 'business'}.
+"""
+
+        # Build system message with business context
+        system_message = f"""You are an expert tax advisor providing guidance on tax form fields.
+{business_context}
+Provide concise, accurate tax guidance tailored to the user's business context."""
+
+        # Build user message
+        user_message = f"""
+Field Context: {field_context}
+User Input: {user_input}
+
+Please provide:
+1. Brief explanation of this field
+2. Tax implications specific to this business
+3. Common mistakes to avoid
+4. Confidence level (0-100%)
+
+Keep response concise and actionable.
+"""
+
+        # Get AI response
+        ai_response = get_openai_response(system_message, user_message)
+
+        if not ai_response:
+            # Fallback to mock response if OpenAI fails
+            response = {
+                'explanation': f'For {field_context}: This field is used to report your business income/expenses. Ensure accuracy as this affects your tax liability.',
+                'tax_implications': 'This amount will be included in your Schedule C calculations.',
+                'common_mistakes': 'Common mistakes include double-counting expenses or mixing personal and business items.',
+                'confidence': 88
+            }
+        else:
+            # Parse AI response (simple parsing - could be improved)
+            response = {
+                'explanation': ai_response,
+                'tax_implications': 'See explanation above',
+                'common_mistakes': 'See explanation above',
+                'confidence': 90
+            }
+
+        return jsonify(response)
+
     except Exception as e:
         logging.error(f"AI guidance error: {str(e)}")
         return jsonify({'error': 'Guidance unavailable'}), 500

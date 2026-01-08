@@ -6,15 +6,15 @@ This module defines the database models for the .fylr tax platform.
 
 from app import db
 from flask_login import UserMixin
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import JSON
 from datetime import datetime
 import enum
 
 class UserPlan(enum.Enum):
     """User subscription plan levels"""
     SELF_SERVICE = "self_service"
-    GUIDED = "guided" 
-    CONCIERGE = "concierge"
+    GUIDED = "guided"
+    PREMIUM = "premium"
 
 class BusinessType(enum.Enum):
     """Business entity types"""
@@ -42,6 +42,14 @@ class TaxFormType(enum.Enum):
     FORM_1099MISC = "1099misc"
     FORM_1096 = "1096"
 
+class SubscriptionType(enum.Enum):
+    """Subscription plan types for Stripe integration"""
+    SELF_SERVICE = "self_service"
+    GUIDED = "guided"
+    PREMIUM = "premium"
+    TRIAL = "trial"
+    CANCELLED = "cancelled"
+
 class User(UserMixin, db.Model):
     """User model"""
     id = db.Column(db.Integer, primary_key=True)
@@ -66,7 +74,75 @@ class User(UserMixin, db.Model):
     business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)
     tax_forms = db.relationship('TaxForm', backref='user')
     tax_strategies = db.relationship('TaxStrategy', backref='user')
-    
+    subscriptions = db.relationship('Subscription', backref='user', lazy='dynamic')
+
+    def has_paid(self) -> bool:
+        """
+        Check if user has an active paid subscription.
+
+        Returns:
+            bool: True if user has active subscription, False otherwise
+        """
+        active_subscription = self.subscriptions.filter_by(status='active').first()
+        return active_subscription is not None
+
+    def has_feature(self, feature_name: str) -> bool:
+        """
+        Check if user's subscription includes a specific feature.
+
+        Feature access by subscription type:
+        - SELF_SERVICE: basic features only
+        - GUIDED: includes AI assistance, export forms
+        - PREMIUM: includes all features plus audit protection
+
+        Args:
+            feature_name: Feature to check (e.g., 'export_forms', 'smart_ledger_ai', 'audit_protection')
+
+        Returns:
+            bool: True if user has access to the feature, False otherwise
+        """
+        active_subscription = self.subscriptions.filter_by(status='active').first()
+
+        if not active_subscription:
+            return False
+
+        # Feature matrix by subscription type
+        feature_map = {
+            SubscriptionType.SELF_SERVICE: [
+                'basic_forms',
+                'tax_calculator',
+            ],
+            SubscriptionType.GUIDED: [
+                'basic_forms',
+                'tax_calculator',
+                'export_forms',
+                'smart_ledger_ai',
+                'tax_optimization',
+                'contractor_management_addon',  # $19/month add-on
+            ],
+            SubscriptionType.PREMIUM: [
+                'basic_forms',
+                'tax_calculator',
+                'export_forms',
+                'smart_ledger_ai',
+                'tax_optimization',
+                'contractor_management',  # Included free
+                'business_credit_reporting',  # Net-30 reporting
+                'audit_protection',
+                'priority_support',
+                'tax_strategy_consultation',
+            ],
+            SubscriptionType.TRIAL: [
+                'basic_forms',
+                'tax_calculator',
+                'export_forms',
+                'smart_ledger_ai',
+            ],
+        }
+
+        allowed_features = feature_map.get(active_subscription.subscription_type, [])
+        return feature_name in allowed_features
+
     def __repr__(self):
         return f'<User {self.username}>'
 
@@ -94,7 +170,7 @@ class BusinessProfile(db.Model):
     has_employees = db.Column(db.Boolean, default=False)
     employee_count = db.Column(db.Integer, default=0)
     contractor_count = db.Column(db.Integer, default=0)
-    operating_states = db.Column(JSONB)  # Stored as JSON array of state codes
+    operating_states = db.Column(JSON)  # Stored as JSON array of state codes
     
     # Deduction-relevant fields
     has_home_office = db.Column(db.Boolean, default=False)
@@ -110,7 +186,7 @@ class BusinessProfile(db.Model):
     
     # Optimization opportunities
     expense_ratio = db.Column(db.Float)  # Expenses / Revenue
-    potential_deductions = db.Column(JSONB)  # JSON array of potential deduction categories
+    potential_deductions = db.Column(JSON)  # JSON array of potential deduction categories
     
     # Additional financial data
     has_capital_gains = db.Column(db.Boolean, default=False)
@@ -121,7 +197,7 @@ class BusinessProfile(db.Model):
     incomplete_records = db.Column(db.Boolean, default=False)
     
     # Extended data storage
-    data = db.Column(JSONB)  # For extensibility without schema changes
+    data = db.Column(JSON)  # For extensibility without schema changes
     
     def __repr__(self):
         return f'<BusinessProfile {self.business_name}>'
@@ -139,10 +215,10 @@ class TaxForm(db.Model):
     status = db.Column(db.String(20), default='draft')  # draft, complete, filed, etc.
     
     # Form data
-    data = db.Column(JSONB)  # Stores the actual form data as JSON
+    data = db.Column(JSON)  # Stores the actual form data as JSON
     
     # Validation results
-    validation_results = db.Column(JSONB)  # JSON object containing validation results
+    validation_results = db.Column(JSON)  # JSON object containing validation results
     
     def __repr__(self):
         return f'<TaxForm {self.form_type.name} {self.tax_year}>'
@@ -157,15 +233,15 @@ class TaxStrategy(db.Model):
     strategy_name = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text)
     estimated_savings = db.Column(db.String(64))  # Could be a range or "Varies"
-    implementation_steps = db.Column(JSONB)  # JSON array of implementation steps
-    qualifications = db.Column(JSONB)  # JSON array of qualifications or limitations
+    implementation_steps = db.Column(JSON)  # JSON array of implementation steps
+    qualifications = db.Column(JSON)  # JSON array of qualifications or limitations
     
     # Metadata
     tax_year = db.Column(db.Integer, default=datetime.utcnow().year - 1)
     tier = db.Column(db.String(20), default='basic')  # Which subscription tier this strategy is for
     
     # Extended data storage
-    data = db.Column(JSONB)  # For storing additional contextual data
+    data = db.Column(JSON)  # For storing additional contextual data
     
     def __repr__(self):
         return f'<TaxStrategy {self.strategy_name}>'
@@ -180,10 +256,10 @@ class AccountingConnection(db.Model):
     status = db.Column(db.String(20), default='active')
     
     # Connection credentials (encrypted in production)
-    credentials = db.Column(JSONB)
+    credentials = db.Column(JSON)
     
     # Metadata
-    data = db.Column(JSONB)  # Additional metadata about the connection
+    data = db.Column(JSON)  # Additional metadata about the connection
     
     def __repr__(self):
         return f'<AccountingConnection {self.platform}>'
@@ -200,8 +276,8 @@ class DataImport(db.Model):
     records_count = db.Column(db.Integer)
     
     # Import results and data
-    results = db.Column(JSONB)
-    data = db.Column(JSONB)  # The actual imported data
+    results = db.Column(JSON)
+    data = db.Column(JSON)  # The actual imported data
     
     def __repr__(self):
         return f'<DataImport {self.platform} {self.data_type} {self.tax_year}>'
@@ -212,13 +288,189 @@ class QuestionnaireResponse(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
-    
+
     # Questionnaire metadata
     tax_year = db.Column(db.Integer, default=datetime.utcnow().year - 1)
     questionnaire_type = db.Column(db.String(64))  # e.g., business_info, deductions, etc.
-    
+
     # Response data
-    responses = db.Column(JSONB)  # JSON object containing question IDs and responses
-    
+    responses = db.Column(JSON)  # JSON object containing question IDs and responses
+
     def __repr__(self):
         return f'<QuestionnaireResponse {self.questionnaire_type} {self.tax_year}>'
+
+class Subscription(db.Model):
+    """Model for storing user subscriptions"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    # Stripe subscription information
+    stripe_subscription_id = db.Column(db.String(128), unique=True, nullable=False)
+    stripe_customer_id = db.Column(db.String(128), nullable=False)
+    stripe_price_id = db.Column(db.String(128))
+
+    # Subscription details
+    subscription_type = db.Column(db.Enum(SubscriptionType), nullable=False)
+    status = db.Column(db.String(20), nullable=False)  # active, cancelled, past_due, trialing
+
+    # Billing cycle
+    current_period_start = db.Column(db.DateTime)
+    current_period_end = db.Column(db.DateTime)
+    cancel_at_period_end = db.Column(db.Boolean, default=False)
+    cancelled_at = db.Column(db.DateTime)
+
+    # Trial information
+    trial_start = db.Column(db.DateTime)
+    trial_end = db.Column(db.DateTime)
+
+    # Features
+    has_audit_protection = db.Column(db.Boolean, default=False)
+
+    # Relationships
+    payments = db.relationship('Payment', backref='subscription', lazy='dynamic')
+
+    # Extended data storage
+    stripe_metadata = db.Column(JSON)  # Additional subscription metadata from Stripe
+
+    def __repr__(self):
+        return f'<Subscription {self.subscription_type.value} - {self.status}>'
+
+class Payment(db.Model):
+    """Model for storing payment transactions"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Stripe payment information
+    stripe_payment_id = db.Column(db.String(128), unique=True, nullable=False)
+    stripe_payment_intent_id = db.Column(db.String(128))
+    stripe_charge_id = db.Column(db.String(128))
+
+    # Payment details
+    amount = db.Column(db.Float, nullable=False)  # Amount in dollars
+    currency = db.Column(db.String(3), default='usd')
+    status = db.Column(db.String(20), nullable=False)  # succeeded, failed, pending, refunded
+
+    # Payment metadata
+    description = db.Column(db.String(256))
+    receipt_url = db.Column(db.String(512))
+
+    # Subscription link (if payment is for a subscription)
+    subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'))
+
+    # Extended data storage
+    stripe_metadata = db.Column(JSON)  # Additional payment metadata from Stripe
+
+    def __repr__(self):
+        return f'<Payment {self.stripe_payment_id} ${self.amount}>'
+
+class AuditLog(db.Model):
+    """Model for storing audit trail of critical actions"""
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    # User information
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    username = db.Column(db.String(64))  # Denormalized for audit integrity
+
+    # Action details
+    action = db.Column(db.String(64), nullable=False, index=True)  # e.g., "user.login", "payment.created"
+    resource_type = db.Column(db.String(64))  # e.g., "User", "Payment", "Subscription"
+    resource_id = db.Column(db.Integer)
+
+    # Request metadata
+    ip_address = db.Column(db.String(45))  # IPv6 compatible
+    user_agent = db.Column(db.String(256))
+
+    # Status and result
+    status = db.Column(db.String(20), nullable=False)  # success, failure, error
+    error_message = db.Column(db.Text)
+
+    # Extended data storage
+    details = db.Column(JSON)  # Additional context about the action
+
+    def __repr__(self):
+        return f'<AuditLog {self.action} by {self.username} - {self.status}>'
+
+class Contractor(db.Model):
+    """Model for 1099 contractors"""
+    __tablename__ = 'contractors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Contractor info
+    name = db.Column(db.String(255), nullable=False)
+    business_name = db.Column(db.String(255))
+    email = db.Column(db.String(255))
+    phone = db.Column(db.String(50))
+
+    # Tax info
+    ein = db.Column(db.String(20))  # EIN or SSN (encrypted in production)
+    address_line1 = db.Column(db.String(255))
+    address_line2 = db.Column(db.String(255))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(2))
+    zip_code = db.Column(db.String(10))
+
+    # Payment tracking
+    total_paid_ytd = db.Column(db.Numeric(10, 2), default=0)
+    needs_1099 = db.Column(db.Boolean, default=False)  # True if >$600
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    # Relationships
+    payments = db.relationship('ContractorPayment', backref='contractor', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<Contractor {self.name}>'
+
+
+class ContractorPayment(db.Model):
+    """Track payments to contractors for 1099 calculation"""
+    __tablename__ = 'contractor_payments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    contractor_id = db.Column(db.Integer, db.ForeignKey('contractors.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Payment details
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
+    payment_date = db.Column(db.Date, nullable=False)
+    description = db.Column(db.Text)
+    category = db.Column(db.String(100))
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ContractorPayment ${self.amount} to Contractor {self.contractor_id}>'
+
+
+class Form1099(db.Model):
+    """Generated 1099-NEC forms"""
+    __tablename__ = 'forms_1099'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    contractor_id = db.Column(db.Integer, db.ForeignKey('contractors.id'), nullable=False)
+
+    # Form details
+    tax_year = db.Column(db.Integer, nullable=False)
+    total_amount = db.Column(db.Numeric(10, 2), nullable=False)
+    form_data = db.Column(JSON)
+
+    # Status
+    status = db.Column(db.String(50), default='draft')  # draft, ready, filed
+    filed_date = db.Column(db.DateTime)
+
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Form1099 {self.tax_year} - Contractor {self.contractor_id}>'

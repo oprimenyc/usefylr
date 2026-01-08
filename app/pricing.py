@@ -41,8 +41,8 @@ TIERS = {
             "Capital gains or losses"
         ]
     },
-    "concierge": {
-        "name": "Concierge",
+    "premium": {
+        "name": "Premium",
         "price": 497,
         "description": "Premium tax service with audit protection",
         "features": [
@@ -61,25 +61,25 @@ BUSINESS_TYPES = {
     "sole_proprietor": {
         "name": "Sole Proprietorship",
         "description": "A business owned and operated by one individual",
-        "eligible_tiers": ["self_service", "guided", "concierge"],
+        "eligible_tiers": ["self_service", "guided", "premium"],
         "required_docs": ["ID", "SSN", "Business Income Proof", "Expense Records"]
     },
     "llc": {
         "name": "Limited Liability Company (LLC)",
         "description": "A business structure that provides personal liability protection",
-        "eligible_tiers": ["self_service", "guided", "concierge"],
+        "eligible_tiers": ["self_service", "guided", "premium"],
         "required_docs": ["EIN", "Articles of Organization", "Operating Agreement", "Income & Expense Records"]
     },
     "s_corp": {
         "name": "S Corporation",
         "description": "A corporation that passes corporate income, losses, deductions, and credits to shareholders",
-        "eligible_tiers": ["guided", "concierge"],
+        "eligible_tiers": ["guided", "premium"],
         "required_docs": ["EIN", "Form 2553", "Bylaws", "Income Statement", "Payroll Summary"]
     },
     "c_corp": {
         "name": "C Corporation",
         "description": "A legal structure for a business where owners are taxed separately from the entity",
-        "eligible_tiers": ["guided", "concierge"],
+        "eligible_tiers": ["guided", "premium"],
         "required_docs": ["EIN", "Articles of Incorporation", "Income Statement", "Balance Sheet", "Payroll Summary"]
     }
 }
@@ -88,7 +88,7 @@ BUSINESS_TYPES = {
 AUDIT_PROTECTION = {
     "name": "Audit Protection Plan",
     "description": "Protection and support in case of an IRS audit",
-    "included_tiers": ["concierge"],
+    "included_tiers": ["premium"],
     "optional_add_on_price": 99,
     "coverage_details": "Includes up to 2 IRS responses per year and 1 state filing support. AI-based document match verification included."
 }

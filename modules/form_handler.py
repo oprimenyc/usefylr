@@ -277,6 +277,7 @@ def view_form(form_id):
 @forms_bp.route('/download/<int:form_id>')
 @login_required
 @requires_legal_acknowledgment
+@requires_access_level('export_forms')
 def download_form(form_id):
     """Download a tax form PDF"""
     # Get form

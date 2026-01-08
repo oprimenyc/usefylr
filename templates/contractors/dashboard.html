@@ -1,0 +1,260 @@
+{% extends "layout_unified.html" %}
+
+{% block title %}.fylr | 1099 Contractor Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3">1099 Contractor Management</h1>
+            <p class="text-muted">Track contractor payments and generate 1099-NEC forms with automatic Net-30 credit reporting</p>
+        </div>
+    </div>
+
+    {% if needs_upgrade %}
+    <!-- UPGRADE PROMPT FOR NON-SUBSCRIBERS -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-lock me-2"></i> Upgrade Required</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Build Business Credit While Managing Contractors</h5>
+                    <p class="mb-4">Our 1099 Contractor Management system automatically reports Net-30 payments to business credit bureaus, helping you build business credit while staying compliant.</p>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><strong>Premium Plan</strong> - Included Free</h6>
+                                    <p class="display-6 text-primary fw-bold">$497<span class="fs-6">/year</span></p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i> Unlimited contractors</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Automatic 1099-NEC generation</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Net-30 credit reporting</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Payment tracking & analytics</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Audit protection included</li>
+                                    </ul>
+                                    <a href="{{ url_for('main.pricing') }}" class="btn btn-primary w-100">Upgrade to Premium</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><strong>Guided Plan</strong> + Add-on</h6>
+                                    <p class="display-6 text-success fw-bold">$19<span class="fs-6">/month</span></p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i> Up to 10 contractors</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Automatic 1099-NEC generation</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Payment tracking</li>
+                                        <li><i class="fas fa-times text-muted me-2"></i> Net-30 credit reporting</li>
+                                        <li><i class="fas fa-times text-muted me-2"></i> Audit protection</li>
+                                    </ul>
+                                    <a href="{{ url_for('main.pricing') }}" class="btn btn-outline-success w-100">Add to Guided Plan</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Why Net-30 Reporting Matters:</strong> Every contractor payment can build your business credit score. Our system automatically reports your on-time payments to Dun & Bradstreet, Experian, and Equifax business credit bureaus.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- CONTRACTOR DASHBOARD FOR SUBSCRIBERS -->
+    <div class="row mb-4">
+        <!-- Summary Cards -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Total Contractors</h6>
+                    <h2 class="mb-0">{{ total_contractors }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Need 1099 Forms</h6>
+                    <h2 class="mb-0 {% if contractors_need_1099 > 0 %}text-warning{% endif %}">{{ contractors_need_1099 }}</h2>
+                    <small class="text-muted">Paid >$600 YTD</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Total Paid YTD</h6>
+                    <h2 class="mb-0 text-success">${{ "%.2f"|format(total_paid_ytd) }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h4>Your Contractors</h4>
+            <a href="{{ url_for('contractors.add_contractor') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Add Contractor
+            </a>
+        </div>
+    </div>
+
+    {% if contractors %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Business</th>
+                                    <th>Email</th>
+                                    <th>Total Paid YTD</th>
+                                    <th>1099 Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contractor in contractors %}
+                                <tr>
+                                    <td>{{ contractor.name }}</td>
+                                    <td>{{ contractor.business_name or '-' }}</td>
+                                    <td>{{ contractor.email or '-' }}</td>
+                                    <td>${{ "%.2f"|format(contractor.total_paid_ytd) }}</td>
+                                    <td>
+                                        {% if contractor.needs_1099 %}
+                                            <span class="badge bg-warning">Needs 1099</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Below $600</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showAddPayment({{ contractor.id }}, '{{ contractor.name }}')">
+                                            <i class="fas fa-dollar-sign"></i> Add Payment
+                                        </button>
+                                        {% if contractor.needs_1099 %}
+                                        <a href="{{ url_for('contractors.generate_1099', contractor_id=contractor.id) }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-file-invoice-dollar"></i> Generate 1099
+                                        </a>
+                                        {% endif %}
+                                        <form action="{{ url_for('contractors.delete_contractor', contractor_id=contractor.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete contractor {{ contractor.name }}?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5>No Contractors Yet</h5>
+                    <p class="text-muted">Add your first contractor to start tracking payments and building business credit</p>
+                    <a href="{{ url_for('contractors.add_contractor') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i> Add Your First Contractor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if current_user.has_feature('business_credit_reporting') %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-success">
+                <h6><i class="fas fa-chart-line me-2"></i> Business Credit Reporting Active</h6>
+                <p class="mb-0 small">Your contractor payments are automatically reported to Dun & Bradstreet, Experian Business, and Equifax Business to help build your business credit profile.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% endif %}
+</div>
+
+<!-- Add Payment Modal -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('contractors.add_payment') }}" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="contractor_id" id="payment_contractor_id">
+                    <p>Recording payment to: <strong id="payment_contractor_name"></strong></p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" name="amount" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Payment Date</label>
+                        <input type="date" name="payment_date" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <input type="text" name="description" class="form-control" placeholder="e.g., Web design services">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="Services">Services</option>
+                            <option value="Consulting">Consulting</option>
+                            <option value="Design">Design</option>
+                            <option value="Development">Development</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showAddPayment(contractorId, contractorName) {
+    document.getElementById('payment_contractor_id').value = contractorId;
+    document.getElementById('payment_contractor_name').textContent = contractorName;
+
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelector('input[name="payment_date"]').value = today;
+
+    const modal = new bootstrap.Modal(document.getElementById('addPaymentModal'));
+    modal.show();
+}
+</script>
+{% endblock %}
