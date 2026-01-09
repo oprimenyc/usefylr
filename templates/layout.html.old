@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | .fylr Tax Platform</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --fylr-orange: #FF6B00;
+            --fylr-dark-blue: #264653;
+            --fylr-light-bg: #f8f9fa;
+            --text-color: #212529;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+        }
+        
+        [data-theme="dark"] {
+            --fylr-light-bg: #343a40;
+            --text-color: #f8f9fa;
+            --bg-color: #121212;
+            --card-bg: #212529;
+            --border-color: #495057;
+        }
+        
+        body {
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        main {
+            flex: 1;
+        }
+        
+        .navbar-brand img {
+            max-height: 45px;
+        }
+        
+        .text-fylr-orange {
+            color: var(--fylr-orange) !important;
+        }
+        
+        .bg-fylr-orange {
+            background-color: var(--fylr-orange) !important;
+        }
+        
+        .btn-fylr {
+            background-color: var(--fylr-orange);
+            border-color: var(--fylr-orange);
+            color: white;
+        }
+        
+        .btn-fylr:hover {
+            background-color: #e05e00;
+            border-color: #e05e00;
+            color: white;
+        }
+        
+        footer {
+            margin-top: auto;
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="d-flex align-items-center">
+                    <div class="me-2 text-fylr-orange">
+                        <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                    </div>
+                    <div>
+                        <span class="fw-bold text-white fs-4">.fylr</span>
+                        <span class="text-white-50 d-block small">Business Tax Platform</span>
+                    </div>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Form Demo removed - route not available in app factory pattern -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main role="main">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>.fylr Tax Platform</h5>
+                    <p class="text-muted small">
+                        The AI-powered business tax filing solution
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted small mb-0">
+                        DISCLAIMER: This tool is provided for information purposes only. 
+                        Users should consult with qualified tax professionals.
+                    </p>
+                    <p class="text-muted small">
+                        &copy; 2025 Federal Funding Club. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
