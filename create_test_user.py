@@ -26,7 +26,11 @@ def create_test_user():
         if existing_user:
             print("[X] User tester@usefylr.app already exists!")
             print(f"   User ID: {existing_user.id}")
-            print(f"   Subscription: {existing_user.subscription_type.value if existing_user.subscription_type else 'None'}")
+
+            # Get subscription info
+            existing_sub = existing_user.subscriptions.filter_by(status='active').first()
+            sub_info = existing_sub.subscription_type.value if existing_sub else 'None'
+            print(f"   Subscription: {sub_info}")
 
             # Offer to delete and recreate
             response = input("\nDelete and recreate? (yes/no): ")
@@ -46,7 +50,7 @@ def create_test_user():
         user = User(
             username='tester',
             email='tester@usefylr.app',
-            password_hash=generate_password_hash('Password123!')
+            password_hash=generate_password_hash('FylrLaunch2026!')
         )
 
         db.session.add(user)
@@ -66,13 +70,13 @@ def create_test_user():
         db.session.add(subscription)
 
         # Create BusinessProfile with S-Corp in Trucking
-        print("[*] Creating BusinessProfile (S-Corp, Trucking)...")
+        print("[*] Creating BusinessProfile (S-Corp, Trucking/Logistics)...")
         profile = BusinessProfile(
             user_id=user.id,
             business_type=BusinessType.S_CORP,
             business_name='Test Trucking Solutions Inc.',
-            industry='Trucking',
-            annual_revenue=350000.00,  # $350k annual revenue
+            industry='Trucking / Logistics',
+            annual_revenue=250000.00,  # $250k annual revenue
             operating_states=['TX'],  # Texas (JSON array)
             ein='12-3456789',  # Dummy EIN
             has_employees=True,
@@ -84,48 +88,53 @@ def create_test_user():
         # Commit all changes
         db.session.commit()
 
-        print("\n[OK] Test user created successfully!")
-        print("\n" + "="*50)
-        print("TEST USER CREDENTIALS")
-        print("="*50)
-        print(f"Email:    tester@usefylr.app")
-        print(f"Password: Password123!")
-        print(f"User ID:  {user.id}")
-        print("\n" + "="*50)
-        print("SUBSCRIPTION DETAILS")
-        print("="*50)
-        print(f"Tier:     TRIAL")
-        print(f"Status:   active")
-        print(f"Expires:  {subscription.current_period_end.strftime('%Y-%m-%d')}")
-        print("\n" + "="*50)
+        print("\n" + "="*60)
+        print(" SUCCESS - VERIFIED TEST USER CREATED")
+        print("="*60)
+        print("\n[*] SANDBOX ACCOUNT FOR REVENUE GATE VERIFICATION")
+        print("\n" + "-"*60)
+        print("LOGIN CREDENTIALS")
+        print("-"*60)
+        print(f"  Email:    tester@usefylr.app")
+        print(f"  Password: FylrLaunch2026!")
+        print(f"  User ID:  {user.id}")
+        print("\n" + "-"*60)
+        print("SUBSCRIPTION STATUS")
+        print("-"*60)
+        print(f"  Tier:     TRIAL")
+        print(f"  Status:   Active")
+        print(f"  Expires:  {subscription.current_period_end.strftime('%Y-%m-%d')}")
+        print("\n" + "-"*60)
         print("BUSINESS PROFILE")
-        print("="*50)
-        print(f"Entity:   S-Corporation")
-        print(f"Name:     Test Trucking Solutions Inc.")
-        print(f"Industry: Trucking")
-        print(f"Revenue:  $350,000/year")
-        print(f"State:    Texas")
-        print(f"EIN:      12-3456789")
-        print(f"Employees: 3")
-        print(f"Home Office: Yes")
-        print("\n" + "="*50)
-        print("EXPECTED RESTRICTIONS (TRIAL TIER)")
-        print("="*50)
-        print("[X] Export Forms - Should redirect to /pricing")
-        print("[X] Smart Ledger AI - Should show upgrade prompt")
-        print("[X] 1099 Management - Should show upgrade prompt")
-        print("[OK] AI Tax Assistant - Limited to 5 questions/month")
-        print("[OK] Tax Calculator - Basic access only")
-        print("\n" + "="*50)
-        print("\nTest this user by:")
-        print("1. Starting Flask: flask run")
-        print("2. Navigate to: http://127.0.0.1:5000/auth/login")
-        print("3. Login with credentials above")
-        print("4. Try accessing:")
-        print("   - Dashboard export button -> Should redirect to /pricing")
-        print("   - Smart Ledger features -> Should show upgrade prompt")
-        print("   - Contractor management -> Should show upgrade prompt")
-        print("="*50)
+        print("-"*60)
+        print(f"  Entity Type:      S-Corporation")
+        print(f"  Business Name:    Test Trucking Solutions Inc.")
+        print(f"  Industry:         Trucking / Logistics")
+        print(f"  Annual Revenue:   $250,000")
+        print(f"  Operating State:  Texas")
+        print(f"  EIN:              12-3456789")
+        print(f"  Employees:        3")
+        print(f"  Home Office:      Yes")
+        print("\n" + "-"*60)
+        print("PAYWALL VERIFICATION CHECKLIST (TRIAL TIER)")
+        print("-"*60)
+        print("  [BLOCKED] Export Forms -> Should redirect to /pricing")
+        print("  [BLOCKED] Smart Ledger AI -> Should show upgrade prompt")
+        print("  [BLOCKED] 1099 Management -> Should show upgrade prompt")
+        print("  [LIMITED] AI Tax Assistant -> Limited to 5 questions/month")
+        print("  [ACCESS]  Tax Calculator -> Basic access only")
+        print("\n" + "="*60)
+        print(" LOGIN URL")
+        print("="*60)
+        print("\n  http://127.0.0.1:5000/auth/login")
+        print("\n" + "="*60)
+        print("\n[*] To start the application:")
+        print("    1. Run: flask run")
+        print("    2. Open the login URL above")
+        print("    3. Use the credentials shown above")
+        print("\n[*] This account is ready for AI personalization testing")
+        print("    and paywall verification.\n")
+        print("="*60)
 
         return user
 
