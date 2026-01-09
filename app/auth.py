@@ -16,7 +16,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 def login():
     """Handle user login"""
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
         
     if request.method == 'POST':
         email = request.form.get('email')
@@ -50,7 +50,7 @@ def login():
             # Log in the demo user
             login_user(user, remember=remember)
             flash('Welcome to the demo account! You have access to the Guided Plan features.', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('main.dashboard'))
         
         # Normal login flow
         user = User.query.filter_by(email=email).first()
@@ -65,9 +65,9 @@ def login():
             action='User logged in',
             data={'remember_me': remember}
         )
-            
+
         login_user(user, remember=remember)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
         
     return render_template('auth/login.html')
 
@@ -75,7 +75,7 @@ def login():
 def register():
     """Register a new user"""
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
         
     if request.method == 'POST':
         username = request.form.get('username')
@@ -157,9 +157,9 @@ def acknowledge_disclaimer():
         action='Acknowledged legal disclaimer',
         data={}
     )
-    
+
     # Redirect to the requested page or dashboard
-    next_page = request.args.get('next', url_for('dashboard'))
+    next_page = request.args.get('next', url_for('main.dashboard'))
     return redirect(next_page)
 
 def init_app(app):

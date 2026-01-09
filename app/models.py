@@ -391,6 +391,48 @@ class AuditLog(db.Model):
     # Extended data storage
     details = db.Column(JSON)  # Additional context about the action
 
+    @classmethod
+    def log_action(cls, user_id=None, action='', data=None, status='success', error_message=None):
+        """
+        Log an action to the audit trail
+
+        Args:
+            user_id: ID of the user performing the action
+            action: Description of the action
+            data: Additional data/context as a dictionary
+            status: Status of the action ('success', 'failure', 'error')
+            error_message: Error message if status is 'failure' or 'error'
+        """
+        from app import db
+        from flask import request
+
+        # Get user info if user_id provided
+        username = None
+        if user_id:
+            user = User.query.get(user_id)
+            if user:
+                username = user.username
+
+        # Create audit log entry
+        log_entry = cls(
+            user_id=user_id,
+            username=username,
+            action=action,
+            status=status,
+            error_message=error_message,
+            ip_address=request.remote_addr if request else None,
+            user_agent=request.headers.get('User-Agent') if request else None,
+            details=data
+        )
+
+        db.session.add(log_entry)
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            # Silent fail for audit logging - don't break the main flow
+            pass
+
     def __repr__(self):
         return f'<AuditLog {self.action} by {self.username} - {self.status}>'
 
