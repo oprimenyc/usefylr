@@ -94,21 +94,12 @@ header .btn,
   text-transform: none !important;
 }
 
-/* Mobile menu toggle - ENABLED for mobile nav */
+/* Hide unnecessary hamburger menu */
 .navbar-toggler,
-.navbar-toggle {
-  display: flex !important;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 6px;
-  border-radius: 4px;
-}
-
-@media (min-width: 768px) {
-  .navbar-toggler,
-  .navbar-toggle {
-    display: none !important;
-  }
+.navbar-toggle,
+[class*="hamburger"],
+[class*="menu-toggle"] {
+  display: none !important;
 }
 
 /* ===== HERO SECTION - DRAMATIC REDUCTION FOR LAYOUT FIX ===== */
@@ -125,17 +116,11 @@ section:first-of-type {
   min-height: auto !important;
 }
 
-/* Fix main content spacing - prevent overlap with sticky nav */
-main,
-.main-content {
+/* Fix main content top margin to account for smaller nav */
+main {
   margin-top: 0 !important;
   padding-top: 0 !important;
 }
-
-/* IMPORTANT: If using fixed nav, uncomment below */
-/* body.has-fixed-nav main {
-  padding-top: 64px !important;
-} */
 
 /* Remove any hero pseudo-elements causing layout issues */
 .hero::before,

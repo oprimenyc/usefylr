@@ -43,29 +43,36 @@
                     
                     <!-- Beautiful Navigation -->
                     <nav class="main-nav">
-                        <a class="nav-item" href="{{ url_for('index') }}">Dashboard</a>
-                        <a class="nav-item" href="{{ url_for('smart_ledger') }}">Smart Ledger</a>
-                        <a class="nav-item" href="{{ url_for('tax_form_builder') }}">Forms</a>
-                        <a class="nav-item" href="{{ url_for('enhanced_smart_ledger') }}">Enhanced Ledger</a>
-                        <a class="nav-item {% if request.endpoint == 'gorgeous_ai_chat' %}active{% endif %}" href="{{ url_for('gorgeous_ai_chat') }}">AI Assistant</a>
-                        <a class="nav-item" href="{{ url_for('ai_chat_test') }}">AI Chat Test</a>
+                        <a class="nav-item {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">Home</a>
+                        <a class="nav-item {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                        <a class="nav-item {% if request.endpoint == 'contractors.dashboard' %}active{% endif %}" href="{{ url_for('contractors.dashboard') }}">1099 Management</a>
+                        <a class="nav-item {% if request.endpoint == 'main.export' %}active{% endif %}" href="{{ url_for('main.export') }}">Export</a>
+                        <a class="nav-item {% if request.endpoint == 'main.plans' %}active{% endif %}" href="{{ url_for('main.plans') }}">Pricing</a>
                     </nav>
                 </div>
 
                 <!-- Header Right Section -->
                 <div class="header-right">
+                    {% if current_user.is_authenticated %}
                     <div class="user-status">
                         <div class="status-indicator">
                             <div class="status-dot"></div>
-                            <span class="status-text">Trial - 14 days left</span>
+                            <span class="status-text">{{ current_user.subscriptions.filter_by(status='active').first().subscription_type.value|upper if current_user.subscriptions.filter_by(status='active').first() else 'FREE' }}</span>
                         </div>
                         <div class="divider"></div>
-                        <span class="user-email">john@example.com</span>
+                        <span class="user-email">{{ current_user.email }}</span>
                     </div>
-                    
-                    <a href="#" class="cta-button">
+
+                    <a href="{{ url_for('main.plans') }}" class="cta-button">
                         Upgrade Now
                     </a>
+                    <a href="{{ url_for('auth.logout') }}" class="nav-item" style="margin-left: 1rem;">Logout</a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="cta-button">
+                        Login
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="nav-item" style="margin-left: 1rem;">Sign Up</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
