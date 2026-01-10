@@ -25,6 +25,33 @@
             margin: 0 !important;
             padding: 0 !important;
         }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            /* Hide desktop navigation menu on mobile */
+            .main-nav {
+                display: none !important;
+            }
+
+            /* Center .fylr logo on mobile */
+            .logo-section {
+                justify-content: center !important;
+            }
+
+            /* Stack header elements vertically */
+            .header-content {
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+
+            /* Adjust header right section for mobile */
+            .header-right {
+                margin-top: 1rem !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0.5rem !important;
+            }
+        }
     </style>
 </head>
 <body>
