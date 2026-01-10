@@ -54,7 +54,11 @@ def create_app():
     # Register authentication blueprint
     from app.auth import auth_bp
     app.register_blueprint(auth_bp)
-    
+
+    # Register features blueprint (AI Chat, Smart Ledger, Forms)
+    from app.features import features_bp
+    app.register_blueprint(features_bp)
+
     # Try to register optional blueprints if they exist
     try:
         from modules.tax_strategy_routes import tax_strategy_bp
