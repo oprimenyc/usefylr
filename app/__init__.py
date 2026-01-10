@@ -59,6 +59,14 @@ def create_app():
     from app.features import features_bp
     app.register_blueprint(features_bp)
 
+    # Register intake API blueprint (Dynamic Tax Engine)
+    from app.intake_routes import intake_bp
+    app.register_blueprint(intake_bp)
+
+    # Register onboarding blueprint (Smart Entry Point)
+    from app.onboarding import onboarding_bp
+    app.register_blueprint(onboarding_bp)
+
     # Try to register optional blueprints if they exist
     try:
         from modules.tax_strategy_routes import tax_strategy_bp

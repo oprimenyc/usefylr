@@ -3,14 +3,14 @@
 {% block title %}Log In - .fylr Tax Platform{% endblock %}
 
 {% block content %}
-<div class="container py-5" style="padding-top: 120px !important; min-height: 100vh;">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <div class="card shadow" style="background: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius-lg);">
-                <div class="card-header text-center py-4" style="background: transparent; border-bottom: 1px solid var(--border-primary);">
-                    <h1 class="h3 mb-0" style="color: var(--text-orange);">Log In to .fylr</h1>
+            <div class="card shadow">
+                <div class="card-header bg-white text-center py-4">
+                    <h1 class="h3 mb-0 text-fylr-orange">Log In to .fylr</h1>
                 </div>
-                <div class="card-body p-4" style="color: var(--text-primary);">
+                <div class="card-body p-4">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
@@ -24,32 +24,32 @@
                     
                     <form method="POST" action="{{ url_for('auth.login') }}">
                         <div class="mb-3">
-                            <label for="email" class="form-label" style="color: var(--text-secondary);">Email Address</label>
-                            <input type="email" class="form-control form-control-lg" id="email" name="email" required style="background: var(--bg-tertiary); border: 1px solid var(--border-primary); color: var(--text-primary);">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label" style="color: var(--text-secondary);">Password</label>
-                            <input type="password" class="form-control form-control-lg" id="password" name="password" required style="background: var(--bg-tertiary); border: 1px solid var(--border-primary); color: var(--text-primary);">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" required>
                         </div>
                         <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember" style="background: var(--bg-tertiary); border: 1px solid var(--border-primary);">
-                            <label class="form-check-label" for="remember" style="color: var(--text-secondary);">Remember me</label>
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">Remember me</label>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-lg" style="background: var(--orange-gradient-primary); border: none; color: white; font-weight: 600; padding: 12px 24px; border-radius: var(--radius-md);">Log In</button>
+                            <button type="submit" class="btn btn-primary btn-lg">Log In</button>
                         </div>
                     </form>
                     
-                    <hr class="my-4" style="border-color: var(--border-primary);">
-
+                    <hr class="my-4">
+                    
                     <div class="text-center mb-3">
-                        <p class="mb-0" style="color: var(--text-tertiary);">Demo Account (for testing):</p>
-                        <p class="mb-0" style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Email:</strong> demo@fylr.tax</p>
-                        <p class="mb-0" style="color: var(--text-secondary);"><strong style="color: var(--text-primary);">Password:</strong> demo123</p>
+                        <p class="mb-0 text-muted">Demo Account (for testing):</p>
+                        <p class="mb-0"><strong>Email:</strong> demo@fylr.tax</p>
+                        <p class="mb-0"><strong>Password:</strong> demo123</p>
                     </div>
-
+                    
                     <div class="text-center">
-                        <p class="mb-0" style="color: var(--text-secondary);">Don't have an account? <a href="{{ url_for('auth.register') }}" style="color: var(--text-orange); text-decoration: none;">Sign up</a></p>
+                        <p class="mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up</a></p>
                     </div>
                 </div>
             </div>

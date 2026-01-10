@@ -1,0 +1,457 @@
+{% extends "beautiful_base.html" %}
+
+{% block title %}Welcome to .fylr - AI Tax Intelligence{% endblock %}
+
+{% block head %}
+<style>
+/* Onboarding Specific Styles */
+.onboarding-hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--bg-primary);
+}
+
+.welcome-container {
+    max-width: 900px;
+    width: 100%;
+}
+
+.welcome-glass-card {
+    background: linear-gradient(135deg, rgba(17,17,17,0.9) 0%, rgba(17,17,17,0.6) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-2xl);
+    padding: 3rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--text-orange), transparent);
+}
+
+.welcome-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.welcome-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.try-ai-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.ai-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    padding: 1.2rem 1.5rem;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.ai-input:focus {
+    outline: none;
+    border-color: var(--text-orange);
+    box-shadow: 0 0 0 3px rgba(255,107,0,0.1);
+    background: rgba(255,255,255,0.08);
+}
+
+.ai-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.try-button {
+    width: 100%;
+    background: var(--orange-gradient-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 1.2rem 2rem;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255,107,0,0.3);
+}
+
+.try-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(255,107,0,0.4);
+}
+
+.try-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.result-card {
+    background: linear-gradient(135deg, rgba(255,107,0,0.1) 0%, rgba(255,107,0,0.05) 100%);
+    border: 1px solid rgba(255,107,0,0.3);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.result-category {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-orange);
+}
+
+.result-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.result-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.result-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.result-label {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.25rem;
+}
+
+.result-value {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.cta-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+}
+
+.signup-prompt {
+    background: linear-gradient(135deg, rgba(0,208,132,0.1) 0%, rgba(0,150,100,0.1) 100%);
+    border: 1px solid rgba(0,208,132,0.3);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    animation: slideIn 0.5s ease;
+}
+
+.signup-prompt h3 {
+    color: #00D084;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.signup-prompt p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.signup-button {
+    background: linear-gradient(135deg, #00D084 0%, #00A869 100%);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 1rem 2.5rem;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,208,132,0.3);
+}
+
+.signup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(0,208,132,0.4);
+}
+
+.skip-link {
+    margin-top: 1rem;
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.skip-link:hover {
+    color: var(--text-secondary);
+}
+
+.feature-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.feature-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.feature-description {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="onboarding-hero">
+    <div class="welcome-container">
+        <div class="welcome-glass-card">
+            <h1 class="welcome-title">See Your Tax Savings in Seconds</h1>
+            <p class="welcome-subtitle">
+                Our AI instantly analyzes your business expenses and shows you exactly what you can deduct.
+                Try it now — no signup required.
+            </p>
+
+            <!-- Try AI Section -->
+            <div class="try-ai-section">
+                <h3 style="color: var(--text-primary); font-size: 1.2rem; margin-bottom: 1rem;">
+                    Tell us about a business expense:
+                </h3>
+
+                <input
+                    type="text"
+                    id="expense-input"
+                    class="ai-input"
+                    placeholder="Example: I bought a $3,000 laptop for my business"
+                    autocomplete="off"
+                />
+
+                <button id="try-ai-button" class="try-button">
+                    Analyze with AI
+                </button>
+
+                <!-- Result Card (hidden initially) -->
+                <div id="result-card" style="display: none;"></div>
+            </div>
+
+            <!-- Feature Highlights -->
+            <div class="feature-highlights">
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Instant Analysis</div>
+                    <div class="feature-description">AI-powered expense categorization in real-time</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-title">IRS Compliant</div>
+                    <div class="feature-description">Mapped to correct Schedule C lines automatically</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Maximize Deductions</div>
+                    <div class="feature-description">Never miss a legitimate business expense</div>
+                </div>
+            </div>
+
+            <!-- CTA Section (shown after demo) -->
+            <div id="cta-section" class="cta-section" style="display: none;">
+                <div class="signup-prompt">
+                    <h3>Ready to save thousands on your taxes?</h3>
+                    <p>Create a free account to track all your expenses and get your complete tax package</p>
+                    <button onclick="window.location.href='{{ url_for('onboarding.continue_to_signup') }}'" class="signup-button">
+                        Create Free Account
+                    </button>
+                </div>
+                <a href="{{ url_for('onboarding.skip') }}" class="skip-link">Skip for now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('expense-input');
+    const button = document.getElementById('try-ai-button');
+    const resultCard = document.getElementById('result-card');
+    const ctaSection = document.getElementById('cta-section');
+
+    // Enable submit on Enter
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            button.click();
+        }
+    });
+
+    button.addEventListener('click', async function() {
+        const description = input.value.trim();
+
+        if (!description) {
+            input.focus();
+            return;
+        }
+
+        // Show loading state
+        button.disabled = true;
+        button.innerHTML = 'Analyzing<span class="loading-spinner"></span>';
+
+        try {
+            const response = await fetch('/onboarding/try-ai', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Show result
+                displayResult(data.expense);
+
+                // Show signup prompt
+                if (data.show_signup_prompt) {
+                    ctaSection.style.display = 'block';
+                }
+            } else {
+                alert(data.error || 'Failed to analyze expense');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to analyze expense. Please try again.');
+        } finally {
+            // Reset button
+            button.disabled = false;
+            button.innerHTML = 'Try Another Expense';
+        }
+    });
+
+    function displayResult(expense) {
+        const amount = expense.amount ? `$${expense.amount.toLocaleString()}` : 'Amount not detected';
+
+        resultCard.innerHTML = `
+            <div class="result-header">
+                <div class="result-category">${expense.irs_category}</div>
+                <div class="result-amount">${amount}</div>
+            </div>
+
+            <div style="margin: 1rem 0;">
+                <div style="color: var(--text-secondary); font-size: 0.95rem;">
+                    ${expense.irs_guidance}
+                </div>
+            </div>
+
+            <div class="result-details">
+                <div class="result-detail">
+                    <div class="result-label">Schedule C Line</div>
+                    <div class="result-value">Line ${expense.schedule_c_line}</div>
+                </div>
+                <div class="result-detail">
+                    <div class="result-label">Deductible Amount</div>
+                    <div class="result-value">${expense.deduction_percentage}%</div>
+                </div>
+                <div class="result-detail">
+                    <div class="result-label">Audit Risk</div>
+                    <div class="result-value" style="color: ${expense.audit_risk === 'low' ? '#00D084' : expense.audit_risk === 'medium' ? '#F59E0B' : '#EF4444'}">
+                        ${expense.audit_risk.toUpperCase()}
+                    </div>
+                </div>
+                <div class="result-detail">
+                    <div class="result-label">AI Confidence</div>
+                    <div class="result-value">${Math.round(expense.confidence * 100)}%</div>
+                </div>
+            </div>
+        `;
+
+        resultCard.style.display = 'block';
+
+        // Smooth scroll to result
+        resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+});
+</script>
+{% endblock %}

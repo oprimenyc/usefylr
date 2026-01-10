@@ -1,0 +1,41 @@
+# .claudignore - Protected Files and Directories
+# These paths are READ-ONLY for AI modifications
+
+# ========================================
+# PREMIUM UI PROTECTION
+# ========================================
+# Protects the restored Replit Beautiful UI dark theme
+templates/
+
+# Protects CSS, JavaScript, and branding assets
+static/
+
+# ========================================
+# DYNAMIC TAX ENGINE PROTECTION
+# ========================================
+# Protects the AI-powered tax context parser
+app/modules/intake.py
+
+# Protects the intake API routes
+app/intake_routes.py
+
+# Protects the onboarding flow
+app/onboarding.py
+
+# ========================================
+# DOCUMENTATION PROTECTION
+# ========================================
+# Protects API documentation
+INTAKE_API_DOCUMENTATION.md
+ONBOARDING_FLOW.md
+
+# ========================================
+# NOTES
+# ========================================
+# Files in these paths require explicit user confirmation
+# before any modifications can be made.
+#
+# To modify protected files:
+# 1. User must explicitly request the change
+# 2. User must confirm each line being modified
+# 3. Changes must be reviewed before commit
