@@ -5,11 +5,12 @@ This module handles contractor management, payment tracking, and 1099-NEC form g
 Premium feature that helps build business credit through Net-30 reporting.
 """
 
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash, send_from_directory
 from flask_login import login_required, current_user
 from datetime import datetime, date
 from decimal import Decimal
 from sqlalchemy import func
+import os
 
 from app import db
 from app.models import Contractor, ContractorPayment, Form1099, User
@@ -321,4 +322,22 @@ def delete_contractor(contractor_id):
     except Exception as e:
         db.session.rollback()
         flash(f'Error deleting contractor: {str(e)}', 'danger')
+        return redirect(url_for('contractors.dashboard'))
+
+
+@contractor_bp.route('/pdf/<filename>')
+@login_required
+@requires_access_level('contractor_management')
+def download_pdf(filename):
+    """Download PDF from static/pdfs folder"""
+    try:
+        # Construct path to static/pdfs directory
+        pdf_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            'static',
+            'pdfs'
+        )
+        return send_from_directory(pdf_dir, filename, as_attachment=True)
+    except Exception as e:
+        flash(f'Error downloading PDF: {str(e)}', 'danger')
         return redirect(url_for('contractors.dashboard'))

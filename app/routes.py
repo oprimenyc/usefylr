@@ -14,7 +14,8 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route("/")
 def index():
     """Home page route"""
-    return render_template("index.html")
+    # Use premium homepage for landing page
+    return render_template("premium_homepage.html")
 
 @main_bp.route("/dashboard")
 @login_required
