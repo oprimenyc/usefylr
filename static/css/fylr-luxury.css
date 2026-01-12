@@ -3,10 +3,10 @@
 /* ===== NEON PULSE ANIMATION ===== */
 @keyframes neonPulse {
   0%, 100% {
-    box-shadow: 0 2px 0 #FF6B00, 0 0 8px rgba(255, 107, 0, 0.4);
+    box-shadow: 0 2px 0 rgba(255, 255, 255, 0.2), 0 0 4px rgba(255, 255, 255, 0.1);
   }
   50% {
-    box-shadow: 0 2px 0 #FF6B00, 0 0 20px rgba(255, 107, 0, 0.8);
+    box-shadow: 0 2px 0 rgba(255, 255, 255, 0.3), 0 0 8px rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -510,7 +510,7 @@
 
 .intake-progress-dot.active {
   background: #FF6B00;
-  box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .intake-progress-dot.completed {
@@ -650,7 +650,8 @@
 
 .intake-btn-next:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .intake-btn-next:disabled {
