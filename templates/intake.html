@@ -1,0 +1,316 @@
+{% extends "layout_unified.html" %}
+
+{% block title %}Business Profile - Intake{% endblock %}
+
+{% block content %}
+<div class="intake-container" style="max-width: 600px; margin: 80px auto; padding: 40px 20px;">
+
+    <!-- Progress Whisper (12px grey, subtle) -->
+    <div class="progress-whisper" style="font-size: 12px; color: #666; text-align: center; margin-bottom: 40px; letter-spacing: 1px;">
+        Step <span id="current-step">{{ initial_step }}</span> of 5
+    </div>
+
+    <!-- Card Container -->
+    <div id="card-container" style="position: relative; min-height: 400px;">
+
+        <!-- Card 1: Identity -->
+        <div class="intake-card {% if initial_step == 1 %}active{% endif %}" data-step="1">
+            <h2 style="color: white; font-weight: 300; font-size: 32px; margin-bottom: 40px;">Tell us about yourself</h2>
+            <input type="text" id="full-name" placeholder="Full Name" class="luxury-input mb-4">
+            <input type="text" id="industry" placeholder="Industry (e.g., Consulting, E-commerce)" class="luxury-input mb-4">
+            <div class="luxury-button" onclick="nextStep(1)">Continue</div>
+        </div>
+
+        <!-- Card 2: Entity -->
+        <div class="intake-card {% if initial_step == 2 %}active{% endif %}" data-step="2">
+            <h2 style="color: white; font-weight: 300; font-size: 32px; margin-bottom: 40px;">What type of business?</h2>
+            <select id="entity-type" class="luxury-input mb-4">
+                <option value="">Select entity type</option>
+                <option value="sole_proprietor">Sole Proprietor</option>
+                <option value="llc">LLC</option>
+                <option value="s_corp">S-Corp</option>
+                <option value="c_corp">C-Corp</option>
+            </select>
+            <div class="luxury-button" onclick="nextStep(2)">Continue</div>
+        </div>
+
+        <!-- Card 3: Volume -->
+        <div class="intake-card {% if initial_step == 3 %}active{% endif %}" data-step="3">
+            <h2 style="color: white; font-weight: 300; font-size: 32px; margin-bottom: 40px;">Annual Revenue?</h2>
+            <input type="number" id="revenue" placeholder="$0" class="luxury-input mb-4" step="1000">
+            <div class="luxury-button" onclick="nextStep(3)">Continue</div>
+        </div>
+
+        <!-- Card 4: Complexity -->
+        <div class="intake-card {% if initial_step == 4 %}active{% endif %}" data-step="4">
+            <h2 style="color: white; font-weight: 300; font-size: 32px; margin-bottom: 40px;">Business Complexity</h2>
+            <div class="luxury-checkbox-group">
+                <label class="luxury-checkbox">
+                    <input type="checkbox" value="employees">
+                    <span>I have employees</span>
+                </label>
+                <label class="luxury-checkbox">
+                    <input type="checkbox" value="contractors">
+                    <span>I hire contractors</span>
+                </label>
+                <label class="luxury-checkbox">
+                    <input type="checkbox" value="inventory">
+                    <span>I manage inventory</span>
+                </label>
+                <label class="luxury-checkbox">
+                    <input type="checkbox" value="multiple_states">
+                    <span>I operate in multiple states</span>
+                </label>
+            </div>
+            <div class="luxury-button" onclick="nextStep(4)">Continue</div>
+        </div>
+
+        <!-- Card 5: Final (Neon Pulse) -->
+        <div class="intake-card {% if initial_step == 5 %}active{% endif %}" data-step="5">
+            <h2 class="neon-pulse" style="font-weight: 300; font-size: 32px; text-align: center;">All set!</h2>
+            <p style="color: #999; text-align: center; margin-top: 20px;">Analyzing your business profile...</p>
+        </div>
+
+    </div>
+</div>
+
+<style>
+/* Luxury Inputs - No boxes, just underlines */
+.luxury-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 18px;
+    font-weight: 300;
+    padding: 12px 0;
+    width: 100%;
+    transition: border-color 0.3s ease;
+}
+
+.luxury-input:focus {
+    outline: none;
+    border-bottom-color: #FF6B00;
+}
+
+.luxury-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Luxury Select */
+.luxury-input option {
+    background: #212529;
+    color: white;
+}
+
+/* Luxury Button - Floating white text, no box */
+.luxury-button {
+    color: white;
+    font-size: 18px;
+    font-weight: 300;
+    text-align: center;
+    padding: 16px 0;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.luxury-button:hover {
+    color: #FF6B00;
+    text-shadow: 0 0 20px rgba(255, 107, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.luxury-button::after {
+    content: '→';
+    position: absolute;
+    right: 20px;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-button:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Luxury Checkboxes */
+.luxury-checkbox-group {
+    margin-bottom: 40px;
+}
+
+.luxury-checkbox {
+    display: block;
+    color: white;
+    font-size: 16px;
+    font-weight: 300;
+    padding: 16px 0;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.luxury-checkbox:hover {
+    color: #FF6B00;
+    border-bottom-color: rgba(255, 107, 0, 0.3);
+}
+
+.luxury-checkbox input[type="checkbox"] {
+    margin-right: 16px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* Card Transitions - PREMIUM WEIGHTED FEEL */
+.intake-card {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.intake-card.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+/* Neon Pulse - Subtle, not cheap */
+.neon-pulse {
+    animation: neon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes neon-pulse {
+    0%, 100% {
+        color: #FF6B00;
+        text-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+    }
+    50% {
+        color: #FFA500;
+        text-shadow: 0 0 25px rgba(255, 165, 0, 0.7);
+    }
+}
+
+/* Progress Whisper */
+.progress-whisper {
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+/* Responsive: Hide demo on small screens */
+@media (max-width: 1024px) {
+    .demo-section {
+        display: none !important;
+    }
+}
+</style>
+
+<script>
+let currentStep = {{ initial_step }};
+const totalSteps = 5;
+
+function nextStep(step) {
+    // Validate current step
+    if (!validateStep(step)) {
+        return;
+    }
+
+    // Collect data from current card
+    const data = collectStepData(step);
+
+    // Save to backend
+    fetch('/intake', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({step: step, data: data})
+    })
+    .then(r => r.json())
+    .then(result => {
+        if (result.redirect) {
+            // Neon pulse already visible on card 5, just redirect
+            window.location.href = result.redirect;
+            return;
+        }
+
+        // Weighted fade-out (0.6s)
+        const current = document.querySelector(`.intake-card[data-step="${step}"]`);
+        current.classList.remove('active');
+
+        // Weighted fade-in after transition completes
+        setTimeout(() => {
+            const next = document.querySelector(`.intake-card[data-step="${step + 1}"]`);
+            next.classList.add('active');
+
+            currentStep = step + 1;
+            document.getElementById('current-step').textContent = currentStep;
+
+            // Auto-redirect on step 5 after 2s of neon pulse
+            if (currentStep === 5) {
+                setTimeout(() => {
+                    nextStep(5);
+                }, 2000);
+            }
+        }, 600); // Match CSS transition time
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
+
+function validateStep(step) {
+    switch(step) {
+        case 1:
+            const name = document.getElementById('full-name').value.trim();
+            if (!name) {
+                alert('Please enter your name');
+                return false;
+            }
+            return true;
+        case 2:
+            const entity = document.getElementById('entity-type').value;
+            if (!entity) {
+                alert('Please select an entity type');
+                return false;
+            }
+            return true;
+        case 3:
+            const revenue = document.getElementById('revenue').value;
+            if (!revenue || revenue < 0) {
+                alert('Please enter your annual revenue (enter 0 if no revenue yet)');
+                return false;
+            }
+            return true;
+        default:
+            return true;
+    }
+}
+
+function collectStepData(step) {
+    switch(step) {
+        case 1: return {
+            name: document.getElementById('full-name').value.trim(),
+            industry: document.getElementById('industry').value.trim()
+        };
+        case 2: return {
+            entity_type: document.getElementById('entity-type').value
+        };
+        case 3: return {
+            revenue: parseFloat(document.getElementById('revenue').value) || 0
+        };
+        case 4: return {
+            complexity: Array.from(document.querySelectorAll('[data-step="4"] input:checked'))
+                .map(el => el.value)
+        };
+        case 5: return {};
+    }
+}
+</script>
+{% endblock %}

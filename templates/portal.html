@@ -1,0 +1,141 @@
+{% extends "layout_unified.html" %}
+
+{% block title %}Tax Intelligence Portal{% endblock %}
+
+{% block content %}
+<div class="portal-container" style="max-width: 1200px; margin: 80px auto; padding: 40px 20px;">
+
+    <!-- Welcome Header -->
+    <div class="portal-header" style="text-align: center; margin-bottom: 60px;">
+        <h1 style="color: white; font-weight: 300; font-size: 42px; margin-bottom: 16px;">
+            Welcome, {{ profile.data.get('full_name', current_user.username) }}
+        </h1>
+        <p style="color: #999; font-size: 16px;">
+            {{ profile.industry }} • {{ profile.business_type.value.replace('_', ' ').title() }}
+        </p>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="row g-4">
+        <!-- Audit Risk Card -->
+        <div class="col-md-6">
+            <div class="metric-card" style="background: rgba(17, 17, 17, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px;">
+                <div class="metric-label" style="color: #999; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">
+                    Audit Risk Assessment
+                </div>
+                <div class="metric-value" style="color: {{ audit_risk.color }}; font-size: 48px; font-weight: 300; margin-bottom: 12px;">
+                    {{ audit_risk.level }}
+                </div>
+                <div class="metric-bar" style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden;">
+                    <div style="width: {{ audit_risk.percentage }}%; height: 100%; background: {{ audit_risk.color }}; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                </div>
+                <p style="color: #666; font-size: 14px; margin-top: 20px;">
+                    {{ audit_risk.percentage }}% risk score based on your business complexity
+                </p>
+            </div>
+        </div>
+
+        <!-- Tax Savings Card -->
+        <div class="col-md-6">
+            <div class="metric-card" style="background: rgba(17, 17, 17, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 107, 0, 0.3); border-radius: 24px; padding: 40px;">
+                <div class="metric-label" style="color: #999; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">
+                    Potential Tax Savings
+                </div>
+                <div class="metric-value" style="color: #FF6B00; font-size: 48px; font-weight: 300; margin-bottom: 12px;">
+                    {{ tax_intelligence.amount }}
+                </div>
+                <div class="metric-bar" style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden;">
+                    <div style="width: {{ tax_intelligence.percentage }}%; height: 100%; background: #FF6B00; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                </div>
+                <p style="color: #666; font-size: 14px; margin-top: 20px;">
+                    Estimated {{ tax_intelligence.percentage }}% optimization opportunity
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Profile Summary -->
+    <div class="profile-summary" style="margin-top: 60px; background: rgba(17, 17, 17, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px;">
+        <h3 style="color: white; font-weight: 300; font-size: 24px; margin-bottom: 30px;">Business Profile</h3>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-item" style="margin-bottom: 24px;">
+                    <div style="color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Industry</div>
+                    <div style="color: white; font-size: 18px; font-weight: 300;">{{ profile.industry or 'Not specified' }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="profile-item" style="margin-bottom: 24px;">
+                    <div style="color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Entity Type</div>
+                    <div style="color: white; font-size: 18px; font-weight: 300;">{{ profile.business_type.value.replace('_', ' ').title() }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="profile-item" style="margin-bottom: 24px;">
+                    <div style="color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Annual Revenue</div>
+                    <div style="color: white; font-size: 18px; font-weight: 300;">${{ "{:,.0f}".format(profile.annual_revenue) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-12">
+                <div style="color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Complexity Flags</div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    {% if profile.has_employees %}
+                    <span style="background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.3); border-radius: 12px; padding: 6px 16px; color: #FF6B00; font-size: 14px;">Employees</span>
+                    {% endif %}
+                    {% if profile.contractor_count > 0 %}
+                    <span style="background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.3); border-radius: 12px; padding: 6px 16px; color: #FF6B00; font-size: 14px;">Contractors</span>
+                    {% endif %}
+                    {% for flag in (profile.data or {}).get('complexity_flags', []) %}
+                        {% if flag not in ['employees', 'contractors'] %}
+                        <span style="background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.3); border-radius: 12px; padding: 6px 16px; color: #FF6B00; font-size: 14px;">{{ flag.replace('_', ' ').title() }}</span>
+                        {% endif %}
+                    {% endfor %}
+                    {% if not profile.has_employees and profile.contractor_count == 0 and not (profile.data or {}).get('complexity_flags') %}
+                    <span style="color: #666; font-size: 14px;">None</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="portal-actions" style="margin-top: 60px; text-align: center;">
+        <a href="{{ url_for('main.dashboard') }}" class="luxury-link-button" style="color: white; font-size: 18px; font-weight: 300; padding: 16px 40px; text-decoration: none; display: inline-block; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+            Go to Dashboard
+        </a>
+    </div>
+
+</div>
+
+<style>
+.luxury-link-button:hover {
+    color: #FF6B00;
+    border-color: rgba(255, 107, 0, 0.5);
+    text-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.metric-card {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .portal-header h1 {
+        font-size: 32px !important;
+    }
+
+    .metric-value {
+        font-size: 36px !important;
+    }
+}
+</style>
+{% endblock %}
