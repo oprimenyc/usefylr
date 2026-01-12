@@ -12,8 +12,69 @@ from datetime import datetime
 from app.models import BusinessProfile
 
 
-# 2026 IRS Tax Rules (Default values from Tax Rules Admin System)
+# Multi-Year IRS Tax Rules (Historical and Projected)
+# Source: IRS Revenue Procedures and Publication 505
 DEFAULT_TAX_RULES = {
+    2023: {
+        'standard_deductions': {
+            'single': 13850,
+            'married_jointly': 27700,
+            'married_separately': 13850,
+            'head_of_household': 20800,
+        },
+        'tax_brackets': [
+            {'rate': 10, 'limit': 11000},   # 10% on income up to $11,000
+            {'rate': 12, 'limit': 44725},   # 12% on income $11,001 to $44,725
+            {'rate': 22, 'limit': 95375},   # 22% on income $44,726 to $95,375
+            {'rate': 24, 'limit': 182100},  # 24% on income $95,376 to $182,100
+            {'rate': 32, 'limit': 231250},  # 32% on income $182,101 to $231,250
+            {'rate': 35, 'limit': 578125},  # 35% on income $231,251 to $578,125
+            {'rate': 37, 'limit': float('inf')},  # 37% on income over $578,125
+        ],
+        'self_employment_tax_rate': 0.153,  # 15.3% (Social Security + Medicare)
+        'qbi_deduction_rate': 0.20,  # 20% Qualified Business Income deduction
+        'ss_wage_base': 160200,  # Social Security wage base for 2023
+    },
+    2024: {
+        'standard_deductions': {
+            'single': 14600,
+            'married_jointly': 29200,
+            'married_separately': 14600,
+            'head_of_household': 21900,
+        },
+        'tax_brackets': [
+            {'rate': 10, 'limit': 11600},   # 10% on income up to $11,600
+            {'rate': 12, 'limit': 47150},   # 12% on income $11,601 to $47,150
+            {'rate': 22, 'limit': 100525},  # 22% on income $47,151 to $100,525
+            {'rate': 24, 'limit': 191950},  # 24% on income $100,526 to $191,950
+            {'rate': 32, 'limit': 243725},  # 32% on income $191,951 to $243,725
+            {'rate': 35, 'limit': 609350},  # 35% on income $243,726 to $609,350
+            {'rate': 37, 'limit': float('inf')},  # 37% on income over $609,350
+        ],
+        'self_employment_tax_rate': 0.153,  # 15.3% (Social Security + Medicare)
+        'qbi_deduction_rate': 0.20,  # 20% Qualified Business Income deduction
+        'ss_wage_base': 168600,  # Social Security wage base for 2024
+    },
+    2025: {
+        'standard_deductions': {
+            'single': 15000,
+            'married_jointly': 30000,
+            'married_separately': 15000,
+            'head_of_household': 22500,
+        },
+        'tax_brackets': [
+            {'rate': 10, 'limit': 11925},   # 10% on income up to $11,925
+            {'rate': 12, 'limit': 48475},   # 12% on income $11,926 to $48,475
+            {'rate': 22, 'limit': 103350},  # 22% on income $48,476 to $103,350
+            {'rate': 24, 'limit': 197300},  # 24% on income $103,351 to $197,300
+            {'rate': 32, 'limit': 250525},  # 32% on income $197,301 to $250,525
+            {'rate': 35, 'limit': 626350},  # 35% on income $250,526 to $626,350
+            {'rate': 37, 'limit': float('inf')},  # 37% on income over $626,350
+        ],
+        'self_employment_tax_rate': 0.153,  # 15.3% (Social Security + Medicare)
+        'qbi_deduction_rate': 0.20,  # 20% Qualified Business Income deduction
+        'ss_wage_base': 176100,  # Social Security wage base for 2025
+    },
     2026: {
         'standard_deductions': {
             'single': 14600,
@@ -32,6 +93,7 @@ DEFAULT_TAX_RULES = {
         ],
         'self_employment_tax_rate': 0.153,  # 15.3% (Social Security + Medicare)
         'qbi_deduction_rate': 0.20,  # 20% Qualified Business Income deduction
+        'ss_wage_base': 168600,  # Social Security wage base for 2026 (projected)
     }
 }
 
@@ -48,10 +110,27 @@ class TaxCalculationEngine:
     - Entity optimization recommendations
     """
 
-    def __init__(self, tax_year: int = 2026):
-        """Initialize tax engine with specific tax year rules"""
+    def __init__(self, tax_year: int = 2025):
+        """
+        Initialize tax engine with specific tax year rules
+
+        Args:
+            tax_year: Tax year to use for calculations (2023-2026)
+                     Defaults to 2025 (current year)
+
+        Raises:
+            ValueError: If tax_year is not supported
+        """
+        if tax_year not in DEFAULT_TAX_RULES:
+            available_years = sorted(DEFAULT_TAX_RULES.keys())
+            raise ValueError(
+                f"Tax year {tax_year} not supported. "
+                f"Available years: {available_years}. "
+                f"Using default year 2025."
+            )
+
         self.tax_year = tax_year
-        self.rules = DEFAULT_TAX_RULES.get(tax_year, DEFAULT_TAX_RULES[2026])
+        self.rules = DEFAULT_TAX_RULES[tax_year]
 
     def calculate_audit_risk(self, profile: BusinessProfile) -> Dict[str, Any]:
         """
@@ -352,6 +431,8 @@ class TaxCalculationEngine:
         """
         Calculate self-employment tax (Social Security + Medicare)
 
+        Uses the correct Social Security wage base for the tax year.
+
         Args:
             net_profit: Net business profit (Schedule C profit)
 
@@ -360,11 +441,13 @@ class TaxCalculationEngine:
                 'social_security': float,
                 'medicare': float,
                 'total_se_tax': float,
-                'deductible_portion': float (50% of SE tax)
+                'deductible_portion': float (50% of SE tax),
+                'ss_wage_base': float (for reference),
+                'tax_year': int (year used for calculation)
             }
         """
-        # 2026 Social Security wage base (estimated)
-        ss_wage_base = 168600
+        # Get SS wage base for this tax year
+        ss_wage_base = self.rules.get('ss_wage_base', 168600)
 
         # SE tax is calculated on 92.35% of net profit
         se_income = net_profit * 0.9235
@@ -386,7 +469,9 @@ class TaxCalculationEngine:
             'social_security': social_security,
             'medicare': medicare,
             'total_se_tax': total_se_tax,
-            'deductible_portion': deductible_portion
+            'deductible_portion': deductible_portion,
+            'ss_wage_base': ss_wage_base,
+            'tax_year': self.tax_year
         }
 
     def estimate_quarterly_tax_payments(self, profile: BusinessProfile) -> Dict[str, Any]:
@@ -440,26 +525,66 @@ class TaxCalculationEngine:
         }
 
 
-# Singleton instance for easy import
-tax_engine = TaxCalculationEngine(tax_year=2026)
+# Singleton instance for easy import (defaults to current year 2025)
+tax_engine = TaxCalculationEngine(tax_year=2025)
 
 
-# Convenience functions for direct use
-def calculate_audit_risk(profile: BusinessProfile) -> Dict[str, Any]:
-    """Calculate audit risk score for a business profile"""
-    return tax_engine.calculate_audit_risk(profile)
+# Convenience functions for direct use (use current year by default)
+def calculate_audit_risk(profile: BusinessProfile, tax_year: int = 2025) -> Dict[str, Any]:
+    """
+    Calculate audit risk score for a business profile
+
+    Args:
+        profile: BusinessProfile instance
+        tax_year: Tax year to use for calculations (2023-2026), defaults to 2025
+
+    Returns:
+        dict: Audit risk assessment with score, level, and recommendations
+    """
+    engine = TaxCalculationEngine(tax_year=tax_year)
+    return engine.calculate_audit_risk(profile)
 
 
-def calculate_tax_savings(profile: BusinessProfile) -> Dict[str, Any]:
-    """Calculate potential tax savings for a business profile"""
-    return tax_engine.calculate_tax_savings(profile)
+def calculate_tax_savings(profile: BusinessProfile, tax_year: int = 2025) -> Dict[str, Any]:
+    """
+    Calculate potential tax savings for a business profile
+
+    Args:
+        profile: BusinessProfile instance
+        tax_year: Tax year to use for calculations (2023-2026), defaults to 2025
+
+    Returns:
+        dict: Tax savings opportunities with amount, percentage, and breakdown
+    """
+    engine = TaxCalculationEngine(tax_year=tax_year)
+    return engine.calculate_tax_savings(profile)
 
 
-def calculate_self_employment_tax(net_profit: float) -> Dict[str, float]:
-    """Calculate self-employment tax"""
-    return tax_engine.calculate_self_employment_tax(net_profit)
+def calculate_self_employment_tax(net_profit: float, tax_year: int = 2025) -> Dict[str, float]:
+    """
+    Calculate self-employment tax
+
+    Args:
+        net_profit: Net business profit
+        tax_year: Tax year to use for calculations (2023-2026), defaults to 2025
+
+    Returns:
+        dict: SE tax breakdown with social security, medicare, and total
+    """
+    engine = TaxCalculationEngine(tax_year=tax_year)
+    return engine.calculate_self_employment_tax(net_profit)
 
 
-def estimate_quarterly_payments(profile: BusinessProfile) -> Dict[str, Any]:
-    """Estimate quarterly tax payments"""
-    return tax_engine.estimate_quarterly_tax_payments(profile)
+def estimate_quarterly_payments(profile: BusinessProfile, tax_year: int = 2025) -> Dict[str, Any]:
+    """
+    Estimate quarterly tax payments
+
+    Args:
+        profile: BusinessProfile instance
+        tax_year: Tax year to use for calculations (2023-2026), defaults to 2025
+
+    Returns:
+        dict: Quarterly payment estimates with due dates
+    """
+    engine = TaxCalculationEngine(tax_year=tax_year)
+    return engine.estimate_quarterly_tax_payments(profile)

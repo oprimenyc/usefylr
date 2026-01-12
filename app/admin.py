@@ -25,11 +25,15 @@ def admin_required(f):
     @wraps(f)
     @login_required
     def decorated_function(*args, **kwargs):
-        # Check if user is admin (you can add a role field to User model later)
-        # For now, just require authentication
+        # Check if user is admin
         if not current_user.is_authenticated:
-            flash('Admin access required', 'danger')
+            flash('Authentication required', 'danger')
             return redirect(url_for('auth.login'))
+
+        if not current_user.is_admin:
+            flash('Admin access required. You do not have permission to access this page.', 'danger')
+            return redirect(url_for('main.dashboard'))
+
         return f(*args, **kwargs)
     return decorated_function
 

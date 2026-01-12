@@ -69,7 +69,10 @@ class User(UserMixin, db.Model):
     
     # WordPress integration information (if applicable)
     wp_user_id = db.Column(db.String(128))
-    
+
+    # Admin access
+    is_admin = db.Column(db.Boolean, default=False)
+
     # Relationships
     business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)
     tax_forms = db.relationship('TaxForm', backref='user')
