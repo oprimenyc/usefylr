@@ -1,0 +1,126 @@
+{% extends "layout_unified.html" %}
+
+{% block title %}Tax Rules Administration{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>2026 IRS Tax Rules</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Tax Rules Engine:</strong> These rules are used by the system to calculate audit risk, tax savings, and provide recommendations.
+    </div>
+
+    {% for year, rules in tax_rules.items() %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Tax Year {{ year }}</h4>
+        </div>
+        <div class="card-body">
+            <!-- Standard Deductions -->
+            <h5 class="mb-3">Standard Deductions</h5>
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="border rounded p-3">
+                        <h6 class="text-muted">Single</h6>
+                        <h3 class="text-fylr-orange">${{ "{:,}".format(rules.standard_deductions.single) }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="border rounded p-3">
+                        <h6 class="text-muted">Married Jointly</h6>
+                        <h3 class="text-fylr-orange">${{ "{:,}".format(rules.standard_deductions.married_jointly) }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="border rounded p-3">
+                        <h6 class="text-muted">Married Separately</h6>
+                        <h3 class="text-fylr-orange">${{ "{:,}".format(rules.standard_deductions.married_separately) }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="border rounded p-3">
+                        <h6 class="text-muted">Head of Household</h6>
+                        <h3 class="text-fylr-orange">${{ "{:,}".format(rules.standard_deductions.head_of_household) }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Brackets -->
+            <h5 class="mb-3">Tax Brackets</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Tax Rate</th>
+                        <th>Income Limit</th>
+                        <th>Applies To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bracket in rules.tax_brackets %}
+                    <tr>
+                        <td><strong>{{ bracket.rate }}%</strong></td>
+                        <td>
+                            {% if bracket.limit == float('inf') %}
+                            Over ${{ "{:,}".format(rules.tax_brackets[loop.index0 - 1].limit if loop.index0 > 0 else 0) }}
+                            {% else %}
+                            Up to ${{ "{:,}".format(bracket.limit) }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if loop.first %}
+                            First ${{ "{:,}".format(bracket.limit) }}
+                            {% elif bracket.limit == float('inf') %}
+                            All income over ${{ "{:,}".format(rules.tax_brackets[loop.index0 - 1].limit) }}
+                            {% else %}
+                            ${{ "{:,}".format(rules.tax_brackets[loop.index0 - 1].limit + 1) }} to ${{ "{:,}".format(bracket.limit) }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Additional Rates -->
+            <h5 class="mb-3 mt-4">Additional Tax Rates</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="border rounded p-3">
+                        <h6 class="text-muted">Self-Employment Tax Rate</h6>
+                        <h4 class="text-fylr-orange">{{ (rules.self_employment_tax_rate * 100)|round(2) }}%</h4>
+                        <small class="text-muted">Social Security + Medicare (FICA)</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3">
+                        <h6 class="text-muted">QBI Deduction Rate</h6>
+                        <h4 class="text-fylr-orange">{{ (rules.qbi_deduction_rate * 100)|round(0)|int }}%</h4>
+                        <small class="text-muted">Qualified Business Income (Pass-Through)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Info Box -->
+    <div class="card border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Important Notes</h5>
+        </div>
+        <div class="card-body">
+            <ul class="mb-0">
+                <li>Tax rules are currently hardcoded in the tax engine service (<code>app/services/tax_engine.py</code>)</li>
+                <li>To modify tax rules, update the <code>DEFAULT_TAX_RULES</code> dictionary in the tax engine</li>
+                <li>Future enhancement: Store tax rules in database with version history (similar to Tax Rules Admin System)</li>
+                <li>All business profile calculations use these centralized rules</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

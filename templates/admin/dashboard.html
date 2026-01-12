@@ -1,0 +1,187 @@
+{% extends "layout_unified.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Admin Dashboard - Tax Rules Administration</h1>
+
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Users</h5>
+                    <h2 class="text-fylr-orange">{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Business Profiles</h5>
+                    <h2 class="text-fylr-orange">{{ total_profiles }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Revenue</h5>
+                    <h2 class="text-fylr-orange">${{ "{:,.0f}".format(total_revenue) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Avg Revenue</h5>
+                    <h2 class="text-fylr-orange">${{ "{:,.0f}".format(avg_revenue) }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-calculator me-2"></i>Tax Rules</h5>
+                    <p class="card-text">Manage 2026 IRS tax rules, standard deductions, and tax brackets.</p>
+                    <a href="{{ url_for('admin.tax_rules') }}" class="btn btn-fylr">Manage Tax Rules</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-building me-2"></i>Business Profiles</h5>
+                    <p class="card-text">View and analyze all business profiles with tax calculations.</p>
+                    <a href="{{ url_for('admin.profiles') }}" class="btn btn-fylr">View Profiles</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-chart-line me-2"></i>Analytics</h5>
+                    <p class="card-text">Advanced analytics and revenue distribution by entity and industry.</p>
+                    <a href="{{ url_for('admin.analytics') }}" class="btn btn-fylr">View Analytics</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users me-2"></i>Users</h5>
+                    <p class="card-text">Manage user accounts and access permissions.</p>
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-fylr">Manage Users</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-history me-2"></i>Audit Log</h5>
+                    <p class="card-text">Review system audit trail and change history.</p>
+                    <a href="{{ url_for('admin.audit_log') }}" class="btn btn-fylr">View Audit Log</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entity Distribution -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Entity Type Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Entity Type</th>
+                                <th class="text-end">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entity, count in entity_distribution %}
+                            <tr>
+                                <td>{{ entity.value.replace('_', ' ').title() }}</td>
+                                <td class="text-end">{{ count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Top Industries</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Industry</th>
+                                <th class="text-end">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for industry, count in industry_distribution %}
+                            <tr>
+                                <td>{{ industry or 'Not specified' }}</td>
+                                <td class="text-end">{{ count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Profiles -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Business Profiles</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Industry</th>
+                                <th>Entity Type</th>
+                                <th class="text-end">Annual Revenue</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for profile in recent_profiles %}
+                            <tr>
+                                <td>{{ profile.id }}</td>
+                                <td>{{ profile.industry or 'N/A' }}</td>
+                                <td>{{ profile.business_type.value.replace('_', ' ').title() }}</td>
+                                <td class="text-end">${{ "{:,.0f}".format(profile.annual_revenue or 0) }}</td>
+                                <td>{{ profile.created_at.strftime('%Y-%m-%d') if profile.created_at else 'N/A' }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin.profile_detail', profile_id=profile.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

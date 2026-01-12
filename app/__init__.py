@@ -67,6 +67,10 @@ def create_app():
     from app.onboarding import onboarding_bp
     app.register_blueprint(onboarding_bp)
 
+    # Register admin blueprint (Tax Rules Administration)
+    from app.admin import admin_bp
+    app.register_blueprint(admin_bp)
+
     # Try to register optional blueprints if they exist
     try:
         from modules.tax_strategy_routes import tax_strategy_bp

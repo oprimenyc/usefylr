@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from app import db
 from app.models import BusinessProfile, BusinessType
+from app.services.tax_engine import calculate_audit_risk, calculate_tax_savings
 
 # Create blueprint
 main_bp = Blueprint("main", __name__)
@@ -146,56 +147,6 @@ def portal():
                          audit_risk=audit_risk,
                          tax_intelligence=tax_intelligence,
                          profile=profile)
-
-def calculate_audit_risk(profile):
-    """Calculate audit risk based on complexity flags and business data"""
-    risk_score = 0
-
-    # Revenue-based risk
-    if profile.annual_revenue and profile.annual_revenue > 100000:
-        risk_score += 20
-    if profile.annual_revenue and profile.annual_revenue > 500000:
-        risk_score += 15
-
-    # Complexity-based risk
-    if profile.has_employees:
-        risk_score += 15
-
-    complexity_flags = (profile.data or {}).get('complexity_flags', [])
-    if 'multiple_states' in complexity_flags:
-        risk_score += 25
-    if 'inventory' in complexity_flags:
-        risk_score += 10
-
-    # Determine risk level
-    if risk_score < 30:
-        return {'level': 'Low', 'color': '#4CAF50', 'percentage': risk_score}
-    elif risk_score < 60:
-        return {'level': 'Medium', 'color': '#FFA500', 'percentage': risk_score}
-    else:
-        return {'level': 'High', 'color': '#FF6B00', 'percentage': risk_score}
-
-def calculate_tax_savings(profile):
-    """Estimate potential tax savings based on business profile"""
-    revenue = profile.annual_revenue or 0
-
-    # Base savings estimation (15% of revenue for optimization)
-    estimated_savings = revenue * 0.15
-
-    # Adjust based on complexity
-    complexity_flags = (profile.data or {}).get('complexity_flags', [])
-    if 'employees' in complexity_flags:
-        estimated_savings += 5000  # Payroll tax optimization
-    if 'contractors' in complexity_flags:
-        estimated_savings += 2000  # 1099 optimization
-
-    # Cap at reasonable amount
-    estimated_savings = min(estimated_savings, revenue * 0.30)
-
-    return {
-        'amount': f'${estimated_savings:,.0f}',
-        'percentage': int((estimated_savings / revenue * 100) if revenue > 0 else 15)
-    }
 
 # Error handlers
 def page_not_found(e):
