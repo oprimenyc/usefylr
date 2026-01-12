@@ -1,0 +1,909 @@
+{% extends "base_layout.html" %}
+
+{% block title %}Financial Hub - .fylr{% endblock %}
+
+{% block head %}
+<style>
+.text-muted {
+    color: #C8C8CC !important;
+}
+
+.hub-container {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding-top: 100px !important;
+}
+
+/* Stream Filter Bar */
+.stream-filter-bar {
+    background: rgba(30, 30, 35, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.stream-tile {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    margin-right: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 160px;
+}
+
+.stream-tile:hover {
+    background: rgba(255, 107, 0, 0.05);
+    border-color: rgba(255, 107, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.stream-tile.active {
+    background: rgba(255, 107, 0, 0.1);
+    border-color: var(--fylr-orange);
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.2);
+}
+
+.stream-tile.all-streams {
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.1), rgba(255, 107, 0, 0.05));
+    border-color: var(--fylr-orange);
+}
+
+.stream-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 107, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fylr-orange);
+    font-size: 1rem;
+    margin-right: 0.75rem;
+}
+
+.stream-info {
+    flex: 1;
+}
+
+.stream-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.stream-amount {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Buy Box */
+.buy-box {
+    background: rgba(30, 30, 35, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.buy-box-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.buy-box-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.buy-box-tab:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.buy-box-tab.active {
+    background: rgba(255, 107, 0, 0.1);
+    border-color: var(--fylr-orange);
+    color: var(--fylr-orange);
+}
+
+.buy-box-tab.income-tab.active {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10B981;
+    color: #10B981;
+}
+
+.glass-input {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    color: var(--text-primary) !important;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+    border-color: var(--fylr-orange) !important;
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1) !important;
+    outline: none !important;
+}
+
+.glass-input::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* Transaction Cards */
+.transaction-card {
+    background: rgba(30, 30, 35, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.transaction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 107, 0, 0.3);
+}
+
+.transaction-card.income-type {
+    border-left: 3px solid #10B981;
+    box-shadow: inset 0 0 30px rgba(16, 185, 129, 0.03);
+}
+
+.transaction-card.income-type::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at left, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    border-radius: 12px;
+}
+
+.transaction-card.expense-type {
+    border-left: 3px solid var(--fylr-orange);
+}
+
+.transaction-amount {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.transaction-amount.expense {
+    color: var(--fylr-orange);
+}
+
+.transaction-amount.income {
+    color: #10B981;
+}
+
+.income-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.expense-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 107, 0, 0.15);
+    color: var(--fylr-orange);
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.category-badge {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-block;
+    margin: 0.25rem 0.25rem 0 0;
+}
+
+.category-badge.income-badge {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.category-badge.expense-badge {
+    border-color: rgba(255, 107, 0, 0.5);
+    background: rgba(255, 107, 0, 0.1);
+    color: var(--fylr-orange);
+}
+
+.ai-suggestion {
+    background: rgba(255, 107, 0, 0.05);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.confidence-meter {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--fylr-orange), #FF8C42);
+    transition: width 0.6s ease;
+}
+
+/* Summary Stats */
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .summary-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .summary-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stat-card {
+    background: rgba(30, 30, 35, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-value.text-income {
+    color: #10B981;
+}
+
+.stat-value.text-expense {
+    color: var(--fylr-orange);
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Stream dropdown for buy box */
+.stream-select {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+}
+
+.stream-select:focus {
+    border-color: var(--fylr-orange);
+    outline: none;
+}
+
+/* AI Result */
+.ai-result-card {
+    background: rgba(255, 107, 0, 0.05);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* Add Stream Button */
+.add-stream-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 107, 0, 0.1);
+    border: 2px dashed var(--fylr-orange);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    color: var(--fylr-orange);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.add-stream-btn:hover {
+    background: rgba(255, 107, 0, 0.2);
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hub-container">
+    <div class="container-fluid px-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="text-primary mb-1">Financial Hub</h1>
+                <p class="text-muted mb-0">Track all income streams and expenses in one place</p>
+            </div>
+        </div>
+
+        <!-- Stream Filter Bar -->
+        <div class="stream-filter-bar" id="streamFilterBar">
+            <div class="stream-tile all-streams active" data-stream="all" onclick="filterByStream('all')">
+                <div class="stream-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-name">All Streams</div>
+                    <div class="stream-amount" id="allStreamsTotal">$0.00</div>
+                </div>
+            </div>
+            <div id="streamTilesContainer"></div>
+            <div class="add-stream-btn" onclick="openAddStreamModal()">
+                <i class="fas fa-plus me-2"></i>Add Stream
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="summary-stats">
+            <div class="stat-card">
+                <span class="stat-value text-income" id="totalIncome">$0</span>
+                <div class="stat-label">Total Income</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value text-expense" id="totalExpenses">$0</span>
+                <div class="stat-label">Total Expenses</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value text-primary" id="netProfit">$0</span>
+                <div class="stat-label">Net Profit</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value text-orange" id="estimatedTax">$0</span>
+                <div class="stat-label">Estimated Tax</div>
+            </div>
+        </div>
+
+        <!-- Buy Box -->
+        <div class="buy-box">
+            <div class="buy-box-tabs">
+                <div class="buy-box-tab active" data-type="expense" onclick="switchBuyBoxTab('expense')">
+                    <i class="fas fa-minus-circle me-2"></i>Add Expense
+                </div>
+                <div class="buy-box-tab income-tab" data-type="income" onclick="switchBuyBoxTab('income')">
+                    <i class="fas fa-plus-circle me-2"></i>Add Income
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <select class="form-select glass-input" id="entryStream">
+                        <option value="">Select Stream</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-text" style="background: rgba(255,255,255,0.03); border-color: var(--border-color); color: var(--text-muted);">$</span>
+                        <input type="number" class="form-control glass-input" id="entryAmount" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control glass-input" id="entryDescription" placeholder="What's this for?">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control glass-input" id="entryDate">
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-orange w-100 h-100" id="addEntryBtn" onclick="addEntry()">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="entryResult"></div>
+        </div>
+
+        <!-- Transaction List -->
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <h5 class="text-primary mb-0"><i class="fas fa-list me-2"></i>Recent Transactions</h5>
+            <select class="form-select glass-input" style="width: auto;" id="typeFilter" onchange="applyFilters()">
+                <option value="all">All Types</option>
+                <option value="income">Income Only</option>
+                <option value="expense">Expenses Only</option>
+            </select>
+        </div>
+        
+        <div id="transactionsList">
+            <!-- Transactions will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+<!-- Add Stream Modal -->
+<div class="modal fade" id="addStreamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 16px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-primary">
+                    <i class="fas fa-plus-circle text-orange me-2"></i>Add Revenue Stream
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <label class="form-label text-muted mb-3">Select Platform</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="uber" data-icon="fas fa-car">
+                            <i class="fas fa-car me-2"></i>Uber
+                        </button>
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="lyft" data-icon="fas fa-taxi">
+                            <i class="fas fa-taxi me-2"></i>Lyft
+                        </button>
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="doordash" data-icon="fas fa-utensils">
+                            <i class="fas fa-utensils me-2"></i>DoorDash
+                        </button>
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="instacart" data-icon="fas fa-shopping-cart">
+                            <i class="fas fa-shopping-cart me-2"></i>Instacart
+                        </button>
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="freelance" data-icon="fas fa-laptop-code">
+                            <i class="fas fa-laptop-code me-2"></i>Freelance
+                        </button>
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="consulting" data-icon="fas fa-briefcase">
+                            <i class="fas fa-briefcase me-2"></i>Consulting
+                        </button>
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="etsy" data-icon="fas fa-store">
+                            <i class="fas fa-store me-2"></i>Etsy
+                        </button>
+                        <button type="button" class="btn btn-glass platform-btn" data-platform="custom" data-icon="fas fa-plus">
+                            <i class="fas fa-plus me-2"></i>Other
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3" id="customNameGroup" style="display: none;">
+                    <label class="form-label text-muted">Custom Name</label>
+                    <input type="text" class="form-control glass-input" id="customStreamName" placeholder="e.g., Photography Business">
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-orange" onclick="addStream()">
+                    <i class="fas fa-plus me-2"></i>Add Stream
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let streams = [];
+let transactions = [];
+let currentFilter = 'all';
+let currentTypeFilter = 'all';
+let currentEntryType = 'expense';
+let selectedPlatform = null;
+let selectedIcon = null;
+
+const platformIcons = {
+    'uber': 'fas fa-car',
+    'lyft': 'fas fa-taxi',
+    'doordash': 'fas fa-utensils',
+    'instacart': 'fas fa-shopping-cart',
+    'freelance': 'fas fa-laptop-code',
+    'consulting': 'fas fa-briefcase',
+    'etsy': 'fas fa-store',
+    'custom': 'fas fa-building'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('entryDate').valueAsDate = new Date();
+    loadData();
+    
+    document.querySelectorAll('.platform-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedPlatform = this.dataset.platform;
+            selectedIcon = this.dataset.icon;
+            document.getElementById('customNameGroup').style.display = 
+                selectedPlatform === 'custom' ? 'block' : 'none';
+        });
+    });
+});
+
+function loadData() {
+    const storedStreams = localStorage.getItem('hubStreams');
+    const storedTransactions = localStorage.getItem('hubTransactions');
+    
+    if (storedStreams) {
+        streams = JSON.parse(storedStreams);
+    } else {
+        streams = [
+            { id: 'uber-1', platform: 'uber', name: 'Uber', icon: 'fas fa-car' },
+            { id: 'doordash-1', platform: 'doordash', name: 'DoorDash', icon: 'fas fa-utensils' },
+            { id: 'freelance-1', platform: 'freelance', name: 'Web Development', icon: 'fas fa-laptop-code' }
+        ];
+    }
+    
+    if (storedTransactions) {
+        transactions = JSON.parse(storedTransactions);
+    } else {
+        transactions = [
+            { id: 't1', streamId: 'uber-1', type: 'income', amount: 245.50, description: 'Uber earnings - Weekend', date: '2025-08-15', category: 'Rideshare Income' },
+            { id: 't2', streamId: 'uber-1', type: 'expense', amount: 45.00, description: 'Gas - Shell Station', date: '2025-08-15', category: 'Vehicle Fuel', confidence: 95, deductible: 100, scheduleC: '9' },
+            { id: 't3', streamId: 'doordash-1', type: 'income', amount: 187.25, description: 'DoorDash deliveries', date: '2025-08-14', category: 'Delivery Income' },
+            { id: 't4', streamId: 'freelance-1', type: 'income', amount: 1500.00, description: 'Website project payment', date: '2025-08-13', category: 'Freelance Income' },
+            { id: 't5', streamId: 'freelance-1', type: 'expense', amount: 29.99, description: 'Adobe Creative Cloud', date: '2025-08-12', category: 'Software', confidence: 98, deductible: 100, scheduleC: '18' },
+            { id: 't6', streamId: 'uber-1', type: 'expense', amount: 67.50, description: 'Phone bill - T-Mobile', date: '2025-08-10', category: 'Phone', confidence: 85, deductible: 50, scheduleC: '25' }
+        ];
+    }
+    
+    renderStreamTiles();
+    renderTransactions();
+    updateStats();
+    updateStreamDropdown();
+}
+
+function saveData() {
+    localStorage.setItem('hubStreams', JSON.stringify(streams));
+    localStorage.setItem('hubTransactions', JSON.stringify(transactions));
+}
+
+function renderStreamTiles() {
+    const container = document.getElementById('streamTilesContainer');
+    
+    container.innerHTML = streams.map(stream => {
+        const streamTransactions = transactions.filter(t => t.streamId === stream.id);
+        const income = streamTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        const expenses = streamTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+        const net = income - expenses;
+        
+        return `
+            <div class="stream-tile ${currentFilter === stream.id ? 'active' : ''}" 
+                 data-stream="${stream.id}" 
+                 onclick="filterByStream('${stream.id}')">
+                <div class="stream-icon">
+                    <i class="${stream.icon}"></i>
+                </div>
+                <div class="stream-info">
+                    <div class="stream-name">${stream.name}</div>
+                    <div class="stream-amount ${net >= 0 ? 'text-success' : 'text-warning'}">
+                        ${net >= 0 ? '+' : ''}$${net.toFixed(2)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+    document.getElementById('allStreamsTotal').textContent = '$' + (totalIncome - totalExpenses).toFixed(2);
+}
+
+function renderTransactions() {
+    const container = document.getElementById('transactionsList');
+    
+    let filtered = [...transactions];
+    
+    if (currentFilter !== 'all') {
+        filtered = filtered.filter(t => t.streamId === currentFilter);
+    }
+    
+    if (currentTypeFilter !== 'all') {
+        filtered = filtered.filter(t => t.type === currentTypeFilter);
+    }
+    
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-receipt text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3">No transactions found</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = filtered.map(t => {
+        const stream = streams.find(s => s.id === t.streamId);
+        const isIncome = t.type === 'income';
+        
+        return `
+            <div class="transaction-card ${isIncome ? 'income-type' : 'expense-type'}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-2">
+                            ${isIncome 
+                                ? '<span class="income-indicator"><i class="fas fa-plus"></i></span>'
+                                : '<span class="expense-indicator"><i class="fas fa-minus"></i></span>'
+                            }
+                            <h6 class="text-primary mb-0">${t.description}</h6>
+                        </div>
+                        <p class="text-muted mb-2 small">
+                            ${t.date} • ${stream ? stream.name : 'Unknown'}
+                        </p>
+                        <div class="mb-2">
+                            <span class="category-badge ${isIncome ? 'income-badge' : 'expense-badge'}">${t.category}</span>
+                            ${!isIncome && t.deductible ? `<span class="category-badge">${t.deductible}% Deductible</span>` : ''}
+                        </div>
+                        ${!isIncome && t.confidence ? `
+                            <div class="ai-suggestion">
+                                <i class="fas fa-robot text-orange me-2"></i>
+                                <strong>AI Analysis:</strong> Schedule C Line ${t.scheduleC}
+                                <div class="confidence-meter">
+                                    <div class="confidence-fill" style="width: ${t.confidence}%;"></div>
+                                </div>
+                                <small class="text-muted">${t.confidence}% confidence</small>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="text-end">
+                        <div class="transaction-amount ${isIncome ? 'income' : 'expense'}">
+                            ${isIncome ? '+' : '-'}$${t.amount.toFixed(2)}
+                        </div>
+                        <button class="btn btn-glass btn-sm mt-2" onclick="deleteTransaction('${t.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateStats() {
+    let filtered = [...transactions];
+    if (currentFilter !== 'all') {
+        filtered = filtered.filter(t => t.streamId === currentFilter);
+    }
+    
+    const totalIncome = filtered.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = filtered.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+    const netProfit = totalIncome - totalExpenses;
+    const estimatedTax = netProfit > 0 ? netProfit * 0.32 : 0;
+    
+    document.getElementById('totalIncome').textContent = '$' + totalIncome.toLocaleString('en-US', {minimumFractionDigits: 2});
+    document.getElementById('totalExpenses').textContent = '$' + totalExpenses.toLocaleString('en-US', {minimumFractionDigits: 2});
+    document.getElementById('netProfit').textContent = (netProfit >= 0 ? '+$' : '-$') + Math.abs(netProfit).toLocaleString('en-US', {minimumFractionDigits: 2});
+    document.getElementById('estimatedTax').textContent = '$' + estimatedTax.toLocaleString('en-US', {minimumFractionDigits: 2});
+}
+
+function updateStreamDropdown() {
+    const select = document.getElementById('entryStream');
+    select.innerHTML = '<option value="">Select Stream</option>' + 
+        streams.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+function filterByStream(streamId) {
+    currentFilter = streamId;
+    
+    document.querySelectorAll('.stream-tile').forEach(tile => {
+        tile.classList.remove('active');
+        if (tile.dataset.stream === streamId) {
+            tile.classList.add('active');
+        }
+    });
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    renderTransactions();
+    updateStats();
+}
+
+function applyFilters() {
+    currentTypeFilter = document.getElementById('typeFilter').value;
+    renderTransactions();
+}
+
+function switchBuyBoxTab(type) {
+    currentEntryType = type;
+    document.querySelectorAll('.buy-box-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.type === type) {
+            tab.classList.add('active');
+        }
+    });
+}
+
+async function addEntry() {
+    const streamId = document.getElementById('entryStream').value;
+    const amount = parseFloat(document.getElementById('entryAmount').value);
+    const description = document.getElementById('entryDescription').value;
+    const date = document.getElementById('entryDate').value;
+    const btn = document.getElementById('addEntryBtn');
+    const resultDiv = document.getElementById('entryResult');
+    
+    if (!streamId || !amount || !description) {
+        resultDiv.innerHTML = '<div class="ai-result-card"><span class="text-warning"><i class="fas fa-exclamation-triangle me-2"></i>Please fill in all fields</span></div>';
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    if (currentEntryType === 'expense') {
+        try {
+            const response = await fetch('/api/smart-ledger/add-expense', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, description, date })
+            });
+            const data = await response.json();
+            
+            const newTransaction = {
+                id: 't' + Date.now(),
+                streamId: streamId,
+                type: 'expense',
+                amount: amount,
+                description: description,
+                date: date,
+                category: data.ai_analysis?.category || 'Business Expense',
+                confidence: Math.round((data.ai_analysis?.confidence || 0.85) * 100),
+                deductible: data.ai_analysis?.deductible_percentage || 100,
+                scheduleC: data.ai_analysis?.schedule_c_line || '27'
+            };
+            
+            transactions.unshift(newTransaction);
+            saveData();
+            
+            resultDiv.innerHTML = `
+                <div class="ai-result-card">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <strong>Expense added!</strong> Categorized as ${newTransaction.category} (${newTransaction.deductible}% deductible)
+                </div>
+            `;
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="ai-result-card"><span class="text-danger">${error.message}</span></div>`;
+        }
+    } else {
+        const stream = streams.find(s => s.id === streamId);
+        const newTransaction = {
+            id: 't' + Date.now(),
+            streamId: streamId,
+            type: 'income',
+            amount: amount,
+            description: description,
+            date: date,
+            category: stream ? stream.name + ' Income' : 'Income'
+        };
+        
+        transactions.unshift(newTransaction);
+        saveData();
+        
+        resultDiv.innerHTML = `
+            <div class="ai-result-card" style="border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05);">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong>Income recorded!</strong> +$${amount.toFixed(2)} added to ${stream?.name || 'stream'}
+            </div>
+        `;
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic"></i>';
+    
+    document.getElementById('entryAmount').value = '';
+    document.getElementById('entryDescription').value = '';
+    
+    renderStreamTiles();
+    renderTransactions();
+    updateStats();
+    
+    setTimeout(() => { resultDiv.innerHTML = ''; }, 3000);
+}
+
+function deleteTransaction(id) {
+    if (confirm('Delete this transaction?')) {
+        transactions = transactions.filter(t => t.id !== id);
+        saveData();
+        renderStreamTiles();
+        renderTransactions();
+        updateStats();
+    }
+}
+
+function openAddStreamModal() {
+    selectedPlatform = null;
+    selectedIcon = null;
+    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('customNameGroup').style.display = 'none';
+    document.getElementById('customStreamName').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('addStreamModal'));
+    modal.show();
+}
+
+function addStream() {
+    if (!selectedPlatform) {
+        alert('Please select a platform');
+        return;
+    }
+    
+    let name = selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1);
+    if (selectedPlatform === 'custom') {
+        name = document.getElementById('customStreamName').value || 'Custom Income';
+    }
+    
+    const newStream = {
+        id: selectedPlatform + '-' + Date.now(),
+        platform: selectedPlatform,
+        name: name,
+        icon: selectedIcon || platformIcons[selectedPlatform]
+    };
+    
+    streams.push(newStream);
+    saveData();
+    renderStreamTiles();
+    updateStreamDropdown();
+    
+    bootstrap.Modal.getInstance(document.getElementById('addStreamModal')).hide();
+}
+</script>
+{% endblock %}

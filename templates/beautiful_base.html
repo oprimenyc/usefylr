@@ -37,45 +37,35 @@
                     <div class="logo-container">
                         <div class="logo-glow"></div>
                         <div class="logo-inner">
-                            <a href="{{ url_for('main.index') }}" style="text-decoration: none; color: inherit;">
-                                <span class="logo-text">.fylr</span>
-                            </a>
+                            <span class="logo-text">.fylr</span>
                         </div>
                     </div>
                     
                     <!-- Beautiful Navigation -->
                     <nav class="main-nav">
-                        <a class="nav-item" href="{{ url_for('main.index') }}">Home</a>
-                        <a class="nav-item" href="{{ url_for('features.smart_ledger') }}">Smart Ledger</a>
-                        <a class="nav-item" href="{{ url_for('features.questionnaire') }}">AI Questionnaire</a>
-                        <a class="nav-item {% if request.endpoint == 'features.gorgeous_ai_chat' %}active{% endif %}" href="{{ url_for('features.gorgeous_ai_chat') }}">AI Chat</a>
-                        {% if current_user.is_authenticated %}
-                        <a class="nav-item" href="{{ url_for('main.dashboard') }}">Dashboard</a>
-                        {% endif %}
+                        <a class="nav-item" href="{{ url_for('index') }}">Dashboard</a>
+                        <a class="nav-item" href="{{ url_for('smart_ledger') }}">Smart Ledger</a>
+                        <a class="nav-item" href="{{ url_for('tax_form_builder') }}">Forms</a>
+                        <a class="nav-item" href="{{ url_for('enhanced_smart_ledger') }}">Enhanced Ledger</a>
+                        <a class="nav-item {% if request.endpoint == 'gorgeous_ai_chat' %}active{% endif %}" href="{{ url_for('gorgeous_ai_chat') }}">AI Assistant</a>
+                        <a class="nav-item" href="{{ url_for('ai_chat_test') }}">AI Chat Test</a>
                     </nav>
                 </div>
 
                 <!-- Header Right Section -->
                 <div class="header-right">
-                    {% if current_user.is_authenticated %}
                     <div class="user-status">
                         <div class="status-indicator">
                             <div class="status-dot"></div>
-                            <span class="status-text">{{ current_user.subscriptions.filter_by(status='active').first().subscription_type.value|upper if current_user.subscriptions.filter_by(status='active').first() else 'FREE' }}</span>
+                            <span class="status-text">Trial - 14 days left</span>
                         </div>
                         <div class="divider"></div>
-                        <span class="user-email">{{ current_user.email }}</span>
+                        <span class="user-email">john@example.com</span>
                     </div>
-                    <a href="{{ url_for('main.dashboard') }}" class="cta-button">
-                        Dashboard
+                    
+                    <a href="#" class="cta-button">
+                        Upgrade Now
                     </a>
-                    <a href="{{ url_for('auth.logout') }}" class="nav-item" style="margin-left: 1rem;">Logout</a>
-                    {% else %}
-                    <a href="{{ url_for('onboarding.start') }}" class="cta-button">
-                        Get Started
-                    </a>
-                    <a href="{{ url_for('auth.login') }}" class="nav-item" style="margin-left: 1rem;">Sign In</a>
-                    {% endif %}
                 </div>
             </div>
         </div>

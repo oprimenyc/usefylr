@@ -31,6 +31,8 @@
 /* ===== GLOBAL RESET - MORE AGGRESSIVE ===== */
 html {
   font-size: 14px !important;
+  scroll-padding-top: 90px !important;
+  scroll-behavior: smooth !important;
 }
 
 body {
@@ -39,6 +41,12 @@ body {
   color: #e5e5e5 !important;
   margin: 0 !important;
   padding: 0 !important;
+}
+
+/* Main content padding for fixed header */
+main {
+  padding-top: 80px !important;
+  min-height: calc(100vh - 80px);
 }
 
 /* ===== NAVIGATION FIXES ===== */
@@ -116,11 +124,7 @@ section:first-of-type {
   min-height: auto !important;
 }
 
-/* Fix main content top margin to account for smaller nav */
-main {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
+/* Main content adjusted for fixed nav - uses padding-top from line 47 */
 
 /* Remove any hero pseudo-elements causing layout issues */
 .hero::before,
@@ -548,4 +552,35 @@ body {
   padding: var(--space-xs) var(--space-sm) !important;
   border-radius: 4px !important;
   font-size: var(--text-xs) !important;
+}
+
+/* ===== MOBILE CARD MARGINS ===== */
+@media (max-width: 768px) {
+  .card,
+  .glass-card,
+  .result-card,
+  .transaction-card,
+  [class*="card"] {
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+  }
+  
+  .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* ===== GLOBAL TEXT-MUTED OVERRIDE FOR DARK BACKGROUNDS ===== */
+.text-muted {
+  color: #C8C8CC !important;
+}
+
+/* Ensure muted text is readable everywhere */
+p.text-muted,
+span.text-muted,
+small.text-muted,
+div.text-muted,
+a.text-muted {
+  color: #C8C8CC !important;
 }

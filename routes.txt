@@ -1,0 +1,44 @@
+Endpoint                          Methods    Rule                                          
+--------------------------------  ---------  ----------------------------------------------
+auth.acknowledge_disclaimer       POST       /auth/acknowledge-disclaimer                  
+auth.login                        GET, POST  /auth/login                                   
+auth.logout                       GET        /auth/logout                                  
+auth.register                     GET, POST  /auth/register                                
+contractors.add_contractor        GET, POST  /contractors/add                              
+contractors.add_payment           POST       /contractors/payment/add                      
+contractors.api_summary           GET        /contractors/api/summary                      
+contractors.dashboard             GET        /contractors/dashboard                        
+contractors.delete_contractor     POST       /contractors/delete/<int:contractor_id>       
+contractors.generate_1099         GET        /contractors/1099/generate/<int:contractor_id>
+features.ai_chat_test             GET        /ai-chat-test                                 
+features.clean_ai_chat            GET        /clean-ai-chat                                
+features.enhanced_smart_ledger    GET        /enhanced-smart-ledger                        
+features.form_demo                GET        /form-demo                                    
+features.fullwidth_ai_chat        GET        /fullwidth-ai-chat                            
+features.gorgeous_ai_chat         GET        /gorgeous-ai-chat                             
+features.questionnaire            GET        /questionnaire                                
+features.questionnaire_questions  GET        /questionnaire/questions                      
+features.questionnaire_results    GET        /questionnaire/results                        
+features.smart_ledger             GET        /smart-ledger                                 
+features.tax_form_builder         GET        /tax-form-builder                             
+intake.assess_complexity          POST       /api/intake/assess-complexity                 
+intake.batch_parse                POST       /api/intake/batch-parse                       
+intake.health_check               GET        /api/intake/health                            
+intake.optimize_startup           POST       /api/intake/optimize-startup                  
+intake.parse_expense              POST       /api/intake/parse-expense                     
+main.dashboard                    GET        /dashboard                                    
+main.export                       GET        /export                                       
+main.index                        GET        /                                             
+main.intake                       GET, POST  /intake                                       
+main.legal_disclaimer             GET        /legal-disclaimer                             
+main.plans                        GET        /plans                                        
+main.portal                       GET        /portal                                       
+main.pricing                      GET        /pricing                                      
+main.privacy                      GET        /privacy                                      
+main.profile                      GET        /profile                                      
+main.terms                        GET        /terms                                        
+onboarding.continue_to_signup     GET        /onboarding/get-started                       
+onboarding.skip                   GET        /onboarding/skip                              
+onboarding.start                  GET        /onboarding                                   
+onboarding.try_ai                 POST       /onboarding/try-ai                            
+static                            GET        /static/<path:filename>                       

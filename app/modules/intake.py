@@ -64,6 +64,131 @@ STARTUP_COST_KEYWORDS = [
     'organizational costs', 'pre-opening', 'launch'
 ]
 
+# ========================================
+# MULTI-STREAM GIG ECONOMY ENGINE
+# ========================================
+
+# Gig platform mappings with keywords, fees, and tax forms
+GIG_PLATFORMS = {
+    'uber': {
+        'name': 'Uber',
+        'keywords': ['uber', 'uber eats', 'ubereats'],
+        'service_fee_rate': 0.25,  # 25% service fee
+        'tax_form': '1099-K',
+        'category': 'rideshare',
+        'is_driver': True
+    },
+    'lyft': {
+        'name': 'Lyft',
+        'keywords': ['lyft'],
+        'service_fee_rate': 0.25,
+        'tax_form': '1099-K',
+        'category': 'rideshare',
+        'is_driver': True
+    },
+    'doordash': {
+        'name': 'DoorDash',
+        'keywords': ['doordash', 'door dash'],
+        'service_fee_rate': 0.20,  # 20% service fee
+        'tax_form': '1099-NEC',
+        'category': 'delivery',
+        'is_driver': True
+    },
+    'grubhub': {
+        'name': 'GrubHub',
+        'keywords': ['grubhub', 'grub hub'],
+        'service_fee_rate': 0.20,
+        'tax_form': '1099-NEC',
+        'category': 'delivery',
+        'is_driver': True
+    },
+    'instacart': {
+        'name': 'Instacart',
+        'keywords': ['instacart', 'insta cart'],
+        'service_fee_rate': 0.15,
+        'tax_form': '1099-NEC',
+        'category': 'delivery',
+        'is_driver': True
+    },
+    'postmates': {
+        'name': 'Postmates',
+        'keywords': ['postmates', 'post mates'],
+        'service_fee_rate': 0.20,
+        'tax_form': '1099-NEC',
+        'category': 'delivery',
+        'is_driver': True
+    },
+    'amazon_flex': {
+        'name': 'Amazon Flex',
+        'keywords': ['amazon flex', 'amazonflex'],
+        'service_fee_rate': 0.10,
+        'tax_form': '1099-NEC',
+        'category': 'delivery',
+        'is_driver': True
+    },
+    'upwork': {
+        'name': 'Upwork',
+        'keywords': ['upwork'],
+        'service_fee_rate': 0.10,  # 10% service fee (sliding scale)
+        'tax_form': '1099-NEC',
+        'category': 'freelance',
+        'is_driver': False
+    },
+    'fiverr': {
+        'name': 'Fiverr',
+        'keywords': ['fiverr'],
+        'service_fee_rate': 0.20,
+        'tax_form': '1099-K',
+        'category': 'freelance',
+        'is_driver': False
+    },
+    'etsy': {
+        'name': 'Etsy',
+        'keywords': ['etsy'],
+        'service_fee_rate': 0.065,  # 6.5% transaction fee
+        'tax_form': '1099-K',
+        'category': 'ecommerce',
+        'is_driver': False
+    },
+    'airbnb': {
+        'name': 'Airbnb',
+        'keywords': ['airbnb', 'air bnb'],
+        'service_fee_rate': 0.03,  # 3% host service fee
+        'tax_form': '1099-K',
+        'category': 'rental',
+        'is_driver': False
+    },
+    'taskrabbit': {
+        'name': 'TaskRabbit',
+        'keywords': ['taskrabbit', 'task rabbit'],
+        'service_fee_rate': 0.15,
+        'tax_form': '1099-NEC',
+        'category': 'services',
+        'is_driver': False
+    },
+    'rover': {
+        'name': 'Rover',
+        'keywords': ['rover'],
+        'service_fee_rate': 0.20,
+        'tax_form': '1099-K',
+        'category': 'services',
+        'is_driver': False
+    }
+}
+
+# IRS standard mileage rates (updated annually)
+MILEAGE_RATES = {
+    2024: 0.67,  # $0.67 per mile
+    2025: 0.70,  # $0.70 per mile (projected)
+    2026: 0.70   # $0.70 per mile (projected)
+}
+
+# Income keywords for detecting revenue vs expenses
+INCOME_KEYWORDS = [
+    'made', 'earned', 'received', 'income', 'revenue', 'payment', 'paid me',
+    'deposited', 'got paid', 'earnings', 'tips', 'collected'
+]
+
 
 class TaxContextParser:
     """AI-powered tax context parser using Anthropic Claude"""

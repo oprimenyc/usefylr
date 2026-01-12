@@ -14,7 +14,7 @@
   /* Text Colors */
   --text-primary: #FFFFFF;
   --text-secondary: #B4B4B8;
-  --text-muted: #7A7A7F;
+  --text-muted: #9E9EA3;
   
   /* Status Colors */
   --success: #00D084;
@@ -418,12 +418,24 @@ body {
   box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
 }
 
-/* Dashboard Grid */
+/* Dashboard Grid - 5 Column Layout */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 1.5rem;
   margin: 2rem 0;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Feature Cards */
@@ -645,7 +657,7 @@ button:focus,
 .text-success { color: var(--success); }
 .text-warning { color: var(--warning); }
 .text-error { color: var(--error); }
-.text-muted { color: var(--text-muted); }
+.text-muted { color: #B8B8BC !important; }
 
 .bg-dark { background: var(--bg-primary); }
 .bg-dark-secondary { background: var(--bg-secondary); }

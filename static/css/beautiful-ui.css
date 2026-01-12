@@ -1,4 +1,4 @@
-/* .fylr BEAUTIFUL TECH COMPANY UI */
+ /* .fylr BEAUTIFUL TECH COMPANY UI */
 /* Inspired by Stripe, Linear, Vercel aesthetics */
 
 /* Import Inter font for modern tech look */
@@ -82,7 +82,7 @@
 
 body {
   font-family: var(--font-primary);
-  background: var(--bg-primary) !important;
+  background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;

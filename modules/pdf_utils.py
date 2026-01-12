@@ -7,7 +7,7 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
-from app.models import TaxForm, IRSLetter
+from app.models import TaxForm, Form1099
 
 # Directory for storing generated PDFs
 PDF_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'pdfs')
@@ -18,7 +18,20 @@ def generate_tax_form_pdf(tax_form):
     try:
         # Create a unique filename
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"form_{tax_form.form_type.value}_{tax_form.user_id}_{timestamp}.pdf"
+        
+        # Determine form type and data source
+        form_type_value = ""
+        form_data = {}
+        
+        if isinstance(tax_form, Form1099):
+            form_type_value = "1099-NEC"
+            form_data = tax_form.form_data
+            filename = f"form_1099-NEC_{tax_form.user_id}_{timestamp}.pdf"
+        else:
+            form_type_value = tax_form.form_type.value
+            form_data = tax_form.data
+            filename = f"form_{form_type_value}_{tax_form.user_id}_{timestamp}.pdf"
+            
         filepath = os.path.join(PDF_DIR, filename)
         
         # Create the PDF document
@@ -41,7 +54,7 @@ def generate_tax_form_pdf(tax_form):
         elements = []
         
         # Add title
-        form_title = f"Form {tax_form.form_type.value} - Tax Year {tax_form.tax_year}"
+        form_title = f"Form {form_type_value} - Tax Year {tax_form.tax_year}"
         elements.append(Paragraph(form_title, title_style))
         elements.append(Spacer(1, 12))
         
@@ -50,10 +63,9 @@ def generate_tax_form_pdf(tax_form):
         elements.append(Spacer(1, 24))
         
         # Add form data
-        form_data = tax_form.data
         if form_data:
             # Group data by section (assuming it's organized somehow)
-            if tax_form.form_type.value == "1120":
+            if form_type_value == "1120":
                 # Process 1120 form
                 elements.append(Paragraph("U.S. Corporation Income Tax Return", heading_style))
                 elements.append(Spacer(1, 12))
@@ -108,7 +120,7 @@ def generate_tax_form_pdf(tax_form):
                 ]))
                 elements.append(t)
                 
-            elif tax_form.form_type.value == "1065":
+            elif form_type_value == "1065":
                 # Process 1065 form
                 elements.append(Paragraph("U.S. Return of Partnership Income", heading_style))
                 elements.append(Spacer(1, 12))
@@ -164,7 +176,7 @@ def generate_tax_form_pdf(tax_form):
                 ]))
                 elements.append(t)
                 
-            elif tax_form.form_type.value == "Schedule C":
+            elif form_type_value == "Schedule C":
                 # Process Schedule C form
                 elements.append(Paragraph("Profit or Loss From Business (Sole Proprietorship)", heading_style))
                 elements.append(Spacer(1, 12))
@@ -228,6 +240,44 @@ def generate_tax_form_pdf(tax_form):
                 ]))
                 elements.append(t)
         
+            elif form_type_value == "1099-NEC":
+                # Process 1099-NEC form
+                elements.append(Paragraph(f"Form 1099-NEC (Tax Year {form_data.get('tax_year', '')})", heading_style))
+                elements.append(Paragraph("Nonemployee Compensation", title_style))
+                elements.append(Spacer(1, 24))
+                
+                # Main 1099 Table
+                data = [
+                    ["PAYER'S name, street address, city or town, state or province, country, ZIP or foreign postal code, and telephone no.", "1 Nonemployee compensation"],
+                    [Paragraph(f"{form_data.get('payer_name', '')}<br/>{form_data.get('payer_address', '')}<br/>{form_data.get('payer_city', '')}, {form_data.get('payer_state', '')} {form_data.get('payer_zip', '')}<br/>{form_data.get('payer_phone', '')}", normal_style), f"${form_data.get('nonemployee_compensation', '0.00')}"],
+                    ["PAYER'S TIN", "RECIPIENT'S TIN"],
+                    [form_data.get('payer_ein', ''), form_data.get('recipient_ein', '')],
+                    ["RECIPIENT'S name", "4 Federal income tax withheld"],
+                    [form_data.get('recipient_name', ''), f"${form_data.get('federal_tax_withheld', '0.00')}"],
+                    ["Street address", "5 State tax withheld"],
+                    [form_data.get('recipient_address', ''), f"${form_data.get('state_tax_withheld', '0.00')}"],
+                    ["City or town, state or province, country, and ZIP or foreign postal code", "7 State/Payer's state no."],
+                    [f"{form_data.get('recipient_city', '')}, {form_data.get('recipient_state', '')} {form_data.get('recipient_zip', '')}", form_data.get('state_id', '')]
+                ]
+                
+                t = Table(data, colWidths=[300, 200])
+                t.setStyle(TableStyle([
+                    ('GRID', (0, 0), (-1, -1), 0.25, colors.black),
+                    ('BACKGROUND', (0, 0), (1, 0), colors.lightgrey),
+                    ('BACKGROUND', (0, 2), (-1, 2), colors.lightgrey),
+                    ('BACKGROUND', (0, 4), (-1, 4), colors.lightgrey),
+                    ('BACKGROUND', (0, 6), (-1, 6), colors.lightgrey),
+                    ('BACKGROUND', (0, 8), (-1, 8), colors.lightgrey),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                    ('PADDING', (0, 0), (-1, -1), 6),
+                ]))
+                elements.append(t)
+                
+                # Copy Distribution Info
+                elements.append(Spacer(1, 12))
+                elements.append(Paragraph("Copy B For Recipient", styles['Italic']))
+                elements.append(Paragraph("This is important tax information and is being furnished to the IRS. If you are required to file a return, a negligence penalty or other sanction may be imposed on you if this income is taxable and the IRS determines that it has not been reported.", styles['Italic']))
+
         # Add disclaimer
         elements.append(Spacer(1, 36))
         disclaimer_text = "DISCLAIMER: This document is for informational purposes only and is not an official IRS form. Please use this as a guide to complete your official tax filing. Consult a tax professional for tax advice."
@@ -238,7 +288,8 @@ def generate_tax_form_pdf(tax_form):
         
         return filename
     except Exception as e:
-        logging.error(f"Error generating tax form PDF: {str(e)}")
+        import traceback
+        logging.error(f"Error generating tax form PDF: {str(e)}\n{traceback.format_exc()}")
         return None
 
 def generate_irs_letter_pdf(letter):

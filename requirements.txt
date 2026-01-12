@@ -13,3 +13,4 @@ trafilatura>=2.0.0
 oauthlib>=3.2.2
 pyjwt>=2.10.1
 python-dotenv>=1.1.1
+reportlab>=4.0.0

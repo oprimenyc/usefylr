@@ -17,7 +17,7 @@ from flask import Blueprint, render_template, request, jsonify, current_app, ses
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 
-# from ai.openai_interface import get_openai_response
+from ai.openai_interface import get_openai_response
 from app.models import User
 
 class SmartLedger:
@@ -128,14 +128,14 @@ class SmartLedger:
             Respond in JSON format.
             """
             
-            # Get AI analysis (mock response for demo)
-            ai_response = {
-                'category': self._classify_by_keywords(description, merchant),
-                'confidence': 85,
-                'deductibility_percentage': 100,
-                'explanation': 'Categorized using intelligent pattern recognition',
-                'special_considerations': 'Ensure proper documentation for audit purposes'
-            }
+            # Get AI analysis
+            system_msg = "You are an expert tax accountant AI assistant specialized in US tax law for freelancers and small businesses."
+            ai_response = get_openai_response(system_msg, prompt, json_response=True)
+            
+            # Fallback if API fails or returns None
+            if not ai_response:
+                logging.warning("OpenAI API returned None, falling back to rule-based categorization")
+                return self._rule_based_categorization(transaction_data)
             
             if ai_response:
                 # Extract and validate AI response

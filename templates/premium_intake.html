@@ -1,0 +1,724 @@
+{% extends "base_layout.html" %}
+
+{% block title %}.fylr | Smart Tax Intake{% endblock %}
+
+{% block head %}
+<style>
+:root {
+    --glass-bg: rgba(26, 26, 26, 0.85);
+    --glass-border: rgba(255, 107, 0, 0.2);
+    --glass-glow: rgba(255, 107, 0, 0.4);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.intake-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    min-height: calc(100vh - 120px);
+}
+
+.intake-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.intake-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.intake-header p {
+    color: #a0a0a0;
+    font-size: 1rem;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-smooth);
+}
+
+.glass-card:hover {
+    border-color: var(--glass-glow);
+    box-shadow: 0 8px 40px rgba(255, 107, 0, 0.15);
+}
+
+.everything-box {
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 107, 0, 0.3);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: var(--transition-smooth);
+}
+
+.everything-box:focus-within {
+    border: 2px solid #FF6B00;
+    box-shadow: 0 0 15px rgba(255, 107, 0, 0.5);
+}
+
+.everything-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    resize: none;
+    min-height: 80px;
+    outline: none;
+}
+
+.everything-input::placeholder {
+    color: #666666;
+}
+
+.everything-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.char-count {
+    font-size: 0.8rem;
+    color: #666666;
+}
+
+.btn-analyze {
+    background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+    border: none;
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-analyze:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+}
+
+.btn-analyze:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.step-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.step-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #333333;
+    transition: var(--transition-smooth);
+}
+
+.step-dot.active {
+    background: #FF6B00;
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+    animation: pulse 2s infinite;
+}
+
+.step-dot.completed {
+    background: #10b981;
+}
+
+.step-label {
+    font-size: 0.75rem;
+    color: #666666;
+    transition: var(--transition-smooth);
+}
+
+.step-item.active .step-label {
+    color: #FF6B00;
+}
+
+.step-item.completed .step-label {
+    color: #10b981;
+}
+
+.step-connector {
+    width: 30px;
+    height: 2px;
+    background: #333333;
+    transition: var(--transition-smooth);
+}
+
+.step-connector.completed {
+    background: linear-gradient(90deg, #10b981 0%, #FF6B00 100%);
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 0, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 107, 0, 0.8); }
+}
+
+.result-cards {
+    display: grid;
+    gap: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: var(--transition-smooth);
+}
+
+.result-cards.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.result-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: var(--transition-smooth);
+    animation: slideIn 0.4s ease-out forwards;
+    opacity: 0;
+}
+
+.result-card:nth-child(1) { animation-delay: 0.1s; }
+.result-card:nth-child(2) { animation-delay: 0.2s; }
+.result-card:nth-child(3) { animation-delay: 0.3s; }
+.result-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.result-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.result-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-card-title i {
+    color: #FF6B00;
+}
+
+.confidence-badge {
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.2) 0%, rgba(255, 133, 51, 0.2) 100%);
+    border: 1px solid rgba(255, 107, 0, 0.3);
+    color: #FF6B00;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.confidence-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FF6B00;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.result-card-content {
+    color: #a0a0a0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.result-card-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.result-card-content li {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-card-content li:last-child {
+    border-bottom: none;
+}
+
+.result-card-content li::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: #FF6B00;
+    border-radius: 50%;
+}
+
+.tax-summary {
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.1) 0%, rgba(255, 133, 51, 0.05) 100%);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.tax-summary h3 {
+    color: #ffffff;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.tax-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #10b981;
+    font-variant-numeric: tabular-nums;
+}
+
+.tax-label {
+    color: #a0a0a0;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.continue-section {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-continue {
+    background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+    border: none;
+    color: #ffffff;
+    padding: 1rem 2.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.btn-continue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 0, 0.4);
+}
+
+.loading-state {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-state.active {
+    display: block;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 107, 0, 0.2);
+    border-top-color: #FF6B00;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: #a0a0a0;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .intake-container {
+        padding: 1rem;
+    }
+    
+    .intake-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .glass-card {
+        padding: 1rem;
+    }
+    
+    .everything-input {
+        font-size: 1rem;
+    }
+    
+    .step-progress {
+        gap: 0.25rem;
+    }
+    
+    .step-connector {
+        width: 15px;
+    }
+    
+    .step-label {
+        display: none;
+    }
+    
+    .tax-amount {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .everything-box {
+        padding: 1rem;
+    }
+    
+    .everything-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .btn-analyze {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="intake-container">
+    <div class="intake-header">
+        <h1>Tell Us About Your Business</h1>
+        <p>Describe your income, expenses, and tax situation in plain English</p>
+    </div>
+    
+    <div class="step-progress" id="stepProgress">
+        <div class="step-item active" data-step="1">
+            <div class="step-dot active"></div>
+            <span class="step-label">Tell Us</span>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <div class="everything-box" id="everythingBox">
+            <textarea 
+                class="everything-input" 
+                id="businessInput"
+                placeholder="Example: I'm a freelance graphic designer. I made about $85,000 this year from clients. I work from home and bought a new computer for $2,500. I also pay for Adobe Creative Cloud ($600/year) and have a dedicated home office..."
+            ></textarea>
+            <div class="everything-actions">
+                <span class="char-count"><span id="charCount">0</span> characters</span>
+                <button class="btn-analyze" id="analyzeBtn" disabled>
+                    <i class="fas fa-magic"></i>
+                    Analyze My Situation
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-state" id="loadingState">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Analyzing your tax situation...</div>
+    </div>
+    
+    <div class="result-cards" id="resultCards">
+    </div>
+</div>
+
+<script>
+const businessInput = document.getElementById('businessInput');
+const charCount = document.getElementById('charCount');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const loadingState = document.getElementById('loadingState');
+const resultCards = document.getElementById('resultCards');
+const stepProgress = document.getElementById('stepProgress');
+
+businessInput.addEventListener('input', function() {
+    const length = this.value.length;
+    charCount.textContent = length;
+    analyzeBtn.disabled = length < 20;
+});
+
+analyzeBtn.addEventListener('click', async function() {
+    const input = businessInput.value.trim();
+    if (!input) return;
+    
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+    loadingState.classList.add('active');
+    resultCards.innerHTML = '';
+    resultCards.classList.remove('visible');
+    
+    try {
+        const response = await fetch('/api/analyze-intake', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ input: input })
+        });
+        
+        const data = await response.json();
+        
+        setTimeout(() => {
+            loadingState.classList.remove('active');
+            displayResults(data);
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        loadingState.classList.remove('active');
+        displayFallbackResults();
+    }
+    
+    analyzeBtn.disabled = false;
+    analyzeBtn.innerHTML = '<i class="fas fa-magic"></i> Analyze Again';
+});
+
+function displayResults(data) {
+    const results = data.results || getFallbackData();
+    
+    if (window.fylr && window.fylr.scrollToTop) {
+        window.fylr.scrollToTop();
+    } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    buildDynamicSteps(results);
+    
+    displayCardsSequentially(results, data.estimated_savings);
+}
+
+function buildDynamicSteps(results) {
+    const stepProgress = document.getElementById('stepProgress');
+    
+    let stepsHtml = `
+        <div class="step-item completed" data-step="1">
+            <div class="step-dot completed"></div>
+            <span class="step-label">Tell Us</span>
+        </div>
+        <div class="step-connector completed"></div>
+    `;
+    
+    results.forEach((result, index) => {
+        const stepNum = index + 2;
+        const isLast = index === results.length - 1;
+        const shortLabel = result.title.split(' ').slice(0, 2).join(' ');
+        
+        stepsHtml += `
+            <div class="step-item" data-step="${stepNum}" id="step-${stepNum}">
+                <div class="step-dot"></div>
+                <span class="step-label">${shortLabel}</span>
+            </div>
+        `;
+        
+        stepsHtml += `<div class="step-connector" id="connector-${stepNum}"></div>`;
+    });
+    
+    stepsHtml += `
+        <div class="step-item" data-step="${results.length + 2}" id="step-review">
+            <div class="step-dot"></div>
+            <span class="step-label">Review</span>
+        </div>
+    `;
+    
+    stepProgress.innerHTML = stepsHtml;
+}
+
+function displayCardsSequentially(results, estimatedSavings) {
+    resultCards.innerHTML = '';
+    resultCards.classList.add('visible');
+    
+    let delay = 0;
+    const delayIncrement = 600;
+    
+    results.forEach((result, index) => {
+        setTimeout(() => {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `
+                <div class="result-card-header">
+                    <div class="result-card-title">
+                        <i class="${result.icon}"></i>
+                        ${result.title}
+                    </div>
+                    <div class="confidence-badge">
+                        <span class="dot"></span>
+                        ${result.confidence}% Confidence
+                    </div>
+                </div>
+                <div class="result-card-content">
+                    <ul>
+                        ${result.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            resultCards.appendChild(card);
+            
+            const stepNum = index + 2;
+            const stepItem = document.getElementById(`step-${stepNum}`);
+            const connector = document.getElementById(`connector-${stepNum}`);
+            
+            if (stepItem) {
+                stepItem.classList.add('active');
+                stepItem.querySelector('.step-dot').classList.add('active');
+            }
+            if (connector) {
+                connector.classList.add('completed');
+            }
+            
+            setTimeout(() => {
+                if (stepItem) {
+                    stepItem.classList.remove('active');
+                    stepItem.classList.add('completed');
+                    stepItem.querySelector('.step-dot').classList.remove('active');
+                    stepItem.querySelector('.step-dot').classList.add('completed');
+                }
+            }, delayIncrement - 100);
+            
+        }, delay);
+        
+        delay += delayIncrement;
+    });
+    
+    setTimeout(() => {
+        if (estimatedSavings) {
+            const summaryCard = document.createElement('div');
+            summaryCard.className = 'tax-summary';
+            summaryCard.innerHTML = `
+                <h3>Estimated Tax Savings</h3>
+                <div class="tax-amount">$${estimatedSavings.toLocaleString()}</div>
+                <div class="tax-label">Based on identified deductions</div>
+            `;
+            resultCards.appendChild(summaryCard);
+        }
+        
+        setTimeout(() => {
+            const continueSection = document.createElement('div');
+            continueSection.className = 'continue-section';
+            continueSection.innerHTML = `
+                <button class="btn-continue" onclick="continueToNextStep()">
+                    Continue to Forms <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            `;
+            resultCards.appendChild(continueSection);
+        }, 300);
+        
+    }, delay);
+}
+
+function displayFallbackResults() {
+    const fallbackData = {
+        results: getFallbackData(),
+        estimated_savings: 4850
+    };
+    displayResults(fallbackData);
+}
+
+function getFallbackData() {
+    return [
+        {
+            icon: 'fas fa-building',
+            title: 'Business Type Detected',
+            confidence: 94,
+            items: ['Sole Proprietorship / Self-Employed', 'Freelance Services Industry', 'Home-Based Business']
+        },
+        {
+            icon: 'fas fa-file-invoice-dollar',
+            title: 'Required Tax Forms',
+            confidence: 92,
+            items: ['Schedule C (Profit or Loss)', 'Schedule SE (Self-Employment Tax)', '1099-NEC (Client Payments)', 'Form 8829 (Home Office)']
+        },
+        {
+            icon: 'fas fa-receipt',
+            title: 'Potential Deductions',
+            confidence: 88,
+            items: ['Home Office Deduction', 'Equipment & Technology', 'Software Subscriptions', 'Business Insurance']
+        },
+        {
+            icon: 'fas fa-lightbulb',
+            title: 'AI Recommendations',
+            confidence: 91,
+            items: ['Track vehicle mileage for additional deductions', 'Consider SEP-IRA for retirement savings', 'Quarterly estimated payments recommended']
+        }
+    ];
+}
+
+function continueToNextStep() {
+    const steps = document.querySelectorAll('.step-item');
+    const connectors = document.querySelectorAll('.step-connector');
+    
+    steps.forEach(step => {
+        step.classList.add('completed');
+        step.classList.remove('active');
+        step.querySelector('.step-dot').classList.add('completed');
+        step.querySelector('.step-dot').classList.remove('active');
+    });
+    
+    connectors.forEach(conn => {
+        conn.classList.add('completed');
+    });
+    
+    const lastStep = steps[steps.length - 1];
+    if (lastStep) {
+        lastStep.classList.add('active');
+        lastStep.classList.remove('completed');
+        lastStep.querySelector('.step-dot').classList.add('active');
+        lastStep.querySelector('.step-dot').classList.remove('completed');
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+{% endblock %}

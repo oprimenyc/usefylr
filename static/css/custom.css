@@ -198,7 +198,14 @@ body {
 }
 
 [data-theme="dark"] .text-muted {
-  color: #adb5bd !important;
+  color: #b8b8bc !important;
+}
+
+/* Ensure text-muted is visible on all dark backgrounds */
+.dark-theme .text-muted,
+.bg-dark .text-muted,
+body[style*="background"] .text-muted {
+  color: #9E9EA3 !important;
 }
 
 [data-theme="dark"] .border {

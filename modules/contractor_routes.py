@@ -14,6 +14,7 @@ from sqlalchemy import func
 from app import db
 from app.models import Contractor, ContractorPayment, Form1099, User
 from app.access_control import requires_access_level
+from modules.pdf_utils import generate_tax_form_pdf
 
 # Create blueprint
 contractor_bp = Blueprint('contractors', __name__, url_prefix='/contractors')
@@ -221,8 +222,22 @@ def generate_1099(contractor_id):
 
         db.session.add(form_1099)
         db.session.commit()
-
-        flash(f'1099-NEC generated for {contractor.name} (Tax Year {tax_year})', 'success')
+        
+        # Generate PDF
+        pdf_filename = generate_tax_form_pdf(form_1099)
+        
+        if pdf_filename:
+            # Store PDF filename in form_data
+            # Re-assigning to trigger SQLAlchemy update for JSON field
+            form_data = dict(form_1099.form_data)
+            form_data['pdf_file'] = pdf_filename
+            form_1099.form_data = form_data
+            db.session.commit()
+            
+            flash(f'1099-NEC generated for {contractor.name} (Tax Year {tax_year}). API File: {pdf_filename}', 'success')
+        else:
+            flash(f'1099-NEC generated for {contractor.name} (Tax Year {tax_year}), but PDF generation failed.', 'warning')
+            
         return redirect(url_for('contractors.dashboard'))
 
     except Exception as e:
