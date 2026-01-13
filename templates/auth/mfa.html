@@ -1,0 +1,33 @@
+{% extends "base_layout.html" %}
+{% block content %}
+<div class="container mt-5" style="max-width: 450px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4 text-center">
+            <h3 class="fw-bold mb-3">Verify it's you</h3>
+            <p class="text-muted small mb-4">We sent a 6-digit code to your registered device. Enter it below to secure your session.</p>
+            
+            <form action="{{ url_for('auth.verify_mfa') }}" method="POST">
+                <div class="mb-4">
+                    <input type="text" 
+                           name="mfa_code" 
+                           class="form-control form-control-lg text-center fw-bold letter-spacing-lg" 
+                           placeholder="000000" 
+                           maxlength="6" 
+                           pattern="\d{6}" 
+                           inputmode="numeric" 
+                           autocomplete="one-time-code"
+                           required 
+                           autofocus>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Verify & Continue</button>
+                <a href="#" class="text-decoration-none small text-muted">Didn't get a code? Resend</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .letter-spacing-lg { letter-spacing: 0.5rem; font-size: 1.5rem; }
+    .card { border-radius: 12px; }
+</style>
+{% endblock %}

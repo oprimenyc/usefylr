@@ -29,11 +29,11 @@
     <!-- Navigation - Quiet Luxury Header -->
     <nav class="navbar-luxury">
         <div class="container">
-            <a href="{{ url_for('index') }}" style="font-size: 48px !important; font-weight: 900 !important; text-decoration: none !important; background: none !important; border: none !important; padding: 0 !important; line-height: 1 !important; display: inline-block !important;"><span style="color: #FF6B00 !important;">.</span><span style="color: #FFFFFF !important;">fylr</span></a>
+            <a href="{{ url_for('main.index') }}" style="font-size: 48px !important; font-weight: 900 !important; text-decoration: none !important; background: none !important; border: none !important; padding: 0 !important; line-height: 1 !important; display: inline-block !important;"><span style="color: #FF6B00 !important;">.</span><span style="color: #FFFFFF !important;">fylr</span></a>
             
             <div class="nav-luxury">
                 <div class="nav-auth-unified">
-                    <a href="{{ url_for('signin') }}" class="nav-auth-link">Sign In</a>
+                    <a href="{{ url_for('auth.login') }}" class="nav-auth-link">Sign In</a>
                     <span class="nav-auth-slash">/</span>
                     <a href="#pricing" class="nav-auth-link">Get Started</a>
                 </div>
@@ -49,7 +49,7 @@
     
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-luxury" id="mobileMenu">
-        <a href="{{ url_for('signin') }}" onclick="closeMobileMenu()">Sign In</a>
+        <a href="{{ url_for('auth.login') }}" onclick="closeMobileMenu()">Sign In</a>
         <a href="#pricing" onclick="closeMobileMenu()">Upgrade Now</a>
     </div>
     
@@ -71,7 +71,7 @@
                 <div class="footer-links">
                     <a href="#">Features</a>
                     <a href="#">Pricing</a>
-                    <a href="{{ url_for('legal_disclaimer') }}">Legal</a>
+                    <a href="{{ url_for('main.legal_disclaimer') }}">Legal</a>
                     <a href="#">Privacy</a>
                     <a href="#">Support</a>
                 </div>

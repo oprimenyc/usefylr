@@ -415,3 +415,6 @@ Copyright © 2026 .fylr - oprimenyc
 ---
 
 **Built with ❤️ by the .fylr team**
+
+## 🛡️ Compliance
+- [Data Retention Policy](docs/data_retention_policy.md)

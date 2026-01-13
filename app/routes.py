@@ -144,10 +144,15 @@ def portal():
     audit_risk = calculate_audit_risk(profile)
     tax_intelligence = calculate_tax_savings(profile)
 
-    return render_template('portal.html',
+    return render_template('index.html',
                          audit_risk=audit_risk,
                          tax_intelligence=tax_intelligence,
                          profile=profile)
+
+@main_bp.route('/mfa-preview')
+def mfa_preview():
+    """Temporary route for MFA UI preview"""
+    return render_template('auth/mfa.html')
 
 # Error handlers
 def page_not_found(e):
