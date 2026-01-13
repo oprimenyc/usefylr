@@ -410,7 +410,7 @@ Copyright © 2026 .fylr - oprimenyc
 
 - **2026 Best Tax Software** - SaaS Awards (Pending)
 - **Featured on Product Hunt** - #1 Product of the Day (Planned Launch)
-- **TechCrunch Coverage** - "The AI Tax Assistant Small Businesses Need"
+- **TechCrunch Coverage** - "The AI Tax Assistant Small Businesses Need" 
 
 ---
 
